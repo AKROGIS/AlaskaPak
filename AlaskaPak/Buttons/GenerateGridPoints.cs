@@ -8,7 +8,7 @@
 
         protected override void OnClick()
         {
-            System.Windows.Forms.MessageBox.Show("Not Available");
+            System.Windows.Forms.MessageBox.Show(this.GetType().Name + " Not Available");
         }
 
         protected override void OnUpdate()
