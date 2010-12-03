@@ -1,0 +1,194 @@
+﻿<ESRI.Configuration xmlns="http://schemas.esri.com/Desktop/AddIns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Alaska Pak</Name>
+  <AddInID>{f27bc194-1406-4cd9-ab22-067660801251}</AddInID>
+  <Description>A tool kit for increasing GIS productivity</Description>
+  <Version>3.0</Version>
+  <Image>Images\NPS_Logo.png</Image>
+  <Author>Regan Sarwas, GIS Team</Author>
+  <Company>National Park Service, Alaska Regional Office</Company>
+  <Date>12/2/2010</Date>
+  <Targets>
+    <Target name="Desktop" version="10.0" />
+  </Targets>
+  <AddIn language="CLR" library="AlaskaPak3.dll" namespace="NPS.AKRO.ArcGIS">
+    <ArcMap>
+      <Commands>
+        <!--
+		    id       is used for referencing the object in this document and must be unique across all items in the customization commands list
+		    class    is the class that does the work, must be in the namespace above
+			message  apears in the status bar
+			caption  is the button or tool text (it appears in the menu/toolbar, and in the customization commands list
+			tip      is a popup tooltip (does not appear when button is a menu item);
+			category is the folder in the customization commands list
+			image    is a relative path to a image (jpg, png, ico, bmp) usually 16x16 that is used in the menu/toolbar button
+			cursor   is a relative path to a cursor (*.cur) that is used by the tool when it is active (not used by buttons)
+			help     is ???
+		-->
+		<Tool id="NPS_Alaska_Pak_Coordinates" class="Coordinates" message="Interactive Coordinate Display" caption="&amp;Interactive Coordinates" tip="Show/Goto Coordinates" category="NPS Alaska" image="Images\bitmapCoordinates.bmp" cursor="Images\cursorCoordCursor.cur">
+		  <Help heading="Alaska Pak">b</Help>
+		</Tool>
+		<Tool id="NPS_Alaska_Pak_Generate_Grid" class="GenerateGrid" message="Generate a Regular Grid from a user defined rectangle." caption="&amp;Generate Grid" tip="Generate a Grid" category="NPS Alaska" image="Images\iconGridIcon.ico" cursor="Images\GenerateGrid.cur">
+		  <Help heading="Alaska Pak">b</Help>
+		</Tool>
+		  
+		<Button id="NPS_Alaska_Pak_ThemeManager" class="ThemeManager" message="Use Theme Manager for organizing and discovering GIS layers" caption="&amp;Theme Manager" tip="Start Theme Manager" category="NPS Alaska" image="Images\ThemeManager.png">
+          <Help heading="Theme Manager">Use Theme Manager for organizing and discovering GIS layers.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Add_Unique_ID" class="AddUniqueID" message="Add a Unique ID field to a data set and populate that field" caption="Add &amp;Unique ID" tip="Add unique ID to data table" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Add Unique ID">Add a Unique ID field to a data set and populate that field.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Add_XY" class="AddXY" message="Add and/or update fields with each point's coordinate" caption="Add &amp;XY Coordinates" tip="Add XY coordinates to data table" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Add XY">Add and/or update fields with each point's coordinate.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Add_Acres" class="AddAcres" message="Add and/or update a field with each polygon's size in acres" caption="Add &amp;Acres" tip="Add acres to data table" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Add Acres">Add and/or update a field with each polygon's size in acres.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Add_Miles" class="AddMiles" message="Add and/or update a field with each line's length in miles" caption="Add &amp;Miles" tip="Add miles to data table" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Add Miles">Add and/or update a field with each line's length in miles.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Obscure_Points" class="ObscurePoints" message="Randomly obscure the location of sensitive points" caption="&amp;Obscure Points" tip="Obscure sensitive points" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Obscure Points">Randomly obscure the location of sensitive points.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Random_Points" class="RandomPoints" message="Create a feature class with randomly generated points" caption="Random &amp;Points" tip="Create random point features" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Random Points">Create a feature class with randomly generated points.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Transects" class="RandomTransects" message="Create a feature class with randomly generated lines" caption="Random &amp;Transects" tip="Create random line features" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Transects">Create a feature class with randomly generated lines.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Random_Select" class="RandomSelect" message="Create a new selection set of Randomly selected features" caption="Random &amp;Select" tip="Select random features" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Random Select">Create a new selection set of Randomly selected features.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Point_to_Polygon" class="PointToPolygon" message="Create a line or polygon feature class from a point feature class" caption="&amp;Point to Polyline/Polygon" tip="Convert points to a line or polygon" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Point to Polygon">Create a line or polygon feature class from a point feature class.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Polygon_to_Point" class="PolygonToPoint" message="Create a point feature class from the vertices in lines or polygons" caption="P&amp;olyline/Polygon to Point" tip="Convert a line or polygon to points" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Polygon to Point">Create a point feature class from the vertices in lines or polygons.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Graphics_to_Features" class="GraphicsToFeatures" message="Convert graphics to features" caption="&amp;Graphics to Features" tip="Convert graphics to features" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Graphics to Features">Convert graphics to features.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Generate_Grid_Points" class="GenerateGridPoints" message="Generate centroid points from an Alaska Pak generated grid" caption="Generate Grid &amp;Points" tip="Create center points for a grid" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Generate Grid Points">Generate centroid points from an Alaska Pak generated grid.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Resize_Grid" class="ResizeGrid" message="Modify an Alaska Pak generated grid" caption="&amp;Resize Grid" tip="Modify a Grid" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Resize Grid">Modify an Alaska Pak generated grid.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Set_All_Extents" class="SetExtents" message="Set the extents of all data frames to match the active data frame" caption="Set &amp;Dataframe Extents" tip="Set all data frames to the same extents" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Set All Extents">Set the extents of all data frames to match the active data frame.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Animate_Features" class="AnimateFeatures" message="Highlight features in order based on an attribute value" caption="Animate &amp;Features" tip="Animate Features" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Animate Features">Highlight features in order based on an attribute value.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Square_Building" class="SquareBuildings" message="Create rectangular buildings with a line and an offset" caption="&amp;Square Building" tip="Create polygons with a line and offset" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Square Building">Create rectangular buildings with a line and an offset.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Copy_Raster_Legend" class="CopyRasterLegend" message="Copy raster symbology from one layer to other layers" caption="Copy Raster &amp;Legend" tip="Copy raster symbology" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Copy Raster Legend">Copy raster symbology from one layer to other layers.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_About" class="AlaskaPakAbout" message="Show information about NPS AlaskaPak" caption="&amp;About AlaskaPak ..." tip="About AlaskaPak" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak About">Show information about NPS AlaskaPak</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Link_Internal" class="LinkInternal" message="Go to the NPS internal GIS website" caption="&amp;Internal NPS Website" tip="Internal GIS website" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Link Internal">Go to the NPS internal GIS website</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Link_External" class="LinkExternal" message="Go to the NPS external GIS website" caption="&amp;External NPS Website" tip="External GIS website" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Link External">Go to the NPS external GIS website.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Help" class="AlaskaPakHelp" message="Get help on NPS AlaskaPak" caption="&amp;Help on AlaskaPak" tip="Help" category="NPS Alaska" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Help">Get help on NPS AlaskaPak.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Coordinates_Place_Marker" class="CoordinatesPlaceMarker" message="Place a marker on the map at the specified coordinates" caption="&amp;Place Marker" tip="Help" category="NPS Alaska Coordinates" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Coordinates Place Marker">Place a marker on the map at the specified coordinates.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Coordinates_Copy_Text" class="CoordinatesCopyText" message="Copy coordinate text to the clipboard" caption="&amp;Copy Text" tip="Help" category="NPS Alaska Coordinates" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Coordinates Copy Text">Copy coordinate text to the clipboard.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Coordinates_Zoom_To_Marker" class="CoordinatesZoomToMarker" message="Zoom and pan to the coordinate marker" caption="&amp;Zoom/Pan to Marker" tip="Help" category="NPS Alaska Coordinates" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Coordinates Zoom To Marker">Zoom and pan to the coordinate marker.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Coordinates_Set_Mode_Interactive" class="CoordinatesSetModeInteractive" message="Update coordinate display as the cursor is moved" caption="&amp;Interactive" tip="Coordinates of cursor" category="NPS Alaska Coordinates" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Coordinates Set Mode Interactive">Update coordinate display as the cursor is moved.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Coordinates_Set_Mode_Locked" class="CoordinatesSetModeLocked" message="Update coordinate display when the mouse is clicked" caption="&amp;Locked" tip="Coordinates of mouse click" category="NPS Alaska Coordinates" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Coordinates Set Mode Locked">Update coordinate display when the mouse is clicked.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Coordinates_Set_Mode_Feature" class="CoordinatesSetModeFeature" message="Update coordinates based on nearest point feature" caption="&amp;Feature Select" tip="Coordinates of nearest point feature" category="NPS Alaska Coordinates" image="Images\NPS_Logo.png">
+          <Help heading="Alaska Pak Coordinates Set Mode Feature">Update coordinates based on nearest point feature.</Help>
+        </Button>
+      </Commands>
+      <Menus>
+        <Menu id="NPS_Alaska_Pak_Coordinates_Menu" caption="&amp;Coordinates" isRootMenu="false" isShortcutMenu="true">
+          <Items>
+            <Button refID="NPS_Alaska_Pak_Coordinates_Place_Marker" />
+            <Button refID="NPS_Alaska_Pak_Coordinates_Copy_Text" />
+            <Button refID="NPS_Alaska_Pak_Coordinates_Zoom_To_Marker" />
+            <Button refID="NPS_Alaska_Pak_Coordinates_Set_Mode_Interactive" separator="true" />
+            <Button refID="NPS_Alaska_Pak_Coordinates_Set_Mode_Locked" />
+            <Button refID="NPS_Alaska_Pak_Coordinates_Set_Mode_Feature" />
+          </Items>
+        </Menu>
+		  
+        <Menu id="NPS_Alaska_Pak_Add_Menu" caption="&amp;Add Attributes" isRootMenu="false">
+          <Items>
+            <Button refID="NPS_Alaska_Pak_Add_Unique_ID" />
+            <Button refID="NPS_Alaska_Pak_Add_XY" />
+            <Button refID="NPS_Alaska_Pak_Add_Miles" />
+            <Button refID="NPS_Alaska_Pak_Add_Acres" />
+          </Items>
+        </Menu>
+        <Menu id="NPS_Alaska_Pak_Convert_Menu" caption="&amp;Conversions" isRootMenu="false">
+          <Items>
+            <Button refID="NPS_Alaska_Pak_Point_to_Polygon" />
+            <Button refID="NPS_Alaska_Pak_Polygon_to_Point" />
+            <Button refID="NPS_Alaska_Pak_Graphics_to_Features" />
+          </Items>
+        </Menu>
+        <Menu id="NPS_Alaska_Pak_Grid_Menu" caption="&amp;Grids" isRootMenu="false">
+          <Items>
+			<Button refID="NPS_Alaska_Pak_Generate_Grid_Points" />
+			<Button refID="NPS_Alaska_Pak_Resize_Grid" />
+		  </Items>
+        </Menu>
+        <Menu id="NPS_Alaska_Pak_Random_Menu" caption="&amp;Randomize" isRootMenu="false">
+          <Items>
+            <Button refID="NPS_Alaska_Pak_Obscure_Points" />
+            <Button refID="NPS_Alaska_Pak_Random_Points" />
+            <Button refID="NPS_Alaska_Pak_Random_Select" />
+            <Button refID="NPS_Alaska_Pak_Transects" />
+          </Items>
+        </Menu>
+        <Menu id="NPS_Alaska_Pak_Help_Menu" caption="&amp;Help" isRootMenu="false">
+          <Items>
+            <Button refID="NPS_Alaska_Pak_About" separator="true" />
+            <Button refID="NPS_Alaska_Pak_Link_Internal" />
+            <Button refID="NPS_Alaska_Pak_Link_External" />
+            <Button refID="NPS_Alaska_Pak_Help" />
+          </Items>
+        </Menu>
+        <Menu id="NPS_Alaska_Pak_Menu" caption="&amp;Alaska Pak" isRootMenu="true">
+          <Items>
+            <Menu refID="NPS_Alaska_Pak_Add_Menu" />
+            <Menu refID="NPS_Alaska_Pak_Grid_Menu" />
+            <Menu refID="NPS_Alaska_Pak_Convert_Menu" />
+            <Menu refID="NPS_Alaska_Pak_Random_Menu" />
+            <Button refID="NPS_Alaska_Pak_Set_All_Extents" separator="true" />
+            <Button refID="NPS_Alaska_Pak_Animate_Features" />
+            <Button refID="NPS_Alaska_Pak_Square_Building" />
+            <Button refID="NPS_Alaska_Pak_Copy_Raster_Legend" />
+            <Menu refID="NPS_Alaska_Pak_Help_Menu" />
+          </Items>
+        </Menu>
+      </Menus>
+      <Toolbars>
+        <Toolbar id="NPS_Alaska_Pak" caption="NPS Alaska" showInitially="true">
+          <Items>
+            <Button refID="NPS_Alaska_Pak_ThemeManager" />
+            <Menu refID="NPS_Alaska_Pak_Menu" />
+			<Tool refID="NPS_Alaska_Pak_Coordinates" />
+			<Tool refID="NPS_Alaska_Pak_Generate_Grid" />
+		  </Items>
+        </Toolbar>
+      </Toolbars>
+    </ArcMap>
+  </AddIn>
+</ESRI.Configuration>
