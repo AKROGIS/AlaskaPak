@@ -14,24 +14,24 @@
     <ArcMap>
       <Commands>
         <!--
-		    id       is used for referencing the object in this document and must be unique across all items in the customization commands list
-		    class    is the class that does the work, must be in the namespace above
-			message  apears in the status bar
-			caption  is the button or tool text (it appears in the menu/toolbar, and in the customization commands list
-			tip      is a popup tooltip (does not appear when button is a menu item);
-			category is the folder in the customization commands list
-			image    is a relative path to a image (jpg, png, ico, bmp) usually 16x16 that is used in the menu/toolbar button
-			cursor   is a relative path to a cursor (*.cur) that is used by the tool when it is active (not used by buttons)
-			help     is ???
-		-->
-		<Tool id="NPS_Alaska_Pak_Coordinates" class="Coordinates" message="Interactive Coordinate Display" caption="&amp;Interactive Coordinates" tip="Show/Goto Coordinates" category="NPS Alaska" image="Images\bitmapCoordinates.bmp" cursor="Images\cursorCoordCursor.cur">
-		  <Help heading="Alaska Pak">b</Help>
-		</Tool>
-		<Tool id="NPS_Alaska_Pak_Generate_Grid" class="GenerateGrid" message="Generate a Regular Grid from a user defined rectangle." caption="&amp;Generate Grid" tip="Generate a Grid" category="NPS Alaska" image="Images\iconGridIcon.ico" cursor="Images\GenerateGrid.cur">
-		  <Help heading="Alaska Pak">b</Help>
-		</Tool>
-		  
-		<Button id="NPS_Alaska_Pak_ThemeManager" class="ThemeManager" message="Use Theme Manager for organizing and discovering GIS layers" caption="&amp;Theme Manager" tip="Start Theme Manager" category="NPS Alaska" image="Images\ThemeManager.png">
+					id       is used for referencing the object in this document and must be unique across all items in the customization commands list
+					class    is the class that does the work, must be in the namespace above
+					message  apears in the status bar
+					caption  is the button or tool text (it appears in the menu/toolbar, and in the customization commands list
+					tip      is a popup tooltip (does not appear when button is a menu item);
+					category is the folder in the customization commands list
+					image    is a relative path to a image (jpg, png, ico, bmp) usually 16x16 that is used in the menu/toolbar button
+					cursor   is a relative path to a cursor (*.cur) that is used by the tool when it is active (not used by buttons)
+					help     is ???
+				-->
+        <Tool id="NPS_Alaska_Pak_Coordinates" class="Coordinates" message="Interactive Coordinate Display" caption="&amp;Interactive Coordinates" tip="Show/Goto Coordinates" category="NPS Alaska" image="Images\bitmapCoordinates.bmp" cursor="Images\cursorCoordCursor.cur">
+          <Help heading="Alaska Pak">b</Help>
+        </Tool>
+        <Tool id="NPS_Alaska_Pak_Generate_Grid" class="GenerateGrid" message="Generate a Regular Grid from a user defined rectangle." caption="&amp;Generate Grid" tip="Generate a Grid" category="NPS Alaska" image="Images\iconGridIcon.ico" cursor="Images\GenerateGrid.cur">
+          <Help heading="Alaska Pak">b</Help>
+        </Tool>
+
+        <Button id="NPS_Alaska_Pak_ThemeManager" class="ThemeManager" message="Use Theme Manager for organizing and discovering GIS layers" caption="&amp;Theme Manager" tip="Start Theme Manager" category="NPS Alaska" image="Images\ThemeManager.png">
           <Help heading="Theme Manager">Use Theme Manager for organizing and discovering GIS layers.</Help>
         </Button>
         <Button id="NPS_Alaska_Pak_Add_Unique_ID" class="AddUniqueID" message="Add a Unique ID field to a data set and populate that field" caption="Add &amp;Unique ID" tip="Add unique ID to data table" category="NPS Alaska" image="Images\NPS_Logo.png">
@@ -124,7 +124,7 @@
             <Button refID="NPS_Alaska_Pak_Coordinates_Set_Mode_Feature" />
           </Items>
         </Menu>
-		  
+
         <Menu id="NPS_Alaska_Pak_Add_Menu" caption="&amp;Add Attributes" isRootMenu="false">
           <Items>
             <Button refID="NPS_Alaska_Pak_Add_Unique_ID" />
@@ -142,9 +142,9 @@
         </Menu>
         <Menu id="NPS_Alaska_Pak_Grid_Menu" caption="&amp;Grids" isRootMenu="false">
           <Items>
-			<Button refID="NPS_Alaska_Pak_Generate_Grid_Points" />
-			<Button refID="NPS_Alaska_Pak_Resize_Grid" />
-		  </Items>
+            <Button refID="NPS_Alaska_Pak_Generate_Grid_Points" />
+            <Button refID="NPS_Alaska_Pak_Resize_Grid" />
+          </Items>
         </Menu>
         <Menu id="NPS_Alaska_Pak_Random_Menu" caption="&amp;Randomize" isRootMenu="false">
           <Items>
@@ -181,10 +181,10 @@
           <Items>
             <Button refID="NPS_Alaska_Pak_ThemeManager" />
             <Menu refID="NPS_Alaska_Pak_Menu" />
-			<Button refID="esriControls.ControlsMapGoToCommand" />
-			<!-- <Tool refID="NPS_Alaska_Pak_Coordinates" /> -->
-			<Tool refID="NPS_Alaska_Pak_Generate_Grid" />
-		  </Items>
+            <Button refID="esriControls.ControlsMapGoToCommand" />
+            <!-- <Tool refID="NPS_Alaska_Pak_Coordinates" /> -->
+            <Tool refID="NPS_Alaska_Pak_Generate_Grid" />
+          </Items>
         </Toolbar>
       </Toolbars>
     </ArcMap>
