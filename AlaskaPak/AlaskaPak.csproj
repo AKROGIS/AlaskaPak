@@ -181,6 +181,9 @@
   <ItemGroup>
     <AddInContent Include="Images\Button2.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="PathToThemeManager.txt" />
+  </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>
     <AddInTargetProduct>Desktop</AddInTargetProduct>
