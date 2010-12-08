@@ -182,7 +182,9 @@
     <AddInContent Include="Images\Button2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="PathToThemeManager.txt" />
+    <Content Include="PathToThemeManager.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>
