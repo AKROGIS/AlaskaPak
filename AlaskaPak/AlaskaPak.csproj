@@ -120,6 +120,7 @@
     <Compile Include="Buttons\ResizeGrid.cs" />
     <Compile Include="Buttons\SetExtents.cs" />
     <Compile Include="Buttons\SquareBuildings.cs" />
+    <Compile Include="Common\ArcToolBox.cs" />
     <Compile Include="Tools\Coordinates.cs" />
     <Compile Include="Tools\GenerateGrid.cs" />
     <Compile Include="Buttons\LinkInternal.cs" />
@@ -180,7 +181,6 @@
   <ItemGroup>
     <AddInContent Include="Images\Button2.png" />
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>
     <AddInTargetProduct>Desktop</AddInTargetProduct>

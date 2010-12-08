@@ -8,7 +8,7 @@
 
         protected override void OnClick()
         {
-            System.Windows.Forms.MessageBox.Show(this.GetType().Name + " Not Available");
+            Common.ArcToolBox.Invoke("AddXY_management");
         }
 
         protected override void OnUpdate()
