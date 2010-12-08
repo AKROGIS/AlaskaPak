@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace NPS.AKRO.ArcGIS
 {
@@ -23,17 +24,29 @@ namespace NPS.AKRO.ArcGIS
 
         private string GetExecutable()
         {
-            //return @"X:\GIS\ThemeMgrApp\Ver10.x\ThemeManager.exe";
             string datafile = Path.Combine(AssemblyDirectory, "PathToThemeManager.txt");
-            using (var file = File.OpenText(datafile))
+            try
             {
-                return file.ReadToEnd();
+                using (var file = File.OpenText(datafile))
+                {
+                    return file.ReadToEnd();
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
 
         protected override void OnClick()
         {
             string exe = GetExecutable();
+            if (exe == null)
+            {
+                MessageBox.Show("Can't find the data file with the path to Theme Manager.",
+                    "Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             if (File.Exists(exe))
             {
                 string directory = Path.GetDirectoryName(exe);
@@ -42,7 +55,8 @@ namespace NPS.AKRO.ArcGIS
                 Process.Start(startInfo);
             }
             else
-                System.Windows.Forms.MessageBox.Show("Path to Theme Manager is not valid.\n" + exe);
+                MessageBox.Show("Path to Theme Manager is not valid.\n" + exe, 
+                    "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         protected override void OnUpdate()
