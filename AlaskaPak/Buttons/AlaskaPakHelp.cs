@@ -35,6 +35,7 @@ namespace NPS.AKRO.ArcGIS
                     "Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         protected override void OnUpdate()
         {
             Enabled = true;
