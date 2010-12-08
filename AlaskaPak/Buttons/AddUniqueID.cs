@@ -13,7 +13,7 @@
 
         protected override void OnUpdate()
         {
-            Enabled = false;
+            Enabled = true;
         }
     }
 }
