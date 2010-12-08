@@ -64,9 +64,6 @@
         <Button id="NPS_Alaska_Pak_Polygon_to_Point" class="PolygonToPoint" message="Create a point feature class from the vertices in lines or polygons" caption="P&amp;olyline/Polygon to Point" tip="Convert a line or polygon to points" category="NPS Alaska" image="Images\NPS_Logo.png">
           <Help heading="Alaska Pak Polygon to Point">Create a point feature class from the vertices in lines or polygons.</Help>
         </Button>
-        <Button id="NPS_Alaska_Pak_Graphics_to_Features" class="GraphicsToFeatures" message="Convert graphics to features" caption="&amp;Graphics to Features" tip="Convert graphics to features" category="NPS Alaska" image="Images\NPS_Logo.png">
-          <Help heading="Alaska Pak Graphics to Features">Convert graphics to features.</Help>
-        </Button>
         <Button id="NPS_Alaska_Pak_Generate_Grid_Points" class="GenerateGridPoints" message="Generate centroid points from an Alaska Pak generated grid" caption="Generate Grid &amp;Points" tip="Create center points for a grid" category="NPS Alaska" image="Images\NPS_Logo.png">
           <Help heading="Alaska Pak Generate Grid Points">Generate centroid points from an Alaska Pak generated grid.</Help>
         </Button>
@@ -140,7 +137,7 @@
           <Items>
             <Button refID="NPS_Alaska_Pak_Point_to_Polygon" />
             <Button refID="NPS_Alaska_Pak_Polygon_to_Point" />
-            <Button refID="NPS_Alaska_Pak_Graphics_to_Features" />
+            <Button refID="esriArcMapUI.GraphicsToFeaturesCommand" />
           </Items>
         </Menu>
         <Menu id="NPS_Alaska_Pak_Grid_Menu" caption="&amp;Grids" isRootMenu="false">
@@ -184,7 +181,8 @@
           <Items>
             <Button refID="NPS_Alaska_Pak_ThemeManager" />
             <Menu refID="NPS_Alaska_Pak_Menu" />
-			<Tool refID="NPS_Alaska_Pak_Coordinates" />
+			<Button refID="esriControls.ControlsMapGoToCommand" />
+			<!-- <Tool refID="NPS_Alaska_Pak_Coordinates" /> -->
 			<Tool refID="NPS_Alaska_Pak_Generate_Grid" />
 		  </Items>
         </Toolbar>

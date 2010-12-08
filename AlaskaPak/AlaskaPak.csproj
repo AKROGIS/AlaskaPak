@@ -121,21 +121,21 @@
     <Compile Include="Buttons\SetExtents.cs" />
     <Compile Include="Buttons\SquareBuildings.cs" />
     <Compile Include="Common\ArcToolBox.cs" />
-    <Compile Include="Tools\Coordinates.cs" />
-    <Compile Include="Tools\GenerateGrid.cs" />
-    <Compile Include="Buttons\LinkInternal.cs" />
-    <Compile Include="Buttons\AlaskaPakHelp.cs" />
     <Compile Include="Config.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Config.esriaddinx</DependentUpon>
     </Compile>
+    <Compile Include="Tools\Coordinates.cs" />
+    <Compile Include="Tools\GenerateGrid.cs" />
+    <Compile Include="Buttons\LinkInternal.cs" />
+    <Compile Include="Buttons\AlaskaPakHelp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Config.esriaddinx">
       <Generator>ArcGISAddInHostGenerator</Generator>
-      <LastGenOutput>Config.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Config.Designer.cs</LastGenOutput>
     </AddInContent>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +182,9 @@
     <AddInContent Include="Images\Button2.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Help\help.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="PathToThemeManager.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
