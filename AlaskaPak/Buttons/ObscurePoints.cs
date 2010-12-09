@@ -8,12 +8,12 @@
 
         protected override void OnClick()
         {
-            System.Windows.Forms.MessageBox.Show(this.GetType().Name + " Not Available");
+            Common.ArcToolBox.Invoke(@"T:\USER\Regan\AlaskaPak Toolbox", "Alaska Pak", "ObscurePoints");
         }
 
         protected override void OnUpdate()
         {
-            Enabled = false;
+            Enabled = true;
         }
     }
 }
