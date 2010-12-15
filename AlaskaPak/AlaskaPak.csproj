@@ -169,27 +169,23 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <AddInContent Include="Images\GenerateGrid.png" />
-  </ItemGroup>
-  <ItemGroup>
     <AddInContent Include="Images\GenerateGrid.cur" />
   </ItemGroup>
   <ItemGroup>
-    <AddInContent Include="Images\bitmap108.bmp" />
-    <AddInContent Include="Images\bitmapCoordinates.bmp" />
-    <AddInContent Include="Images\bitmapGrid.bmp" />
+    <AddInContent Include="Images\Coordinates.bmp" />
+    <AddInContent Include="Images\Grid.bmp" />
     <AddInContent Include="Images\cursorCoordCursor.cur" />
     <AddInContent Include="Images\iconGridIcon.ico" />
     <AddInContent Include="Images\NPS_Logo.png" />
-    <AddInContent Include="Images\ThemeManager.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AddInContent Include="Images\Button2.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Help\help.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <AddInContent Include="Images\Hammer.png" />
+    <AddInContent Include="Images\help.png" />
+    <AddInContent Include="Images\Scatterplots.png" />
+    <AddInContent Include="Images\Web.png" />
     <Content Include="PathToThemeManager.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
