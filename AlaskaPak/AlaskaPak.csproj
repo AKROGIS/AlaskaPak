@@ -130,6 +130,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Config.esriaddinx</DependentUpon>
     </Compile>
+    <Compile Include="Forms\CopyRasterLegendForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CopyRasterLegendForm.Designer.cs">
+      <DependentUpon>CopyRasterLegendForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tools\Coordinates.cs" />
     <Compile Include="Tools\GenerateGrid.cs" />
     <Compile Include="Buttons\LinkInternal.cs" />
@@ -189,6 +195,11 @@
     <Content Include="PathToThemeManager.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\CopyRasterLegendForm.resx">
+      <DependentUpon>CopyRasterLegendForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>
