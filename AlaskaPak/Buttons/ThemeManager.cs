@@ -11,36 +11,9 @@ namespace NPS.AKRO.ArcGIS
         {
         }
 
-        private string AssemblyDirectory
-        {
-            get
-            {
-                string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
-                UriBuilder uri = new UriBuilder(codeBase);
-                string path = Uri.UnescapeDataString(uri.Path);
-                return Path.GetDirectoryName(path);
-            }
-        }
-
-        private string GetExecutable()
-        {
-            string datafile = Path.Combine(AssemblyDirectory, "PathToThemeManager.txt");
-            try
-            {
-                using (var file = File.OpenText(datafile))
-                {
-                    return file.ReadToEnd();
-                }
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         protected override void OnClick()
         {
-            string exe = GetExecutable();
+            string exe = Common.Settings.Get("PathToThemeManager");
             if (exe == null)
             {
                 MessageBox.Show("Can't find the data file with the path to Theme Manager.",
@@ -57,11 +30,6 @@ namespace NPS.AKRO.ArcGIS
             else
                 MessageBox.Show("Path to Theme Manager is not valid.\n" + exe, 
                     "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        protected override void OnUpdate()
-        {
-            Enabled = (ArcMap.Application != null);
         }
 
     }
