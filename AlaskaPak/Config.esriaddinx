@@ -76,11 +76,11 @@
         <Button id="NPS_Alaska_Pak_Animate_Features" class="AnimateFeatures" message="Highlight features in order based on an attribute value" caption="Animate &amp;Features" tip="Animate Features" category="NPS Alaska" image="Images\Hammer.png">
           <Help heading="Alaska Pak Animate Features">Highlight features in order based on an attribute value.</Help>
         </Button>
-        <Button id="NPS_Alaska_Pak_Square_Building" class="SquareBuildings" message="Create rectangular buildings with a line and an offset" caption="&amp;Square Building" tip="Create polygons with a line and offset" category="NPS Alaska" image="Images\Hammer.png">
+        <Button id="NPS_Alaska_Pak_Square_Building" class="SquareBuildings" message="Create rectangular buildings with a line and an offset" caption="Square &amp;Building" tip="Create polygons with a line and offset" category="NPS Alaska" image="Images\Hammer.png">
           <Help heading="Alaska Pak Square Building">Create rectangular buildings with a line and an offset.</Help>
         </Button>
-        <Button id="NPS_Alaska_Pak_Copy_Raster_Legend" class="CopyRasterLegend" message="Copy raster symbology from one layer to other layers" caption="Copy Raster &amp;Legend" tip="Copy raster symbology" category="NPS Alaska" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Copy Raster Legend">Copy raster symbology from one layer to other layers.</Help>
+        <Button id="NPS_Alaska_Pak_Copy_Raster_Symbology" class="CopyRasterSymbology" message="Copy raster symbology from one layer to other layers" caption="Copy Raster &amp;Symbology" tip="Copy raster symbology" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Copy Raster Symbology">Copy raster symbology from one layer to other layers.</Help>
         </Button>
         <Button id="NPS_Alaska_Pak_About" class="AlaskaPakAbout" message="Show information about NPS AlaskaPak" caption="&amp;About AlaskaPak ..." tip="About AlaskaPak" category="NPS Alaska" image="Images\Help.png">
           <Help heading="Alaska Pak About">Show information about NPS AlaskaPak</Help>
@@ -171,7 +171,7 @@
             <Button refID="NPS_Alaska_Pak_Set_All_Extents" separator="true" />
             <Button refID="NPS_Alaska_Pak_Animate_Features" />
             <Button refID="NPS_Alaska_Pak_Square_Building" />
-            <Button refID="NPS_Alaska_Pak_Copy_Raster_Legend" />
+            <Button refID="NPS_Alaska_Pak_Copy_Raster_Symbology" />
             <Menu refID="NPS_Alaska_Pak_Help_Menu" />
           </Items>
         </Menu>
