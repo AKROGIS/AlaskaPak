@@ -22,13 +22,27 @@ namespace NPS.AKRO.ArcGIS
             }
             if (File.Exists(exe))
             {
-                string directory = Path.GetDirectoryName(exe);
-                ProcessStartInfo startInfo = new ProcessStartInfo(exe);
-                startInfo.WorkingDirectory = directory;
-                Process.Start(startInfo);
+                try
+                {
+                    string directory = Path.GetDirectoryName(exe);
+                    ProcessStartInfo startInfo = new ProcessStartInfo(exe);
+                    startInfo.WorkingDirectory = directory;
+                    Process.Start(startInfo);
+                }
+                catch (System.ComponentModel.Win32Exception ex)
+                {
+                    if (ex.NativeErrorCode == 1223)  //User canceled
+                        return;
+                    throw ex;
+                }
+                catch (Exception ex)  //everything else
+                {
+                    MessageBox.Show("Unable to start Theme Manager." + Environment.NewLine + exe + Environment.NewLine + "Cause: " + ex.Message,
+                        "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             else
-                MessageBox.Show("Path to Theme Manager is not valid.\n" + exe, 
+                MessageBox.Show("Path to Theme Manager is not valid." + Environment.NewLine + exe, 
                     "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
