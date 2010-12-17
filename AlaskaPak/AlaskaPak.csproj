@@ -127,6 +127,7 @@
     <Compile Include="Buttons\SquareBuildings.cs" />
     <Compile Include="Common\ArcToolBox.cs" />
     <Compile Include="Common\LayerUtils.cs" />
+    <Compile Include="Common\Settings.cs" />
     <Compile Include="Config.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Config.esriaddinx</DependentUpon>
@@ -186,6 +187,9 @@
     <AddInContent Include="Images\NPS_Logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="PathToToolBox.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Help\help.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
