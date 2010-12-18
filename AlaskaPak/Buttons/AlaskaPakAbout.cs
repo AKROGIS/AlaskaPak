@@ -8,12 +8,9 @@
 
         protected override void OnClick()
         {
-            System.Windows.Forms.MessageBox.Show(this.GetType().Name + " Not Available");
+            Forms.AboutAlaskaPak _form = new Forms.AboutAlaskaPak();
+            _form.ShowDialog();
         }
 
-        protected override void OnUpdate()
-        {
-            Enabled = false;
-        }
     }
 }

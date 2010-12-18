@@ -132,11 +132,23 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Config.esriaddinx</DependentUpon>
     </Compile>
+    <Compile Include="Forms\AboutAlaskaPak.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutAlaskaPak.Designer.cs">
+      <DependentUpon>AboutAlaskaPak.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\CopyRasterSymbologyForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\CopyRasterSymbologyForm.Designer.cs">
       <DependentUpon>CopyRasterSymbologyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\RandomFeatureSelectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RandomFeatureSelectionForm.Designer.cs">
+      <DependentUpon>RandomFeatureSelectionForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Tools\Coordinates.cs" />
     <Compile Include="Tools\GenerateGrid.cs" />
@@ -202,8 +214,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\AboutAlaskaPak.resx">
+      <DependentUpon>AboutAlaskaPak.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\CopyRasterSymbologyForm.resx">
       <DependentUpon>CopyRasterSymbologyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RandomFeatureSelectionForm.resx">
+      <DependentUpon>RandomFeatureSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
