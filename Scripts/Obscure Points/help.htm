@@ -1,0 +1,173 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-16">
+<link rel="stylesheet" type="text/css" href="file://C:/Program Files (x86)/ArcGIS/help/gp/81Help.css"><script type="text/javascript" language="JavaScript" src="C:/Program Files (x86)/ArcGIS/help/gp/81Help.js"></script><script type="text/javascript" language="JavaScript" src="ms-its:Geoprocessing.chm::/81Help.js"></script><script language="JavaScript1.2"></script><title></title>
+</head>
+<body>
+<table style="margin-top:-1em; margin-bottom:0; padding:0; margin-left:-1em">
+<tr>
+<td style="background:white"><img width="875" height="70" alt="ArcToolbox banner" src="file://C:/Program Files (x86)/ArcGIS/help/gp/AHBanner_Arctoolbox.gif"></td>
+</tr>
+</table>
+<h1>Obscure Points</h1>
+<p></p>
+<p>Creates a new data set from sensitive point data (like cabins and eagle nests), by adding a random offset to each point, so that the new dataset can be shared with the public.</p><br><p>
+<h2> Command line syntax</h2>
+</p>
+<div>ObscurePoints &lt;Sensitive_Points&gt; &lt;Obscured_Features&gt; {Points | Circles} {Minimum_Offset} {Maximum_Offset} {No-go_Area;No-go_Area...} &lt;test&gt; <br><br><b>Parameters</b><br><table width="100%" border="0" cellpadding="5">
+<tbody>
+<tr>
+<th width="40%"><b>Expression</b></th>
+<th width="60%"><b>Explanation</b></th>
+</tr>
+<tr>
+<td class="info">&lt;Sensitive_Points&gt;</td>
+<td class="info" align="left">
+<p>The feature class of sensitive points.</p>
+<p>The input features must be points or multipoints.</p>
+<p>The spatial reference should be a projected system.  Calculating distances with a geographic system intoduces errors.</p>
+</td>
+</tr>
+<tr>
+<td class="info">&lt;Obscured_Features&gt;</td>
+<td class="info" align="left">
+<p>The name and location of the feature class to create.</p>
+<p>If the feature class already exists. You can only overwrite it if you have set that option in the geoprocessing tab in Tools-&gt;Options menu.</p>
+<p>The output coordinate system will be determined by the environment settings.  Typically it will default to the same as the input.  Click on the Environment... button and then the General Settings tab to check and set the output coordinate system.</p>
+<p>All attributes of the sensitive features will be copied to these output features.  If there is sensitive information in these attributes, then that must be removed separately.</p>
+</td>
+</tr>
+<tr>
+<td class="info">{Points | Circles}</td>
+<td class="info" align="left">
+<p>What kind of output is desired.  The default is Points.</p>
+<p>Points:</p>
+<dl>
+<dt></dt>
+<dd>
+<p>The output will be a point or multipoint feature class to match the input. With multipoint, each of the individual points will be offset as though the feature class was individual points.</p><br><img src="file://T:\USER\Regan\AlaskaPak Toolbox\Obscure Points\min_max.PNG" alt="Illustrative Point Example"><p></p>
+</dd>
+</dl>
+<p>Circles:</p>
+<dl>
+<dt></dt>
+<dd>
+<p>The output feature class will be a circle (polygon) centered at the randomly offset location, with the radius of the circle equal to the Maximum Radius for the offset of center. This guarantees that the real point will fall somewhere in the circle.</p><br><img src="file://T:\USER\Regan\AlaskaPak Toolbox\Obscure Points\circles.PNG" alt="Illustrative Circle Example"><p></p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr>
+<td class="info">{Minimum_Offset}</td>
+<td class="info" align="left">
+<p>The mimimum distance that the obscured point will be from the actual point.  The default is zero.</p>
+<p>The measurement units (feet/meters) are the same as the input feature class.  If the input is in lat/long (geographic), Then the units are interpreted as meters.</p>
+<p>Non-zero minimum offset</p><br><img src="file://T:\USER\Regan\AlaskaPak Toolbox\Obscure Points\min_max.PNG" alt="Non-zero minimum offset"><p></p>
+<p>Default minimum offset (0)</p><br><img src="file://T:\USER\Regan\AlaskaPak Toolbox\Obscure Points\max.PNG" alt="No minimum offset example"><p></p>
+</td>
+</tr>
+<tr>
+<td class="info">{Maximum_Offset}</td>
+<td class="info" align="left">
+<p>The maximum distance that the obscured point will be from the actual point.  The default is 500.</p>
+<p>The measurement units (feet/meters) are the same as the input feature class.  If the input is in lat/long (geographic), Then the units are interpreted as meters.</p>
+</td>
+</tr>
+<tr>
+<td class="info">{No-go_Area;No-go_Area...}</td>
+<td class="info" align="left">
+<p>Areas in which points will not be placed. Typically this will be water bodies, but it could be any polygon areas that would not be a logical location for the obscured points.</p>
+<p>What to do if there is no solution???</p>
+</td>
+</tr>
+<tr>
+<td class="info">&lt;test&gt;</td>
+<td class="info" align="left">
+</td>
+</tr>
+</tbody>
+</table><b>Command Line Example</b><br><br><pre>ObscurePoints C:\tmp\nests.shp C:\tmp\nests_obscured.shp Points 0 500 C:\tmp\lakes.shp;C:\tmp\buildings.shp</pre>
+</div>
+<p>
+<h2> Scripting syntax</h2>
+</p>
+<div>ObscurePoints (Sensitive_Points, Obscured_Features, Output_Feature_Type, Minimum_Offset, Maximum_Offset, No-go_Area, test) <br><br><b>Parameters</b><br><table width="100%" border="0" cellpadding="5">
+<tbody>
+<tr>
+<th width="40%"><b>Expression</b></th>
+<th width="60%"><b>Explanation</b></th>
+</tr>
+<tr>
+<td class="info">Sensitive Points (Required) </td>
+<td class="info" align="left">
+<p>The feature class of sensitive points.</p>
+<p>The input features must be points or multipoints.</p>
+<p>The spatial reference should be a projected system.  Calculating distances with a geographic system intoduces errors.</p>
+</td>
+</tr>
+<tr>
+<td class="info">Obscured Features (Required) </td>
+<td class="info" align="left">
+<p>The name and location of the feature class to create.</p>
+<p>If the feature class already exists. You can only overwrite it if you have set that option in the geoprocessing tab in Tools-&gt;Options menu.</p>
+<p>The output coordinate system will be determined by the environment settings.  Typically it will default to the same as the input.  Click on the Environment... button and then the General Settings tab to check and set the output coordinate system.</p>
+<p>All attributes of the sensitive features will be copied to these output features.  If there is sensitive information in these attributes, then that must be removed separately.</p>
+</td>
+</tr>
+<tr>
+<td class="info">Output Feature Type (Optional) </td>
+<td class="info" align="left">
+<p>What kind of output is desired.  The default is Points.</p>
+<p>Points:</p>
+<dl>
+<dt></dt>
+<dd>
+<p>The output will be a point or multipoint feature class to match the input. With multipoint, each of the individual points will be offset as though the feature class was individual points.</p><br><img src="file://T:\USER\Regan\AlaskaPak Toolbox\Obscure Points\min_max.PNG" alt="Illustrative Point Example"><p></p>
+</dd>
+</dl>
+<p>Circles:</p>
+<dl>
+<dt></dt>
+<dd>
+<p>The output feature class will be a circle (polygon) centered at the randomly offset location, with the radius of the circle equal to the Maximum Radius for the offset of center. This guarantees that the real point will fall somewhere in the circle.</p><br><img src="file://T:\USER\Regan\AlaskaPak Toolbox\Obscure Points\circles.PNG" alt="Illustrative Circle Example"><p></p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr>
+<td class="info">Minimum Offset (Optional) </td>
+<td class="info" align="left">
+<p>The mimimum distance that the obscured point will be from the actual point.  The default is zero.</p>
+<p>The measurement units (feet/meters) are the same as the input feature class.  If the input is in lat/long (geographic), Then the units are interpreted as meters.</p>
+<p>Non-zero minimum offset</p><br><img src="file://T:\USER\Regan\AlaskaPak Toolbox\Obscure Points\min_max.PNG" alt="Non-zero minimum offset"><p></p>
+<p>Default minimum offset (0)</p><br><img src="file://T:\USER\Regan\AlaskaPak Toolbox\Obscure Points\max.PNG" alt="No minimum offset example"><p></p>
+</td>
+</tr>
+<tr>
+<td class="info">Maximum Offset (Optional) </td>
+<td class="info" align="left">
+<p>The maximum distance that the obscured point will be from the actual point.  The default is 500.</p>
+<p>The measurement units (feet/meters) are the same as the input feature class.  If the input is in lat/long (geographic), Then the units are interpreted as meters.</p>
+</td>
+</tr>
+<tr>
+<td class="info">No-go Area (Optional) </td>
+<td class="info" align="left">
+<p>Areas in which points will not be placed. Typically this will be water bodies, but it could be any polygon areas that would not be a logical location for the obscured points.</p>
+<p>What to do if there is no solution???</p>
+</td>
+</tr>
+<tr>
+<td class="info">test (Required) </td>
+<td class="info" align="left">
+</td>
+</tr>
+</tbody>
+</table><b>Script Example</b><br><br><pre>import arcgisscripting
+gp = arcgisscripting.create(9.3)
+
+gp.toolbox "Alaska Pak"
+gp.ObscurePoints( "C:\tmp\nests.shp", "C:\tmp\nests_obscured.shp", "Points", "0" "500" "C:\tmp\lakes.shp;C:\tmp\buildings.shp")</pre>
+</div>
+</body>
+</html>
