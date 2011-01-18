@@ -54,18 +54,6 @@
 # software and aggregate use with other software.
 # ------------------------------------------------------------------------------
 
-#FIXME
-# *output to a feature dataset in a PGDB fails (for shape and FGDB input)
-# Line2Rect.py lines.shp width c:\tmp\test.mdb\park\rect2
-# Traceback (most recent call last):
-#  File "Line2Rect.py", line 187, in <module>
-#    poly.setValue(fields[field], line.getValue(field))
-#  File "C:\Program Files (x86)\ArcGIS\Desktop10.0\arcpy\arcpy\arcobjects\arcobjects.py", line 941, in setValue
-#    return convertArcObjectToPythonObject(self._arc_object.SetValue(*gp_fixargs(args)))
-# RuntimeError: ERROR 999999: Error executing function.
-
-# *creating rects in PGDB works except one rectangle (width = 1000) is missing
-
 import sys, os, math
 import arcpy
 
@@ -169,7 +157,7 @@ if  (offsetFieldType != "SmallInteger" and
                    ") is not a numeric data type")
     sys.exit(1)
 
-#arcpy.AddMessage("Input has been validated")
+arcpy.AddMessage("Input has been validated")
 
 #start the real work
 workspace,featureClass = os.path.split(rectFC)
@@ -177,8 +165,17 @@ arcpy.CreateFeatureclass_management(workspace,featureClass,
                                     "Polygon", lineFC, "SAME_AS_TEMPLATE",
                                     "SAME_AS_TEMPLATE", lineFC)
 
-#arcpy.AddMessage("Empty feature class has been created")
+arcpy.AddMessage("Empty feature class has been created")
 
+# workaround for bug wherein ValidateFieldName(field,workspace\feature_dataset)
+# returns incorrect results.  Fix is to remove the feature_dataset"
+workspace = workspace.lower()
+if workspace.rfind(".mdb") > 0:
+    workspace = workspace[:workspace.rfind(".mdb")+4]
+else:
+    if workspace.rfind(".gdb") > 0:
+        workspace = workspace[:workspace.rfind(".gdb")+4]
+    
 #create a simple field mapping from input to output
 fields = {}
 for field in lineDescription.fields:
@@ -187,7 +184,7 @@ for field in lineDescription.fields:
         name != lineDescription.OIDFieldName and
         field.editable): #skip uneditable fields like Shape_Length
         fields[name] = arcpy.ValidateFieldName(name,workspace)
-print fields
+        #print workspace, name, "=>", fields[name]  
 
 #create the cursors
 polys = arcpy.InsertCursor(rectFC)
@@ -202,7 +199,11 @@ for line in lines:
             poly.shape = rect
             polys.insertRow(poly)
 
-#arcpy.AddMessage("Output feature class has been populated")
+arcpy.AddMessage("Output feature class has been populated")
 
+#When writing to a PGDB, you must delete the last row or it will not
+#get written to the database.
+if poly:
+    del poly
 #delete the insert cursor to close it and remove the exclusive lock
 del polys
