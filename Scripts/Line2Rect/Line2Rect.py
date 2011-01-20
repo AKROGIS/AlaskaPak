@@ -1,46 +1,54 @@
 # ------------------------------------------------------------------------------
 # Line2Rect.py
 # Created: 2011-01-14
-# Author: Regan Sarwas, National Park Service
 #
-# Builds a polygon feature class containing rectangles derived from a line
-# feature class.  The line is used as the base of the rectangle, and an
-# attribute in the line feature class provides the height.  If the height is
-# positive, the rectangle is drawn on the right side of the line.  If it is
-# negative it is drawn on the left side.  Right and left are determined by the
-# order of the vertices in the line.
+# Title:
+# Lines to Rectangles
 #
-# * The input lines features can have any number of parts, and any number of
-# vertices in each part, however only the first and last vertex are used in
-# the output rectangle.  If the input shape is a multipart, then the output
-# shape is also multipart.
-# * if the line (or part) is degenerate (i.e single vertex, or first vertex
-# and last vertext are the same (based on tolerance in the environment)) then
-# the line (or part) is skipped. If all parts in the input shape are degenerate
-# then no output feature is created for that input feature.
-# * The output feature class will have the same spatial reference as the input
-# * If the Input feature class has Z or M defined, the output will as well,
-# however, no Z or M values will be written to the output. 
-# * The offset must be a numeric field, and it will be interpreted as a double
-# in the same units/coordinate system as the line feature class.
-# * All attributes of the line feature class are copied forward to the output
-# feature class, except Shape, OID, and any fields not editable (Shape_Length)
-# * the offset field name can be either an actual field name, or the alias for
-# the field name.  Actual field names are given priority in case of ambiguity 
-# * The output feature class must not exist unless the user's environment is
-# set to allow overwrite
+# Tags:
+# Building, Offset, Width, Height, Square, Polygon
+#
+# Summary:
+# This tool will derive rectangles from lines and associated offsets.
+#
+# Usage:
+# Use this tool to build a polygon feature class containing rectangles derived from a line feature class.  The line feature class must contain an attribute for each feature which provides the perpendicular distance from the line to the far side of the rectangle.
+#
+# Parameter 1:
+# Line_Features
+# The full name of a polyline feature class.  Each line defines the base or first side of a generated rectangle. Each line can have 1 or more parts (i.e. it may be a multi-line), and there may be two or more vertices in each part, however only the first and last vertex of each part are used in the output rectangle.  If the line is a multi-part shape, then the rectangle is also a multi-part shape.  If any line (or part) is degenerate (i.e. a single vertex, or first vertex and last vertext are the same) then that line (or line part) is skipped. If all parts in the line are degenerate then no output is created for that line.
+#
+# Parameter 2:
+# Rectangle_Width_Field
+# This is the name of an attribute (column/field) in the line feature class which specifies the width of the rectangle. Width may also be known as offset or height.  Specifically It is the distance perpendicular to the line at which the far side of the rectangle is drawn. If the width is positive, the rectangle is drawn on the right side of the line.  If it is negative it is drawn on the left side.  Right and left are from the prespective of the line looking from the first vertex to the last. The width must be a numeric (integer or real) field, and it must be in the same units/coordinate system as the line feature class. The field name can be either an actual field name, or the alias for the field name.  Actual field names are given priority in case of ambiguity.
+#
+# Parameter 3:
+# Rectangle_Features
+# The full name of a polygon feature class to create.  Any existing feature class at that path will not be overwritten, and the script will issue an error if the feature class exists (unless the geoprocessing options are set to overwrite output). The output feature class will have the same spatial reference system as the input. If the input feature class has Z or M values then the output will as well, however no Z or M values will be written to the output. All attributes of the line feature class are copied to the output feature class, except Shape, OID, and any non-editable fields (i.e. Shape_Length).
+#
+# Scripting Syntax:
+# Line2Rect(Line_Features, Rectangle_Width_Field, Rectangle_Features)
+#
+# Example1:
+# Scripting Example
+# The following example shows how this script can be used in another python script, or directly in the ArcGIS Python Window.  It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.
+#  lineFC = r"C:\tmp\gps_lines.shp"
+#  rectFC = r"C:\tmp\test.gdb\park\bldg"
+#  Line2Rect(lineFC, "width", rectFC)
+#
+# Example2:
+# Command Line Example
+# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
+#  C:\tmp> python Line2Rect.py "c:\tmp\gps_lines.shp" "width" "c:\tmp\test.gdb\park\bldg"
+#
+# Credits:
+# Regan Sarwas, Alaska Region GIS Team, National Park Service
+#
+# Limitations:
+# Public Domain
 #
 # Requirements
 # arcpy module - requires ArcGIS v10+ and a valid license
-#
-# Usage:
-# python Line2Rect.py path_to_lineFC Offset_Field_Name path_to_outputFC
-#
-# Example:
-# python Line2Rect.py "c:\tmp\gps_lines.shp" "width" "c:\tmp\test.gdb\park\bldg"
-#
-# License:
-# Public Domain
 #
 # Disclaimer:
 # This software is provide "as is" and the National Park Service gives
