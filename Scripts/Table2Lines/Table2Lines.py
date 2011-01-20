@@ -30,9 +30,10 @@
 # software and aggregate use with other software.
 # ---------------------------------------------------------------------------
 
-import os, arcgisscripting
-gp = arcgisscripting.create(9.3)
-gp.Overwriteoutput = 1
+import os, sys
+import arcpy
+
+arcpy.Overwriteoutput = 1
 
 # I use one search cursor and cache all the points in a dictionary.
 # This avoids creating a search cursor for each point as lines are processed
@@ -42,36 +43,34 @@ gp.Overwriteoutput = 1
 # iterating the cursor is about the same for all datasets.
 def GetPoints(pointFC,pointIdField):
     points = {}
-    pointDescription = gp.Describe(pointFC)
+    pointDescription = arcpy.Describe(pointFC)
     pointShapeField = pointDescription.ShapeFieldName
-    pointIdFieldDelimited = gp.AddFieldDelimiters(pointFC, pointIdField)
+    pointIdFieldDelimited = arcpy.AddFieldDelimiters(pointFC, pointIdField)
     where = pointIdFieldDelimited + " is not null"
     spatialRef = ""
     fields = pointIdField +"; " + pointShapeField
     sort = ""
-    pts = gp.SearchCursor(pointFC, where, spatialRef, fields, sort)
-    pt = pts.Next()
+    pts = arcpy.SearchCursor(pointFC, where, spatialRef, fields, sort)
+    
+    pt = pts.next()
     while pt != None:
-        points[pt.GetValue(pointIdField)] = pt.Shape.getPart()
-        pt = pts.Next()
+        points[pt.getValue(pointIdField)] = pt.shape.getPart()
+        pt = pts.next()
     return points
 
 def MakeLine(pt1, pt2):
     """ pt1 and pt2 should be gp point objects or None """
     if (pt1 == None or pt2 == None):
         return None
-    pts = gp.createobject("Array")
-    pts.add(pt1)
-    pts.add(pt2)
-    line = gp.createobject("geometry", "polyline", pts)
-    if (line == None) or (line.FirstPoint == None) or (line.LastPoint == None):
+    line = arcpy.Polyline(arcpy.Array([pt1,pt2]))
+    if (line == None) or (line.firstPoint == None) or (line.lastPoint == None):
         return None
     return line
 
 # Input field types must be in mapType (defined below).
 # Point id type in both input data sets must map to the same type, i.e. OID and Integer
 
-# Maps the string returned by gp.describe.Field.Type to the string required by gp.AddField()
+# Maps the string returned by arcpy.describe.Field.Type to the string required by arcpy.AddField()
 mapType = {"SmallInteger" : "SHORT",
            "Integer" : "LONG",
            "Single" : "FLOAT",
@@ -86,24 +85,24 @@ mapType = {"SmallInteger" : "SHORT",
 if (len(sys.argv) != 8):
     #ArcGIS won't call the script without the correct number of parameters,
     #so this is for command line usage
-    print "Usage: " + sys.argv[0] + "path_to_line_table Line_ID_Field " +
+    print ("Usage: " + sys.argv[0] + "path_to_line_table Line_ID_Field " +
     "From_Point_ID_Field To_Point_ID_Field path_to_point_FC " +
-    "Point_ID_Field output_line_FC"
+    "Point_ID_Field output_line_FC")
     sys.exit()
     
-lineTable = gp.GetParameterAsText(0)
-lineIdField = gp.GetParameterAsText(1)
-fromPointIdField = gp.GetParameterAsText(2)
-toPointIdField = gp.GetParameterAsText(3)
-pointFC = gp.GetParameterAsText(4)
-pointIdField = gp.GetParameterAsText(5)
-lineFC = gp.GetParameterAsText(6)
+lineTable = arcpy.GetParameterAsText(0)
+lineIdField = arcpy.GetParameterAsText(1)
+fromPointIdField = arcpy.GetParameterAsText(2)
+toPointIdField = arcpy.GetParameterAsText(3)
+pointFC = arcpy.GetParameterAsText(4)
+pointIdField = arcpy.GetParameterAsText(5)
+lineFC = arcpy.GetParameterAsText(6)
 
 #VERIFY INPUT (mostly for command line.  Toolbox does some validation for us)
 lineIdFieldType = ""
 fromPointIdFieldType = ""
 toPointIdFieldType = ""
-tableDescription = gp.Describe(lineTable)
+tableDescription = arcpy.Describe(lineTable)
 for field in tableDescription.Fields:
     if field.Name == lineIdField:
         lineIdFieldType = mapType[field.Type]
@@ -119,7 +118,7 @@ if fromPointIdFieldType == "":
 if toPointIdFieldType == "":
     raise ValueError("Field '" + toPointIdField + "' not found in " + lineTable)
 
-pointDescription = gp.Describe(pointFC)
+pointDescription = arcpy.Describe(pointFC)
 if pointDescription.shapeType != "Point":
     raise ValueError(pointFC + " is a " + pointDescription.shapeType +
                      " not a Point Feature Class.")
@@ -136,61 +135,72 @@ if (pointIdFieldType != fromPointIdFieldType or
     pointIdFieldType != fromPointIdFieldType):
     raise ValueError("Field types do not match - cannot link points to lines.")
 
-gp.AddMessage("Input validated")
+arcpy.AddMessage("Input validated")
 
 # Create Feature Class...
 outSpatialRef = pointDescription.SpatialReference
 outPath, outName = os.path.split(lineFC)
-gp.CreateFeatureclass_management(outPath, outName, "POLYLINE", "", "DISABLED", "DISABLED", outSpatialRef, "", "0", "0", "0")
+tempFC = "in_memory/tempfc"
+fc = arcpy.CreateFeatureclass_management("in_memory", "tempfc", "POLYLINE", "", "DISABLED", "DISABLED", outSpatialRef, "", "0", "0", "0")
 
-gp.AddMessage("Created the output feature class")
+arcpy.AddMessage("Created the output feature class")
 
 # Add Fields...
-lineIdFieldValid = gp.ValidateFieldName(lineIdField,outPath)
-gp.AddField_management(lineFC, lineIdFieldValid, lineIdFieldType, "", "", "", "", "NON_NULLABLE", "REQUIRED", "")
-fromPointIdFieldValid = gp.ValidateFieldName(fromPointIdField,outPath)
-gp.AddField_management(lineFC, fromPointIdFieldValid, fromPointIdFieldType, "", "", "", "", "NON_NULLABLE", "REQUIRED", "")
-toPointIdFieldValid = gp.ValidateFieldName(toPointIdField,outPath)
-gp.AddField_management(lineFC, toPointIdFieldValid, toPointIdFieldType, "", "", "", "", "NON_NULLABLE", "REQUIRED", "")
+lineIdFieldValid = arcpy.ValidateFieldName(lineIdField,outPath)
+arcpy.AddField_management(tempFC, lineIdFieldValid, lineIdFieldType, "", "", "", "", "NON_NULLABLE", "REQUIRED", "")
+fromPointIdFieldValid = arcpy.ValidateFieldName(fromPointIdField,outPath)
+arcpy.AddField_management(tempFC, fromPointIdFieldValid, fromPointIdFieldType, "", "", "", "", "NON_NULLABLE", "REQUIRED", "")
+toPointIdFieldValid = arcpy.ValidateFieldName(toPointIdField,outPath)
+arcpy.AddField_management(tempFC, toPointIdFieldValid, toPointIdFieldType, "", "", "", "", "NON_NULLABLE", "REQUIRED", "")
 
-gp.AddMessage("Added the fields to the output feature class")
+arcpy.AddMessage("Added the fields to the output feature class")
 
 #Put the points in a dictionary, to avoid two search cursors for each line
 #assumes Python is more efficient and faster than ArcGIS.  Should be tested.
 points = GetPoints(pointFC,pointIdField)
+#print points
 
-fromPointIdFieldDelimited = gp.AddFieldDelimiters(lineTable, fromPointIdField)
-toPointIdFieldDelimited = gp.AddFieldDelimiters(lineTable, toPointIdField)
+fromPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, fromPointIdField)
+toPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, toPointIdField)
 where = fromPointIdFieldDelimited + " is not null and " + toPointIdFieldDelimited + " is not null"
 spatialRef = ""
 #fields = lineIdField +"; " + fromPointIdField +"; " +toPointIdField
 fields = ""
 sort = ""
 #Create the input(search) and output(insert) cursors.
-lines = gp.SearchCursor(lineTable, where, spatialRef, fields, sort)
-newLines = gp.InsertCursor(lineFC)
+lines = arcpy.SearchCursor(lineTable, where, spatialRef, fields, sort)
+newLines = arcpy.InsertCursor(tempFC)
+newLine = None
 
-line = lines.Next()
+line = lines.next()
 while line != None:
-    pt1Id = line.GetValue(fromPointIdField)
-    pt2Id = line.GetValue(toPointIdField)
+    pt1Id = line.getValue(fromPointIdField)
+    pt2Id = line.getValue(toPointIdField)
+    #print pt1Id,pt2Id,points[pt1Id],points[pt2Id]
     try:
         lineGeom = MakeLine(points[pt1Id],points[pt2Id])
     except:
+        print "exception"
         lineGeom = None
     if lineGeom == None:
-        gp.AddWarning("Unable to create line " + str(line.GetValue(lineIdField)))
+        arcpy.AddWarning("Unable to create line " + str(line.getValue(lineIdField)))
     else:
         # Create a new feature in the feature class
-        newLine = newLines.NewRow()
-        newLine.Shape = lineGeom
-        newLine.SetValue(lineIdFieldValid, line.GetValue(lineIdField))
-        newLine.SetValue(fromPointIdFieldValid, pt1Id)
-        newLine.SetValue(toPointIdFieldValid, pt2Id)
+        newLine = newLines.newRow()
+        newLine.shape = lineGeom
+        newLine.setValue(lineIdFieldValid, line.getValue(lineIdField))
+        newLine.setValue(fromPointIdFieldValid, pt1Id)
+        newLine.setValue(toPointIdFieldValid, pt2Id)
         newLines.insertRow(newLine)
-    line = lines.Next()
+    line = lines.next()
     
 #Closes the insert cursor, and releases the exclusive lock
-del newLine
+if newLine:
+    del newLine
 del newLines
-gp.AddMessage("Done.")
+
+print "Copy", tempFC, lineFC
+fs = arcpy.FeatureSet()
+fs.load(fc)
+fs.save(lineFC)
+arcpy.AddMessage("Done.")
