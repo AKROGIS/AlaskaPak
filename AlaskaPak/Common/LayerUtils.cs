@@ -22,7 +22,6 @@ namespace NPS.AKRO.ArcGIS.Common
             if (type == null)
                 throw new ArgumentNullException("type");
 
-            List<ILayer> layers = new List<ILayer>();
             UID uid = new UIDClass();
             uid.Value = type;
             IMaps maps = doc.Maps;
@@ -33,11 +32,10 @@ namespace NPS.AKRO.ArcGIS.Common
                 ILayer layer = elayers.Next();
                 while (layer != null)
                 {
-                    layers.Add(layer);
+                    yield return layer;
                     layer = elayers.Next();
                 }
             }
-            return layers;
         }
 
         #region layer naming methods
