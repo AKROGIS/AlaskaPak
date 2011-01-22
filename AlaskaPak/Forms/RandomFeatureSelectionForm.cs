@@ -20,9 +20,27 @@ namespace NPS.AKRO.ArcGIS.Forms
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Fired when the user wants to initiate a copy
+        /// </summary>
+        public event RandomSelectEventHandler RandomSelectEvent;
+
+        public void LoadList(IEnumerable<string> layernames)
+        {
+            layerComboBox.Items.Clear();
+            layerComboBox.Items.AddRange(layernames.ToArray());
+            if (layerComboBox.Items.Count > 0)
+            {
+                layerComboBox.SelectedIndex = 0;
+                //FIXME - get feature count for layer
+                _total = 10000;
+                selectButton.Focus();
+            }
+        }
+
         private void selectButton_Click(object sender, EventArgs e)
         {
-            this.Close();
+            OnRandomSelect();
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -139,6 +157,25 @@ namespace NPS.AKRO.ArcGIS.Forms
             textBox_Validated(null, null);
         }
 
+        private void OnRandomSelect()
+        {
+            RandomSelectEventHandler handle = RandomSelectEvent;
+            if (handle != null)
+                handle(this, new RandomSelectEventArgs
+                {
+                    LayerIndex = layerComboBox.SelectedIndex,
+                    Count = _quantity
+                });
+        }
+
+    }
+
+    public delegate void RandomSelectEventHandler(object sender, RandomSelectEventArgs e);
+
+    public class RandomSelectEventArgs : EventArgs
+    {
+        public int LayerIndex { get; set; }
+        public int Count { get; set; }
     }
 
 }
