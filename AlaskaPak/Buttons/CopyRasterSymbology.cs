@@ -13,13 +13,9 @@ namespace NPS.AKRO.ArcGIS
     public class CopyRasterSymbology : ESRI.ArcGIS.Desktop.AddIns.Button
     {
 
+        private AlaskaPak _controller;
         private CopyRasterSymbologyForm _form;
-        private List<NamedRasterLayer> _rasterLayers;
-        private struct NamedRasterLayer
-        {
-            internal IRasterLayer Layer;
-            internal string Name;
-        }
+        private List<NamedLayer> _rasterLayers;
 
         //Enabled is defined in the Button base class and defaults to True.
         //This button cannot set its Enabled state until after it is instantiated by the user.
@@ -32,13 +28,10 @@ namespace NPS.AKRO.ArcGIS
 
         public CopyRasterSymbology()
         {
-            _rasterLayers = new List<NamedRasterLayer>();
-            GetRasterLayers();
+            _controller = AlaskaPak.Controller;
+            _controller.LayersChanged += Controller_LayersChanged;
+            _rasterLayers = _controller.GetRasterLayers();
             Enabled = MapHasTwoOrMoreRasterLayers;
-            //wire up event handlers to keep track of raster layers
-            //(for maintaining state of Enabled and for form updates, if it is being displayed)
-            AttachEventHandlersToMapDocument();
-            AttachEventHandlersToActiveView();
         }
 
         protected override void OnClick()
@@ -52,9 +45,9 @@ namespace NPS.AKRO.ArcGIS
                 else
                 {
                     _form = new CopyRasterSymbologyForm();
-                    _form.CopyRasterEvent += FormEvent_Copy;
-                    _form.FormClosed += FormEvent_Release;
-                    _form.LoadLists(_rasterLayers.Select(rl => rl.Name));
+                    _form.CopyRasterEvent += Form_Copy;
+                    _form.FormClosed += Form_Closed;
+                    LoadFormList();
                     _form.Show();
                 }
             }
@@ -65,50 +58,47 @@ namespace NPS.AKRO.ArcGIS
             }
         }
 
-        private void GetRasterLayers()
-        {
-            _rasterLayers.Clear();
-            string type = "{D02371C7-35F7-11D2-B1F2-00C04F8EDEFF}"; // IRasterLayer
-            foreach (ILayer layer in LayerUtils.GetAllLayers(ArcMap.Document, type))
-            {
-                string name = null;
-                if (ArcMap.Document.Maps.Count > 1)
-                {
-                    name = LayerUtils.GetFullName(ArcMap.Document, layer);
-                }
-                else
-                {
-                    name = LayerUtils.GetFullName(ArcMap.Document.Maps.Item[0], layer);
-                }
-                _rasterLayers.Add(new NamedRasterLayer
-                {
-                    Name = name,
-                    Layer = (IRasterLayer)layer
-                });
-            }
-        }
-
         private bool MapHasTwoOrMoreRasterLayers
         {
             get { return _rasterLayers.Count > 1; }
         }
 
-        #region Form Event Handlers
+        private void LoadFormList()
+        {
+            _form.LoadLists(_rasterLayers.Select(rl => rl.Name));
+        }
 
-        internal void FormEvent_Release(object sender, FormClosedEventArgs e)
+        #region Event Handlers
+
+        //What we will do when the controller says the layers have changed
+        void Controller_LayersChanged()
+        {
+            _rasterLayers = _controller.GetRasterLayers();
+            Enabled = MapHasTwoOrMoreRasterLayers;
+            if (_form != null)
+                LoadFormList();
+        }
+
+        //What we will do when the form says it has closed
+        internal void Form_Closed(object sender, FormClosedEventArgs e)
         {
             _form = null;
         }
 
-        internal void FormEvent_Copy(object sender, CopyRasterEventArgs e)
+        //What we will do when the form says it has layers to copy
+        internal void Form_Copy(object sender, CopyRasterEventArgs e)
         {
             Copy(e.Source, e.Targets);
             _form.Close();
         }
 
+        #endregion
+
+        #region Helper Functions (Tool Specific Logic)
+
         private void Copy(int sourceLayerIndex, IEnumerable<int> targetLayerIndices)
         {
-            IRasterLayer sourceLayer = _rasterLayers[sourceLayerIndex].Layer;
+            IRasterLayer sourceLayer = _rasterLayers[sourceLayerIndex].Layer as IRasterLayer;
             Debug.Assert(sourceLayer != null, "Source layer not found");
             if (sourceLayer != null)
             {
@@ -119,7 +109,7 @@ namespace NPS.AKRO.ArcGIS
                 {
                     foreach (int index in targetLayerIndices)
                     {
-                        IRasterLayer destLayer = _rasterLayers[index].Layer;
+                        IRasterLayer destLayer = _rasterLayers[index].Layer as IRasterLayer;
                         Debug.Assert(destLayer != null, "Destination layer not found");
                         if (destLayer != null)
                             //destLayer.Renderer = sourceRender;  //layers share the same renderer
@@ -133,66 +123,6 @@ namespace NPS.AKRO.ArcGIS
 
         #endregion
 
-        #region Map Event Handlers
-
-        private void AttachEventHandlersToMapDocument()
-        {
-            IDocumentEvents_Event docEvents = ArcMap.Events;
-            docEvents.ActiveViewChanged += new IDocumentEvents_ActiveViewChangedEventHandler(MapEvents_ActiveViewChanged);
-            docEvents.MapsChanged += new IDocumentEvents_MapsChangedEventHandler(MapEvents_ContentsChanged);
-        }
-
-        private void AttachEventHandlersToActiveView()
-        {
-            //Note: only the active map fires these events.  It is a COM error to add these events to a non-active map
-            //There does not appear to be any way to get item added events from a non-active map
-            //If maps are added (MapsChanged event), but FocusMap did not, then we will be adding duplicate events, so
-            //we conservatively clear the handler before adding it (it not an error to remove a handler that is not there)
-            IActiveViewEvents_Event ev = (IActiveViewEvents_Event)ArcMap.Document.FocusMap;
-            ev.ItemAdded -= MapEvents_ItemAdded; //layer added to view/TOC
-            ev.ItemAdded += MapEvents_ItemAdded;
-            ev.ItemDeleted -= MapEvents_ItemDeleted;  //layer removed from view/TOC
-            ev.ItemDeleted += MapEvents_ItemDeleted;
-            ev.ItemReordered -= MapEvents_ItemReordered; //layer moved in view/TOC
-            ev.ItemReordered += MapEvents_ItemReordered;
-            ev.ContentsChanged -= MapEvents_ContentsChanged;  //view changed (fired when layer changes)
-            ev.ContentsChanged += MapEvents_ContentsChanged;
-        }
-
-        private void MapEvents_ActiveViewChanged()
-        {
-            AttachEventHandlersToActiveView();
-            //Pick up changes that may have occured on the inactive maps
-            MapEvents_ContentsChanged();
-        }
-
-        private void MapEvents_ItemAdded(object item)
-        {
-            if (item is IRasterLayer)
-                MapEvents_ContentsChanged();
-        }
-
-        void MapEvents_ItemDeleted(object item)
-        {
-            if (item is IRasterLayer) 
-                MapEvents_ContentsChanged();
-        }
-
-        void MapEvents_ItemReordered(object item, int index)
-        {
-            if (item is IRasterLayer) 
-                MapEvents_ContentsChanged();
-        }
-
-        void MapEvents_ContentsChanged()
-        {
-            GetRasterLayers();
-            Enabled = MapHasTwoOrMoreRasterLayers;
-            if (_form != null)
-                _form.LoadLists(_rasterLayers.Select(rlayer => rlayer.Name));
-        }
-
-        #endregion
 
     }
 
