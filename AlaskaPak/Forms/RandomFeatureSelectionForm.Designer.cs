@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RandomFeatureSelectionForm));
             this.layerComboBox = new System.Windows.Forms.ComboBox();
             this.layerLabel = new System.Windows.Forms.Label();
             this.selectionMethodGroupBox = new System.Windows.Forms.GroupBox();
@@ -38,7 +39,9 @@
             this.percentRadioButton = new System.Windows.Forms.RadioButton();
             this.cancelButton = new System.Windows.Forms.Button();
             this.selectButton = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.selectionMethodGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // layerComboBox
@@ -64,6 +67,8 @@
             // 
             // selectionMethodGroupBox
             // 
+            this.selectionMethodGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.selectionMethodGroupBox.Controls.Add(this.descriptionTextBox);
             this.selectionMethodGroupBox.Controls.Add(this.numberTextBox);
             this.selectionMethodGroupBox.Controls.Add(this.percentTextBox);
@@ -163,6 +168,19 @@
             this.selectButton.UseVisualStyleBackColor = true;
             this.selectButton.Click += new System.EventHandler(this.selectButton_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox1.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.pictureBox1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.BackgroundImage")));
+            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Location = new System.Drawing.Point(191, 44);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(156, 125);
+            this.pictureBox1.TabIndex = 5;
+            this.pictureBox1.TabStop = false;
+            // 
             // RandomFeatureSelectionForm
             // 
             this.AcceptButton = this.selectButton;
@@ -170,6 +188,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(359, 216);
+            this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.selectButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.selectionMethodGroupBox);
@@ -182,6 +201,7 @@
             this.Text = "Random Feature Selection";
             this.selectionMethodGroupBox.ResumeLayout(false);
             this.selectionMethodGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -199,5 +219,6 @@
         private System.Windows.Forms.RadioButton percentRadioButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button selectButton;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

@@ -153,6 +153,11 @@
     <Compile Include="Forms\RandomFeatureSelectionForm.Designer.cs">
       <DependentUpon>RandomFeatureSelectionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Tools\Coordinates.cs" />
     <Compile Include="Tools\GenerateGrid.cs" />
     <Compile Include="Buttons\LinkInternal.cs" />
@@ -225,6 +230,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RandomFeatureSelectionForm.resx">
       <DependentUpon>RandomFeatureSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
