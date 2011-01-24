@@ -50,7 +50,7 @@ namespace NPS.AKRO.ArcGIS.Forms
         {
             _total = ((Tuple<string, int>)layerComboBox.SelectedItem).Item2;
             UpdateQuantity();
-            UpdateDescription();
+            UpdateForm();
         }
 
         private void percentRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -66,7 +66,13 @@ namespace NPS.AKRO.ArcGIS.Forms
                 numberTextBox.Enabled = true;
             }
             UpdateQuantity();
-            UpdateDescription();
+            UpdateForm();
+        }
+
+        private void textBox_TextChanged(object sender, EventArgs e)
+        {
+            UpdateQuantity();
+            UpdateForm();
         }
 
         private void UpdateQuantity()
@@ -78,7 +84,14 @@ namespace NPS.AKRO.ArcGIS.Forms
             {
                 if (Double.TryParse(percentTextBox.Text, out n))
                 {
-                    q = Convert.ToInt32(n/100*t);
+                    if (n < 0 || 100 < n)
+                    {
+                        q = -1;
+                    }
+                    else
+                    {
+                        q = Convert.ToInt32(n / 100 * t);
+                    }
                 }
                 else
                 {
@@ -87,7 +100,14 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
             else
             {
-                if (!Int32.TryParse(numberTextBox.Text, out q))
+                if (Int32.TryParse(numberTextBox.Text, out q))
+                {
+                    if (q < 0 || t < q)
+                    {
+                        q = -1;
+                    }
+                }
+                else
                 {
                     q = -1;
                 }
@@ -95,71 +115,33 @@ namespace NPS.AKRO.ArcGIS.Forms
             _quantity = q;
         }
 
-        private void UpdateDescription()
+        private void UpdateForm()
         {
             int q = _quantity;
             int t = _total;
-            if (q < 0 || q > t)
-                descriptionTextBox.Text = "Invalid input, unable to compute quantity.";
-            else
-                descriptionTextBox.Text = string.Format("Randomly select {0} of {1} features",q,t);
-        }
-
-        private void percentTextBox_Validating(object sender, CancelEventArgs e)
-        {
-            double n;
-            if (Double.TryParse(percentTextBox.Text, out n))
+            if (q == -1)
             {
-                if (n < 0 || 100 < n)
-                    e.Cancel = true;
-            }
-            else
-                e.Cancel = true;
-            if (e.Cancel)
-                descriptionTextBox.Text = "Enter a number between 0 and 100";
-        }
-
-        private void numberTextBox_Validating(object sender, CancelEventArgs e)
-        {
-            int q;
-            int t = _total;
-            if (Int32.TryParse(numberTextBox.Text, out q))
-            {
-                if ( q < 0 || t < q)
-                    e.Cancel = true;
-            }
-            else
-                e.Cancel = true;
-            if (e.Cancel)
-                descriptionTextBox.Text = "Enter an integer between 0 and " + t;
-            
-        }
-
-        private void textBox_Validated(object sender, EventArgs e)
-        {
-            UpdateQuantity();
-            UpdateDescription();
-        }
-
-        [Obsolete]
-        private void percentTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            //add delete keys and arrow and enter and tab and ....
-            if ((e.KeyData <= Keys.D9 && e.KeyData >= Keys.D0) || e.KeyData == Keys.Decimal)
-            {
-                UpdateQuantity();
-                UpdateDescription();
+                descriptionTextBox.ForeColor = Color.Red;
+                selectButton.Enabled = false;
+                if (percentRadioButton.Checked)
+                {
+                    percentTextBox.ForeColor = Color.Red;
+                    descriptionTextBox.Text = "Enter a percentage from 0 to 100";
+                }
+                else
+                {
+                    numberTextBox.ForeColor = Color.Red;
+                    descriptionTextBox.Text = "Enter an integer between 0 and " + t;
+                }
             }
             else
             {
-                descriptionTextBox.Text = "Invalid Input";
-                e.SuppressKeyPress = true;
+                selectButton.Enabled = true;
+                numberTextBox.ForeColor = Color.Black;
+                percentTextBox.ForeColor = Color.Black;
+                descriptionTextBox.ForeColor = Color.Black;
+                descriptionTextBox.Text = string.Format("Randomly select {0} of {1} features", q, t);
             }
-        }
-
-        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            textBox_Validated(null, null);
         }
 
         private void OnRandomSelect()

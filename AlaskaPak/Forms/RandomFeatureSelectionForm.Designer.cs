@@ -71,7 +71,7 @@
             this.selectionMethodGroupBox.Controls.Add(this.percentRadioButton);
             this.selectionMethodGroupBox.Location = new System.Drawing.Point(12, 43);
             this.selectionMethodGroupBox.Name = "selectionMethodGroupBox";
-            this.selectionMethodGroupBox.Size = new System.Drawing.Size(147, 126);
+            this.selectionMethodGroupBox.Size = new System.Drawing.Size(167, 126);
             this.selectionMethodGroupBox.TabIndex = 2;
             this.selectionMethodGroupBox.TabStop = false;
             this.selectionMethodGroupBox.Text = "Selection Method";
@@ -88,7 +88,7 @@
             this.descriptionTextBox.Multiline = true;
             this.descriptionTextBox.Name = "descriptionTextBox";
             this.descriptionTextBox.ReadOnly = true;
-            this.descriptionTextBox.Size = new System.Drawing.Size(131, 43);
+            this.descriptionTextBox.Size = new System.Drawing.Size(151, 43);
             this.descriptionTextBox.TabIndex = 4;
             this.descriptionTextBox.TabStop = false;
             // 
@@ -97,29 +97,25 @@
             this.numberTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.numberTextBox.Enabled = false;
-            this.numberTextBox.Location = new System.Drawing.Point(93, 46);
+            this.numberTextBox.Location = new System.Drawing.Point(96, 46);
             this.numberTextBox.Name = "numberTextBox";
-            this.numberTextBox.Size = new System.Drawing.Size(45, 23);
+            this.numberTextBox.Size = new System.Drawing.Size(62, 23);
             this.numberTextBox.TabIndex = 3;
             this.numberTextBox.Text = "1";
             this.numberTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.numberTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
-            this.numberTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.numberTextBox_Validating);
-            this.numberTextBox.Validated += new System.EventHandler(this.textBox_Validated);
+            this.numberTextBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // percentTextBox
             // 
             this.percentTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.percentTextBox.Location = new System.Drawing.Point(93, 21);
+            this.percentTextBox.Location = new System.Drawing.Point(96, 21);
             this.percentTextBox.Name = "percentTextBox";
-            this.percentTextBox.Size = new System.Drawing.Size(45, 23);
+            this.percentTextBox.Size = new System.Drawing.Size(62, 23);
             this.percentTextBox.TabIndex = 2;
             this.percentTextBox.Text = "75";
             this.percentTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.percentTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_KeyPress);
-            this.percentTextBox.Validating += new System.ComponentModel.CancelEventHandler(this.percentTextBox_Validating);
-            this.percentTextBox.Validated += new System.EventHandler(this.textBox_Validated);
+            this.percentTextBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // numberRadioButton
             // 
