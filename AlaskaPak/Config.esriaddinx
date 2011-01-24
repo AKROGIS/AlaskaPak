@@ -6,7 +6,7 @@
   <Image>Images\NPS_Logo.png</Image>
   <Author>Regan Sarwas, GIS Team</Author>
   <Company>National Park Service, Alaska Regional Office</Company>
-  <Date>12/2/2010</Date>
+  <Date>1/24/2011</Date>
   <Targets>
     <Target name="Desktop" version="10.0" />
   </Targets>
@@ -30,7 +30,6 @@
         <Tool id="NPS_Alaska_Pak_Generate_Grid" class="GenerateGrid" message="Generate a Regular Grid from a user defined rectangle." caption="&amp;Generate Grid" tip="Generate a Grid" category="NPS Alaska" image="Images\iconGridIcon.ico" cursor="Images\GenerateGrid.cur">
           <Help heading="Alaska Pak">b</Help>
         </Tool>
-
         <Button id="NPS_Alaska_Pak_ThemeManager" class="ThemeManager" message="Use Theme Manager for organizing and discovering GIS layers" caption="&amp;Theme Manager" tip="Start Theme Manager" category="NPS Alaska" image="Images\NPS_Logo.png">
           <Help heading="Theme Manager">Use Theme Manager for organizing and discovering GIS layers.</Help>
         </Button>
@@ -124,7 +123,6 @@
             <Button refID="NPS_Alaska_Pak_Coordinates_Set_Mode_Feature" />
           </Items>
         </Menu>
-
         <Menu id="NPS_Alaska_Pak_Add_Menu" caption="&amp;Add Attributes" isRootMenu="false">
           <Items>
             <Button refID="NPS_Alaska_Pak_Add_Unique_ID" />
@@ -187,6 +185,9 @@
           </Items>
         </Toolbar>
       </Toolbars>
+      <Extensions>
+        <Extension id="NPS_Alaska_Pak_Controller" class="AlaskaPak" />
+      </Extensions>
     </ArcMap>
   </AddIn>
 </ESRI.Configuration>

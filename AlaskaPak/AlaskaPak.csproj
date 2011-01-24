@@ -125,9 +125,12 @@
     <Compile Include="Buttons\ResizeGrid.cs" />
     <Compile Include="Buttons\SetExtents.cs" />
     <Compile Include="Buttons\SquareBuildings.cs" />
+    <Compile Include="Common\AlaskaPak.cs" />
     <Compile Include="Common\ArcToolBox.cs" />
     <Compile Include="Common\LayerUtils.cs" />
+    <Compile Include="Common\NamedLayer.cs" />
     <Compile Include="Common\Settings.cs" />
+    <Compile Include="Common\Tuple.cs" />
     <Compile Include="Config.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Config.esriaddinx</DependentUpon>

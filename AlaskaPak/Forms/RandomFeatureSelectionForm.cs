@@ -6,14 +6,14 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using NPS.AKRO.ArcGIS.Common;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
     public partial class RandomFeatureSelectionForm : Form
     {
-        //replace with property from selected combo box item
         private int _quantity;
-        private int _total = 123;
+        private int _total;
 
         public RandomFeatureSelectionForm()
         {
@@ -21,19 +21,17 @@ namespace NPS.AKRO.ArcGIS.Forms
         }
 
         /// <summary>
-        /// Fired when the user wants to initiate a copy
+        /// Fired when the user is ready to process the layer
         /// </summary>
-        public event RandomSelectEventHandler RandomSelectEvent;
+        public event RandomSelectEventHandler SelectedLayer;
 
-        public void LoadList(IEnumerable<string> layernames)
+        public void LoadList(IEnumerable<Tuple<string, int>> layerinfo)
         {
-            layerComboBox.Items.Clear();
-            layerComboBox.Items.AddRange(layernames.ToArray());
+            layerComboBox.DataSource = layerinfo.ToList();
+            layerComboBox.DisplayMember = "Item1";
             if (layerComboBox.Items.Count > 0)
             {
                 layerComboBox.SelectedIndex = 0;
-                //FIXME - get feature count for layer
-                _total = 10000;
                 selectButton.Focus();
             }
         }
@@ -46,6 +44,13 @@ namespace NPS.AKRO.ArcGIS.Forms
         private void cancelButton_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void layerComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            _total = ((Tuple<string, int>)layerComboBox.SelectedItem).Item2;
+            UpdateQuantity();
+            UpdateDescription();
         }
 
         private void percentRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -159,7 +164,7 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void OnRandomSelect()
         {
-            RandomSelectEventHandler handle = RandomSelectEvent;
+            RandomSelectEventHandler handle = SelectedLayer;
             if (handle != null)
                 handle(this, new RandomSelectEventArgs
                 {

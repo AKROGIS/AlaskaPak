@@ -51,6 +51,7 @@
             this.layerComboBox.Name = "layerComboBox";
             this.layerComboBox.Size = new System.Drawing.Size(249, 23);
             this.layerComboBox.TabIndex = 0;
+            this.layerComboBox.SelectedIndexChanged += new System.EventHandler(this.layerComboBox_SelectedIndexChanged);
             // 
             // layerLabel
             // 

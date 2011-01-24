@@ -15,23 +15,16 @@ namespace NPS.AKRO.ArcGIS
 {
     public class RandomSelect : ESRI.ArcGIS.Desktop.AddIns.Button
     {
+        private AlaskaPak _controller;
         private RandomFeatureSelectionForm _form;
-        private List<NamedSelectableLayer> _selectableLayers;
-        private struct NamedSelectableLayer
-        {
-            internal IFeatureLayer Layer;
-            internal string Name;
-        }
+        private List<NamedLayer> _selectableLayers;
 
         public RandomSelect()
         {
-            _selectableLayers = new List<NamedSelectableLayer>();
-            GetSelectableLayers();
+            _controller = AlaskaPak.Controller;
+            _controller.LayersChanged += Controller_LayersChanged;
+            _selectableLayers = _controller.GetSelectableLayers();
             Enabled = MapHasSelectableLayer;
-            //wire up event handlers to keep track of raster layers
-            //(for maintaining state of Enabled and for form updates, if it is being displayed)
-            //AttachEventHandlersToMapDocument();
-            //AttachEventHandlersToActiveView();
         }
 
         protected override void OnClick()
@@ -45,9 +38,9 @@ namespace NPS.AKRO.ArcGIS
                 else
                 {
                     _form = new RandomFeatureSelectionForm();
-                    _form.RandomSelectEvent += FormEvent_Select;
-                    _form.FormClosed += FormEvent_Release;
-                    _form.LoadList(_selectableLayers.Select(sl => sl.Name));
+                    _form.SelectedLayer += Form_SelectedLayer;
+                    _form.FormClosed += Form_Closed;
+                    LoadFormList();
                     _form.Show();
                 }
             }
@@ -58,48 +51,61 @@ namespace NPS.AKRO.ArcGIS
             }
         }
 
-        private void GetSelectableLayers()
-        {
-            _selectableLayers.Clear();
-            string type = "{40A9E885-5533-11d0-98BE-00805F7CED21}"; // IFeatureLayer
-            foreach (IFeatureLayer layer in LayerUtils.GetAllLayers(ArcMap.Document, type))
-            {
-                if (layer.Selectable)
-                {
-                    string name = null;
-                    if (ArcMap.Document.Maps.Count > 1)
-                    {
-                        name = LayerUtils.GetFullName(ArcMap.Document, layer);
-                    }
-                    else
-                    {
-                        name = LayerUtils.GetFullName(ArcMap.Document.Maps.Item[0], layer);
-                    }
-                    _selectableLayers.Add(new NamedSelectableLayer
-                    {
-                        Name = name,
-                        Layer = (IFeatureLayer)layer
-                    });
-                }
-            }
-        }
-
         private bool MapHasSelectableLayer
         {
             get { return _selectableLayers.Count > 0; }
         }
 
-        #region Form Event Handlers
+        private void LoadFormList()
+        {
+            _form.LoadList(_selectableLayers.Select(sl => new Tuple<string, int>
+            {
+                Item1 = sl.Name,
+                Item2 = FeatureCount(sl.Layer)
+            }));
+        }
 
-        internal void FormEvent_Release(object sender, FormClosedEventArgs e)
+        #region Event Handlers
+
+        //What we will do when the controller says the layers have changed
+        void Controller_LayersChanged()
+        {
+            _selectableLayers = _controller.GetSelectableLayers();
+            Enabled = MapHasSelectableLayer;
+            if (_form != null)
+                LoadFormList();
+        }
+
+        //What we will do when the form says it has closed
+        internal void Form_Closed(object sender, FormClosedEventArgs e)
         {
             _form = null;
         }
 
-        internal void FormEvent_Select(object sender, RandomSelectEventArgs e)
+        //What we will do when the form says it has selected a layer
+        internal void Form_SelectedLayer(object sender, RandomSelectEventArgs e)
         {
             RandomSelection(e.LayerIndex, e.Count);
             _form.Close();
+        }
+
+        #endregion
+
+        #region Helper Functions (Tool Specific Logic)
+
+        private int FeatureCount(ILayer layer)
+        {
+            //casting the layer to ITable gets only the features in the
+            //layer's query definition (i.e. those being shown
+            if (layer is ITable)
+            {
+                ISelectionSet oids = ((ITable)layer).Select(null,
+                        esriSelectionType.esriSelectionTypeHybrid,
+                        esriSelectionOption.esriSelectionOptionNormal, null);
+                return oids.Count;
+            }
+            else
+                return 0;
         }
 
         private void RandomSelection(int layerIndex, int count)
@@ -169,4 +175,5 @@ namespace NPS.AKRO.ArcGIS
         #endregion
 
     }
+
 }
