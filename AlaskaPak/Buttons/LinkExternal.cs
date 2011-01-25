@@ -10,11 +10,5 @@
         {
             System.Diagnostics.Process.Start("http://www.nps.gov/akso/gis/");
         }
-
-        protected override void OnUpdate()
-        {
-            Enabled = true;
-        }
-
     }
 }

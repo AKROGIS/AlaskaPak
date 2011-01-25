@@ -10,10 +10,5 @@
         {
             Common.ArcToolBox.Invoke("AddXY_management");
         }
-
-        protected override void OnUpdate()
-        {
-            Enabled = true;
-        }
     }
 }

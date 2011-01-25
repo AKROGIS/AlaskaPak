@@ -10,10 +10,5 @@
         {
             Common.ArcToolBox.Invoke("AddGlobalIDs_management");
         }
-
-        protected override void OnUpdate()
-        {
-            Enabled = true;
-        }
     }
 }

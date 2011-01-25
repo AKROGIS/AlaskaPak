@@ -114,7 +114,6 @@
     <Compile Include="Buttons\CoordinatesPlaceMarker.cs" />
     <Compile Include="Buttons\CopyRasterSymbology.cs" />
     <Compile Include="Buttons\GenerateGridPoints.cs" />
-    <Compile Include="Buttons\GraphicsToFeatures.cs" />
     <Compile Include="Buttons\LineToRectangle.cs" />
     <Compile Include="Buttons\ObscurePoints.cs" />
     <Compile Include="Buttons\PointToPolygon.cs" />

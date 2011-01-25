@@ -10,10 +10,5 @@
         {
             Common.ArcToolBox.Invoke("CreateRandomPoints_management");
         }
-
-        protected override void OnUpdate()
-        {
-            Enabled = true;
-        }
     }
 }

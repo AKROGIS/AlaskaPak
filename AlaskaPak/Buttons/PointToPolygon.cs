@@ -8,12 +8,7 @@
 
         protected override void OnClick()
         {
-            Common.ArcToolBox.Invoke("PointsToLine_management");
-        }
-
-        protected override void OnUpdate()
-        {
-            Enabled = true;
+            Common.ArcToolBox.Invoke(Common.Settings.Get("PathToToolbox"), "Point2Poly");
         }
     }
 }

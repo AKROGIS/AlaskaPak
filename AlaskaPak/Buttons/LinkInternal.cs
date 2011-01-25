@@ -10,11 +10,5 @@
         {
             System.Diagnostics.Process.Start("http://165.83.62.205/rgr/akgis/");
         }
-
-        protected override void OnUpdate()
-        {
-            Enabled = true;
-        }
-
     }
 }
