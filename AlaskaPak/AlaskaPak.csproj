@@ -100,10 +100,11 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buttons\AddID.cs" />
     <Compile Include="Buttons\AlaskaPakAbout.cs" />
     <Compile Include="Buttons\AddAcres.cs" />
     <Compile Include="Buttons\AddMiles.cs" />
-    <Compile Include="Buttons\AddUniqueID.cs" />
+    <Compile Include="Buttons\AddGUID.cs" />
     <Compile Include="Buttons\AddXY.cs" />
     <Compile Include="Buttons\AnimateFeatures.cs" />
     <Compile Include="Buttons\CoordinatesSetModeFeature.cs" />

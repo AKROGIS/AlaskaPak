@@ -1,8 +1,8 @@
 ﻿namespace NPS.AKRO.ArcGIS
 {
-    public class AddUniqueID : ESRI.ArcGIS.Desktop.AddIns.Button
+    public class AddGUID : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-        public AddUniqueID()
+        public AddGUID()
         {
         }
 

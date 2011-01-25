@@ -33,8 +33,11 @@
         <Button id="NPS_Alaska_Pak_ThemeManager" class="ThemeManager" message="Use Theme Manager for organizing and discovering GIS layers" caption="&amp;Theme Manager" tip="Start Theme Manager" category="NPS Alaska" image="Images\NPS_Logo.png">
           <Help heading="Theme Manager">Use Theme Manager for organizing and discovering GIS layers.</Help>
         </Button>
-        <Button id="NPS_Alaska_Pak_Add_Unique_ID" class="AddUniqueID" message="Add a Unique ID field to a data set and populate that field" caption="Add &amp;Unique ID" tip="Add unique ID to data table" category="NPS Alaska" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Add Unique ID">Add a Unique ID field to a data set and populate that field.</Help>
+        <Button id="NPS_Alaska_Pak_Add_GUID" class="AddGUID" message="Add a globally unique ID field to a data set and populate that field" caption="Add &amp;Globally Unique ID" tip="Add a globally unique ID to a data set" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Add Unique ID">Add a globally unique ID field to a data set and populate that field.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Add_ID" class="AddID" message="Add a simple numeric ID field to a data set and populate that field" caption="Add &amp;ID" tip="Add simple numerical ID to a data set" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Add Unique ID">Add a simple numeric ID field to a data set and populate that field.</Help>
         </Button>
         <Button id="NPS_Alaska_Pak_Add_XY" class="AddXY" message="Add and/or update fields with each point's coordinate" caption="Add &amp;XY Coordinates" tip="Add XY coordinates to data table" category="NPS Alaska" image="Images\Hammer.png">
           <Help heading="Alaska Pak Add XY">Add and/or update fields with each point's coordinate.</Help>
@@ -134,7 +137,8 @@
         </Menu>
         <Menu id="NPS_Alaska_Pak_Add_Menu" caption="&amp;Add Attributes" isRootMenu="false">
           <Items>
-            <Button refID="NPS_Alaska_Pak_Add_Unique_ID" />
+            <Button refID="NPS_Alaska_Pak_Add_GUID" />
+            <Button refID="NPS_Alaska_Pak_Add_ID" />
             <Button refID="NPS_Alaska_Pak_Add_XY" />
             <Button refID="NPS_Alaska_Pak_Add_Miles" />
             <Button refID="NPS_Alaska_Pak_Add_Acres" />
