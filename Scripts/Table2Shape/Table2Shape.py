@@ -24,23 +24,23 @@
 # Multipart polygons and parts with rings are almost the same.  rings should not overlap, and the exterior ring must be specified first, and must be clockwise, and all interior rings must be counterclockwise, including rings inside rings.  If the multipart polygon is specified, spatial relationship (inside/outside) matters, not order of parts, or order of vertices 
 #
 # Parameter 3:
-# Shape_Type
-# This determines the shape created by the points.  Valid values are Polygon, Polyline, Multipoint.  Polyline is the default if either "" or "#" is given for this parameter.
-#
-# Parameter 4:
 # Point_Features
 # The full name of the feature class that has the point geometry for the vertices of the output shapes.  This must be a simple point shape (cannot be a multipoint feature class).  All attributes of this feature class are ignored except the shape and the ID column specified by the Point_ID Parameter
 #
-# Parameter 5:
+# Parameter 4:
 # Point_ID
 # The name of the attribute (column/field) that contains the ID (name) of the point that is used to reference it in the Shape_Table.  The data type of this attribute must be compatible with the attributes in the Vertex List. 
+#
+# Parameter 5:
+# Shape_Type
+# This determines the shape created by the points.  Valid values are Polygon, Polyline, Multipoint.  Polyline is the default if either "" or "#" is given for this parameter.
 #
 # Parameter 6:
 # Output_Features
 # The full name of the feature class to create.  Any existing feature class at that path will not be overwritten, and the script will issue an error if the feature class exists (unless the geoprocessing options are set to overwrite output). The output feature class will have the same spatial reference system as the Point_Features. If the Point_Features has Z or M values then the output will as well, and Z and M values will be preserved. All attributes in the Shape_Table are copied to Output_Features.
 #
 # Scripting Syntax:
-# Line2Rect(Shape_Table, Vertex_List, Shape_Type, Point_Features, Point_ID, Output_Feature)
+# Line2Rect(Shape_Table, Vertex_List, Point_Features, Point_ID, Shape_Type, Output_Feature)
 #
 # Example1:
 # Scripting Example
@@ -48,12 +48,12 @@
 #  table = r"C:\tmp\utilites.mdb\pipe_segments"
 #  ptFC = r"C:\tmp\gps_pts.shp"
 #  outFC = r"C:\tmp\test.gdb\utilities\pipe_cl"
-#  Table2Shape(Shape_Table, "start;end", "Polyline", Point_Features, "id", Output_Features)
+#  Table2Shape(Shape_Table, "start;end", Point_Features, "id", "Polyline", Output_Features)
 #
 # Example2:
 # Command Line Example
 # The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
-#  C:\tmp> python Table2Shape.py "C:\tmp\utilites.mdb\pipe_segments" start;end Polyline C:\tmp\gps_pts.shp id "C:\tmp\test.gdb\utilities\pipe_cl"
+#  C:\tmp> python Table2Shape.py "C:\tmp\utilites.mdb\pipe_segments" start;end C:\tmp\gps_pts.shp id Polyline "C:\tmp\test.gdb\utilities\pipe_cl"
 #
 # Credits:
 # Regan Sarwas, Alaska Region GIS Team, National Park Service
@@ -161,9 +161,9 @@ if (len(sys.argv) != 7):
 
 table = arcpy.GetParameterAsText(0)
 vertexList = arcpy.GetParameterAsText(1)
-shapeType = arcpy.GetParameterAsText(2)
-pointFC = arcpy.GetParameterAsText(3)
-pointIdField = arcpy.GetParameterAsText(4)
+pointFC = arcpy.GetParameterAsText(2)
+pointIdField = arcpy.GetParameterAsText(3)
+shapeType = arcpy.GetParameterAsText(4)
 outFC = arcpy.GetParameterAsText(5)
 
 #VERIFY INPUT (mostly for command line.  Toolbox does some validation for us)
