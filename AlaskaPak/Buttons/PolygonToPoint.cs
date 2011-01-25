@@ -10,11 +10,5 @@
         {
            Common.ArcToolBox.Invoke("FeatureVerticesToPoints_management");
         }
-
-        protected override void OnUpdate()
-        {
-            Enabled = true;
-        }
-
     }
 }

@@ -57,8 +57,17 @@
         <Button id="NPS_Alaska_Pak_Random_Select" class="RandomSelect" message="Create a new selection set of Randomly selected features" caption="Random &amp;Select" tip="Select random features" category="NPS Alaska" image="Images\Scatterplots.png">
           <Help heading="Alaska Pak Random Select">Create a new selection set of Randomly selected features.</Help>
         </Button>
-        <Button id="NPS_Alaska_Pak_Point_to_Polygon" class="PointToPolygon" message="Create a line or polygon feature class from a point feature class" caption="&amp;Point to Polyline/Polygon" tip="Convert points to a line or polygon" category="NPS Alaska" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Point to Polygon">Create a line or polygon feature class from a point feature class.</Help>
+        <Button id="NPS_Alaska_Pak_Table_to_Shape" class="TableToShape" message="Create a feature class from a table of point Ids and point features" caption="&amp;Table to Shape" tip="Create shapes from tabular data" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Table_to_Shape">Create a feature class from a table of point Ids and point features.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Point_to_Polyline" class="PointToPolyline" message="Create a polyline feature class from a point feature class" caption="Point to Poly&amp;line" tip="Convert points to a line" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Point to Polyline">Create a polyline feature class from a point feature class.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Point_to_Polygon" class="PointToPolygon" message="Create a polygon feature class from a point feature class" caption="&amp;Point to Polygon" tip="Convert points to a polygon" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Point to Polygon">Create a polygon feature class from a point feature class.</Help>
+        </Button>
+        <Button id="NPS_Alaska_Pak_Line_to_Rectangle" class="LineToRectangle" message="Create rectangle features from baselines and offsets" caption="Line to &amp;Rectangle" tip="Create rectangles from a line and an offset" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Line_to_Rectangle">Create rectangle features from baselines and offsets.</Help>
         </Button>
         <Button id="NPS_Alaska_Pak_Polygon_to_Point" class="PolygonToPoint" message="Create a point feature class from the vertices in lines or polygons" caption="P&amp;olyline/Polygon to Point" tip="Convert a line or polygon to points" category="NPS Alaska" image="Images\Hammer.png">
           <Help heading="Alaska Pak Polygon to Point">Create a point feature class from the vertices in lines or polygons.</Help>
@@ -133,7 +142,10 @@
         </Menu>
         <Menu id="NPS_Alaska_Pak_Convert_Menu" caption="&amp;Conversions" isRootMenu="false">
           <Items>
+            <Button refID="NPS_Alaska_Pak_Table_to_Shape" />
+            <Button refID="NPS_Alaska_Pak_Point_to_Polyline" />
             <Button refID="NPS_Alaska_Pak_Point_to_Polygon" />
+            <Button refID="NPS_Alaska_Pak_Line_to_Rectangle" />
             <Button refID="NPS_Alaska_Pak_Polygon_to_Point" />
             <Button refID="esriArcMapUI.GraphicsToFeaturesCommand" />
           </Items>

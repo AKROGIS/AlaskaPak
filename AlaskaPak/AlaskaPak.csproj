@@ -115,8 +115,10 @@
     <Compile Include="Buttons\CopyRasterSymbology.cs" />
     <Compile Include="Buttons\GenerateGridPoints.cs" />
     <Compile Include="Buttons\GraphicsToFeatures.cs" />
+    <Compile Include="Buttons\LineToRectangle.cs" />
     <Compile Include="Buttons\ObscurePoints.cs" />
     <Compile Include="Buttons\PointToPolygon.cs" />
+    <Compile Include="Buttons\PointToPolyline.cs" />
     <Compile Include="Buttons\PolygonToPoint.cs" />
     <Compile Include="Buttons\LinkExternal.cs" />
     <Compile Include="Buttons\RandomPoints.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Buttons\ResizeGrid.cs" />
     <Compile Include="Buttons\SetExtents.cs" />
     <Compile Include="Buttons\SquareBuildings.cs" />
+    <Compile Include="Buttons\TableToShape.cs" />
     <Compile Include="Common\AlaskaPak.cs" />
     <Compile Include="Common\ArcToolBox.cs" />
     <Compile Include="Common\LayerUtils.cs" />
@@ -146,6 +149,12 @@
     </Compile>
     <Compile Include="Forms\CopyRasterSymbologyForm.Designer.cs">
       <DependentUpon>CopyRasterSymbologyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GenerateGridForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GenerateGridForm.Designer.cs">
+      <DependentUpon>GenerateGridForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\RandomFeatureSelectionForm.cs">
       <SubType>Form</SubType>
@@ -227,6 +236,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CopyRasterSymbologyForm.resx">
       <DependentUpon>CopyRasterSymbologyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GenerateGridForm.resx">
+      <DependentUpon>GenerateGridForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RandomFeatureSelectionForm.resx">
       <DependentUpon>RandomFeatureSelectionForm.cs</DependentUpon>

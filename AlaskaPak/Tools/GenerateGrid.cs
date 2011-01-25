@@ -5,24 +5,52 @@ using System.IO;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
+using NPS.AKRO.ArcGIS.Forms;
+using NPS.AKRO.ArcGIS.Common;
+using System.Windows.Forms;
 
 namespace NPS.AKRO.ArcGIS
 {
     public class GenerateGrid : ESRI.ArcGIS.Desktop.AddIns.Tool
     {
-        private bool _enabled;
+        private AlaskaPak _controller;
+        private GenerateGridForm _form;
 
         public GenerateGrid()
         {
-            _enabled = CheckForCoordinateSystem();
-        }
-
-        protected override void OnUpdate()
-        {
-            this.Enabled = _enabled;
+            _controller = AlaskaPak.Controller;
+            //_controller.LayersChanged += Controller_LayersChanged;
+            //_selectableLayers = _controller.GetSelectableLayers();
+            Enabled = CheckForCoordinateSystem();
         }
 
         protected override void OnMouseDown(MouseEventArgs arg)
+        {
+            if (Enabled)
+            {
+                GetExtents();
+                if (_form != null) //User may click when form is already loaded.
+                {
+                    _form.Activate();
+                    //UpdateForm();
+                }
+                else
+                {
+                    _form = new GenerateGridForm();
+                    //_form.SelectedLayer += Form_SelectedLayer;
+                    //_form.FormClosed += Form_Closed;
+                    //UpdateForm();
+                    _form.Show();
+                }
+            }
+            else
+            {
+                MessageBox.Show("You must have one or more selectable feature layers in your map to use this command.",
+                    "For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void GetExtents()
         {
             IScreenDisplay screenDisplay = ((IActiveView)ArcMap.Document.ActiveView.FocusMap).ScreenDisplay;
             IRubberBand rubberEnv = new RubberEnvelope();
@@ -33,13 +61,7 @@ namespace NPS.AKRO.ArcGIS
 
         void MapEvents_ContentsChanged()
         {
-            _enabled = CheckForCoordinateSystem();
-            string _message;
-            if (_enabled)
-                //((ESRI.ArcGIS.Desktop.AddIns.Command)this)
-                _message = "Generate a Regular Grid";
-            else
-                _message = "Generate a Regular Grid - The Dataframe must be set to a Projected or Geographic Coordinate System";
+            Enabled = CheckForCoordinateSystem();
         }
 
         private bool CheckForCoordinateSystem()

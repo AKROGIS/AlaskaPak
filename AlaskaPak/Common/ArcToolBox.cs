@@ -1,4 +1,9 @@
-﻿using ESRI.ArcGIS.esriSystem;
+﻿using System;
+using System.IO;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geoprocessing;
 using ESRI.ArcGIS.GeoprocessingUI;
 using ESRI.ArcGIS.Geodatabase;
@@ -16,7 +21,16 @@ namespace NPS.AKRO.ArcGIS.Common
             if (arcToolboxExtension == null)
                 return;
 
-            IGPTool gpTool = arcToolboxExtension.ArcToolbox.GetToolbyNameString(tool);
+            IGPTool gpTool = null;
+            try
+            {
+                gpTool = arcToolboxExtension.ArcToolbox.GetToolbyNameString(tool);
+            }
+            catch (COMException)
+            {
+                MessageBox.Show("Unable to find tool: " + tool + Environment.NewLine + "in the system toolbox.",
+                    "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             if (gpTool == null)
                 return;
 
@@ -25,7 +39,34 @@ namespace NPS.AKRO.ArcGIS.Common
             gpCommandHelper.Invoke(null);
         }
 
-        public static void Invoke(string workspace, string toolbox, string tool)
+        public static void Invoke(string toolboxPath, string tool)
+        {
+            if (toolboxPath == null)
+            {
+                MessageBox.Show("Can't find the Setting 'PathToToolbox'.",
+                    "Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            if (File.Exists(toolboxPath))
+            {
+                string directory = Path.GetDirectoryName(toolboxPath);
+                string toolbox = Path.GetFileNameWithoutExtension(toolboxPath);
+                try
+                {
+                    Invoke(directory, toolbox, tool);
+                }
+                catch (COMException)
+                {
+                    MessageBox.Show("Unable to find tool: " + tool + Environment.NewLine + "in toolbox: " + toolboxPath,
+                        "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+            else
+                MessageBox.Show("Path to Alaska Pak Toolbox is not valid." + Environment.NewLine + toolboxPath,
+                    "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private static void Invoke(string workspace, string toolbox, string tool)
         {
             IWorkspaceFactory factory = new ToolboxWorkspaceFactoryClass();
             IToolboxWorkspace toolboxWorkspace = (IToolboxWorkspace)factory.OpenFromFile(workspace, 0);
@@ -44,5 +85,7 @@ namespace NPS.AKRO.ArcGIS.Common
             gpCommandHelper.SetTool(gpTool);
             gpCommandHelper.Invoke(null);
         }
+
+
     }
 }
