@@ -6,7 +6,7 @@
 # Table to Shape
 #
 # Tags:
-# Building, Offset, Width, Height, Square, Polygon
+# point, vertex, list, geometry, polyline, polygon, multi, create, data, convert
 #
 # Summary:
 # This tool will create a new feature class from a table of point IDs and a point feature class.
@@ -15,32 +15,32 @@
 # Use this tool to build polygons, polylines, or multi-points if you have a point feature class, and a table of vertex ids related to the point feature class.
 #
 # Parameter 1:
-# Shape_Table
-# The full name of a data table.  This can be any format uderstood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...getValue).  All attributes in the input table are copied to the output file. The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.  The data type for these columns must be comptible with the data type in the Point_ID parameter.
+# Table
+# The full name of a data table.  This can be any format uderstood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...).  All attributes in the input table are copied to the output file. The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.  The data type for these columns must be comptible with the data type in the Point_ID parameter.
 #
 # Parameter 2:
-# Vertex_List
-# This is a semicolon separated list of the attribute (filed/column) name for the vertices to use to make this shape.  The vertices are used in the order provided.  If a Polygon shape is requested, the last vertex can be but does not need to be the same as the first vertex.  Two semicolons without a vertex in between (i.e. "pt1;pt2;;pt3;pt4" separates the rings of a polygon(first is outer, rest are inner), or the parts of a multipart line.  If three semicolons are given, they separate the parts of a multipart polygon. Three semicolons are simplified to two for polylines.  Double and triple semicolons are treated as a single semicolon for multipoints. The minimum number of vertices is 1 for Multipoint, two for Polyline, and three for Polygon.  If a multipart feature is being created, then each part must have the required number of vertices. If multipart polygons overlap they wil create holes (this is another way to specify rings).  Rings can also be specified with a closed clockwise exterior ring, followed by closed counterclockwise interior rings.
-# Multipart polygons and parts with rings are almost the same.  rings should not overlap, and the exterior ring must be specified first, and must be clockwise, and all interior rings must be counterclockwise, including rings inside rings.  If the multipart polygon is specified, spatial relationship (inside/outside) matters, not order of parts, or order of vertices 
+# VertexList
+# This is a semicolon separated list of the attribute (field/column) name for the vertices to use to make this shape.  The vertices are used in the order provided.  If a Polygon shape is requested, the last vertex can be but does not need to be the same as the first vertex.  Two semicolons without a vertex in between (i.e. "pt1;pt2;;pt3;pt4" separate the parts (in a multi-part feature) of a polygon or a polyline. Three or more adjacent semicolons are not allowed.  Double semicolons are treated as a single semicolon for multipoints. The minimum number of vertices is 1 for Multipoint, two for Polyline, and three for Polygon.  If a multipart feature is being created, then each part must have the required number of vertices.
+# If the parts in a multipart polygon overlap, this will create holes in the polygon (If one part is completely inside another part then it becomes an interior ring instead of a multipart.
 #
 # Parameter 3:
-# Point_Features
-# The full name of the feature class that has the point geometry for the vertices of the output shapes.  This must be a simple point shape (cannot be a multipoint feature class).  All attributes of this feature class are ignored except the shape and the ID column specified by the Point_ID Parameter
+# Points
+# The full name of the feature class that has the point geometry for the vertices of the output shapes.  This must be a simple point shape (cannot be a multipoint feature class).  All attributes of this feature class are ignored except the shape and the ID column specified by the Point_ID Parameter.  If the points have M or Z values, then the generated shape will have those same values.
 #
 # Parameter 4:
 # Point_ID
 # The name of the attribute (column/field) that contains the ID (name) of the point that is used to reference it in the Shape_Table.  The data type of this attribute must be compatible with the attributes in the Vertex List. 
 #
 # Parameter 5:
-# Shape_Type
+# Geometry
 # This determines the shape created by the points.  Valid values are Polygon, Polyline, Multipoint.  Polyline is the default if either "" or "#" is given for this parameter.
 #
 # Parameter 6:
-# Output_Features
+# Output_feature_class
 # The full name of the feature class to create.  Any existing feature class at that path will not be overwritten, and the script will issue an error if the feature class exists (unless the geoprocessing options are set to overwrite output). The output feature class will have the same spatial reference system as the Point_Features. If the Point_Features has Z or M values then the output will as well, and Z and M values will be preserved. All attributes in the Shape_Table are copied to Output_Features.
 #
 # Scripting Syntax:
-# Line2Rect(Shape_Table, Vertex_List, Point_Features, Point_ID, Shape_Type, Output_Feature)
+# Table2Shape_AlaskaPak (Table, VertexList, Points, Point_ID, Geometry, Output_feature_class)
 #
 # Example1:
 # Scripting Example
@@ -48,7 +48,7 @@
 #  table = r"C:\tmp\utilites.mdb\pipe_segments"
 #  ptFC = r"C:\tmp\gps_pts.shp"
 #  outFC = r"C:\tmp\test.gdb\utilities\pipe_cl"
-#  Table2Shape(Shape_Table, "start;end", Point_Features, "id", "Polyline", Output_Features)
+#  Table2Shape_AlaskPak(table, "start;end", ptFC, "id", "Polyline", outFC)
 #
 # Example2:
 # Command Line Example
