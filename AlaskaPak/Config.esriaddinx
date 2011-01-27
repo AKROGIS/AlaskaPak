@@ -42,11 +42,11 @@
         <Button id="NPS_Alaska_Pak_Add_XY" class="AddXY" message="Add and/or update fields with each point's coordinate" caption="Add &amp;XY Coordinates" tip="Add XY coordinates to data table" category="NPS Alaska" image="Images\Hammer.png">
           <Help heading="Alaska Pak Add XY">Add and/or update fields with each point's coordinate.</Help>
         </Button>
-        <Button id="NPS_Alaska_Pak_Add_Acres" class="AddAcres" message="Add and/or update a field with each polygon's size in acres" caption="Add &amp;Acres" tip="Add acres to data table" category="NPS Alaska" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Add Acres">Add and/or update a field with each polygon's size in acres.</Help>
+        <Button id="NPS_Alaska_Pak_Add_Area" class="AddArea" message="Add and/or update a field with each polygon's area" caption="Add &amp;Area" tip="Add area to feature class" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Add Area">Add and/or update a field with each polygon's areal size.</Help>
         </Button>
-        <Button id="NPS_Alaska_Pak_Add_Miles" class="AddMiles" message="Add and/or update a field with each line's length in miles" caption="Add &amp;Miles" tip="Add miles to data table" category="NPS Alaska" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Add Miles">Add and/or update a field with each line's length in miles.</Help>
+        <Button id="NPS_Alaska_Pak_Add_Length" class="AddLength" message="Add and/or update a field with each line's length" caption="Add &amp;Length" tip="Add length to the feature class" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Add Length">Add and/or update a field with each line's length.</Help>
         </Button>
         <Button id="NPS_Alaska_Pak_Obscure_Points" class="ObscurePoints" message="Randomly obscure the location of sensitive points" caption="&amp;Obscure Points" tip="Obscure sensitive points" category="NPS Alaska" image="Images\Scatterplots.png">
           <Help heading="Alaska Pak Obscure Points">Randomly obscure the location of sensitive points.</Help>
@@ -140,8 +140,8 @@
             <Button refID="NPS_Alaska_Pak_Add_GUID" />
             <Button refID="NPS_Alaska_Pak_Add_ID" />
             <Button refID="NPS_Alaska_Pak_Add_XY" />
-            <Button refID="NPS_Alaska_Pak_Add_Miles" />
-            <Button refID="NPS_Alaska_Pak_Add_Acres" />
+            <Button refID="NPS_Alaska_Pak_Add_Length" />
+            <Button refID="NPS_Alaska_Pak_Add_Area" />
           </Items>
         </Menu>
         <Menu id="NPS_Alaska_Pak_Convert_Menu" caption="&amp;Conversions" isRootMenu="false">
@@ -150,6 +150,7 @@
             <Button refID="NPS_Alaska_Pak_Point_to_Polyline" />
             <Button refID="NPS_Alaska_Pak_Point_to_Polygon" />
             <Button refID="NPS_Alaska_Pak_Line_to_Rectangle" />
+            <Button refID="NPS_Alaska_Pak_Square_Building" />
             <Button refID="NPS_Alaska_Pak_Polygon_to_Point" />
             <Button refID="esriArcMapUI.GraphicsToFeaturesCommand" />
           </Items>
@@ -184,7 +185,6 @@
             <Menu refID="NPS_Alaska_Pak_Random_Menu" />
             <Button refID="NPS_Alaska_Pak_Set_All_Extents" separator="true" />
             <Button refID="NPS_Alaska_Pak_Animate_Features" />
-            <Button refID="NPS_Alaska_Pak_Square_Building" />
             <Button refID="NPS_Alaska_Pak_Copy_Raster_Symbology" />
             <Menu refID="NPS_Alaska_Pak_Help_Menu" />
           </Items>

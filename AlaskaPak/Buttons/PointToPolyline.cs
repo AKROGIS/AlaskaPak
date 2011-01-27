@@ -8,7 +8,7 @@
 
         protected override void OnClick()
         {
-            Common.ArcToolBox.Invoke("FeatureVerticesToPoints_management");
+            Common.ArcToolBox.Invoke("PointsToLine_management");
         }
     }
 }

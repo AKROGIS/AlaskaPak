@@ -102,8 +102,8 @@
   <ItemGroup>
     <Compile Include="Buttons\AddID.cs" />
     <Compile Include="Buttons\AlaskaPakAbout.cs" />
-    <Compile Include="Buttons\AddAcres.cs" />
-    <Compile Include="Buttons\AddMiles.cs" />
+    <Compile Include="Buttons\AddArea.cs" />
+    <Compile Include="Buttons\AddLength.cs" />
     <Compile Include="Buttons\AddGUID.cs" />
     <Compile Include="Buttons\AddXY.cs" />
     <Compile Include="Buttons\AnimateFeatures.cs" />
