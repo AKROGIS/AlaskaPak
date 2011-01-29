@@ -6,77 +6,226 @@
 
 # Problems:
 #  * None yet.
-
-#Matches string as returned by Field.Type to the type code desired by gp.AddField()
-typeMap = {"SmallInteger" : "SHORT",
-           "Integer" : "LONG",
-           "Single" : "FLOAT",
-           "Double" : "DOUBLE",
-           "String" : "TEXT",
-           "Date" : "DATE",
-           "OID" : "LONG",      #Not usually creatable with AddField() - use with Caution
-           "Geometry" : "BLOB", #Not usually creatable with AddField() - use with Caution
-           "BLOB" : "BLOB"}
-
 # Import system modules
-import sys, string, os, arcgisscripting, datetime
-import random, math
-import time
-
-#Create the geoprocessing objectf
-gp = arcgisscripting.create(9.3)
-
-# Input feature class
-inFeatureClass = gp.GetParameterAsText(0)
-
-#describe the input features (to get the spatial reference and the type of the idField)
-inFcDescription = gp.Describe(inFeatureClass)
-inType = inFcDescription.ShapeType.upper()
-inShapeField = inFcDescription.ShapeFieldName
-
-# Output feature class
-outFeatureClass = gp.GetParameterAsText(1)
-outPath, outName = os.path.split(outFeatureClass)
-
-#validate output
-#The user can control overwrite or not with Tools->Options->geoprocessing...
-#ArcGIS (toolbox or command line) does not do any validation on the output workspace
-if not gp.Exists(outPath):
-    raise ValueError("Error: The output workspace does not exist.")
-
-# Output type - validated as within ['Points','Circles'] by ArcGIS
-outType = gp.GetParameterAsText(2)
-
-minOffset = float(gp.GetParameterAsText(3))
-maxOffset = float(gp.GetParameterAsText(4))
-
-#validate min/max
-if (minOffset < 0):
-    raise ValueError("Error: The minimum offset must be greater than zero.")
-if (maxOffset <= minOffset):
-    raise ValueError("Error: The maximum offset must be greater than the minimum offset")
-
-nogoAreas = gp.GetParameterAsText(5).split(";")
-if nogoAreas[0] == "":
-    nogoAreas = [];
+import sys, string, os, datetime
+import random, math, time
+import arcpy
 
 
-def FixPoint(pt, minOffset, maxOffset, nogoAreas):
-    gp.AddMessage("code pt 1.1")
-    if (pt.Shape.Type.lower() == "point"):
-        array = GetRandomizedPoint(pt.Shape)
-        pt.Shape = array
-    if (pt.Shape.Type.lower() == "multipoint"):
-        array = GetRandomizedArray(pt.Shape)
-        pt.Shape = array
-    gp.AddMessage("code pt 1.2")
+# Maps the string returned by arcpy.Field.type to the string required by
+# arcpy.AddField_management().
+typeMap = {"SmallInteger" : "SHORT",
+           "Integer"      : "LONG",
+           "Single"       : "FLOAT",
+           "Double"       : "DOUBLE",
+           "String"       : "TEXT",
+           "Date"         : "DATE",
+           "OID"          : "LONG",
+           "Geometry"     : "BLOB", 
+           "BLOB"         : "BLOB"}
+
+def ValidateFieldName(arcpy, name, workspace):
+    """This mimics arcpy.ValidateFieldName(), but removes a bug (#NIM064306)
+    If the workspace is a feature dataset, then the field name is not
+    properly validated. The work around is to validate against the
+    geodatabase."""
+    if workspace != None:
+        #avoid arcpy.describe() it is very expensive
+        #desc = arcpy.Describe(workspace)
+        #if desc.dataType == "FeatureDataSet":
+        #    workspace = desc.path
+        #this is a poor solution because '.mdb' and '.gdb' could
+        #be anywhere in a valid path, and only by convention do they
+        #identify a PGDB and FGDB. Nevertheless, it works most of the time.
+        #it is faster to validate against the db than the featuredataset
+        workspace = workspace.lower()
+        if workspace.rfind(".mdb") > 0:
+            workspace = workspace[:workspace.rfind(".mdb")+4]
+        else:
+            if workspace.rfind(".gdb") > 0:
+                workspace = workspace[:workspace.rfind(".gdb")+4]
+    return arcpy.ValidateFieldName(name, workspace)
+
+def MakeFieldMap(arcpy, input, workspace):
+    #create a simple field mapping from input to workspace
+    fields = {}
+    for field in input.fields:
+        name = field.name
+        if (name != input.shapeFieldName and
+            name != input.oidFieldName and  #FIXME - we might want this
+            name != "Shape_length" and name != "Shape_area" ):
+        fields[name] = ValidateFieldName(arcpy, name, workspace)
+    #FIXME, it is possible that there are duplicates
+    #i.e. a shape file may have a field (not the oid) called OBJECTID
+    return fields
+
+def AddFields(arcpy, input, output, fields):
+    for field in input.fields:
+        arcpy.AddField_management(output, fields[field.name], field.type,
+                       field.precision, field.scale, field.length, field.aliasName,
+                       field.isNullable, field.required, field.domain)
     
-def MakeCircle(pt, circle, minOffset, maxOffset, nogoAreas):
-    # Add the new attributes to the feature.
-    # tweak point geometry
-    # create buffer on point
-    # copy all attributes from pt to circle
-    pass
+def CopyAttributes(existingRow, newRow, fields):
+    """existingRow is a row cursor in the existing table
+    newRow is a row in an update cursor on the new table
+    fields is a dictionary mapping names in existing to
+    names in new"""
+    for field in fields:
+        newRow.setValue(fields[field], existingRow.getValue(field))
+
+def validateInput():
+    # Input feature class
+    inFeatureClass = arcpy.GetParameterAsText(0)
+
+    #describe the input features (to get the spatial reference and the type of the idField)
+    inFcDescription = arcpy.Describe(inFeatureClass)
+    inType = inFcDescription.ShapeType.upper()
+    inShapeField = inFcDescription.ShapeFieldName
+
+    # Output feature class
+    outFeatureClass = arcpy.GetParameterAsText(1)
+    outPath, outName = os.path.split(outFeatureClass)
+
+    #validate output
+    #The user can control overwrite or not with Tools->Options->geoprocessing...
+    #ArcGIS (toolbox or command line) does not do any validation on the output workspace
+    if not arcpy.Exists(outPath):
+        raise ValueError("Error: The output workspace does not exist.")
+
+    # Output type - validated as within ['Points','Circles'] by ArcGIS
+    outType = arcpy.GetParameterAsText(2)
+
+    minOffset = float(arcpy.GetParameterAsText(3))
+    maxOffset = float(arcpy.GetParameterAsText(4))
+
+    #validate min/max
+    if (minOffset < 0):
+        raise ValueError("Error: The minimum offset must be greater than zero.")
+    if (maxOffset <= minOffset):
+        raise ValueError("Error: The maximum offset must be greater than the minimum offset")
+
+    nogoAreas = arcpy.GetParameterAsText(5).split(";")
+    if nogoAreas[0] == "":
+        nogoAreas = [];
+
+
+def DoWorkxx(pts, max, min = 0, nogo = None, makeCircle = False):
+    if nogo and len(nogo) > 0:
+        v
+    if pts == point
+        DoWorkSinglePoint(pts, min, max, nogo, makeCircle)
+        return
+    if pts == multipoint
+        DoWorkMultPoint(pts,  min, max, nogo, makeCircle)
+        return
+    raise invalid input
+
+def DoWork(pts, min, max, nogo, makeCircle, isMulti):
+    if nogo:
+        if makeCircle:
+            pass
+        else:
+            pass
+    else:
+        if makeCircle:
+            pass
+        else:
+            pass
+
+
+
+def CreatePoints(arcpy, existing, min, max):
+    """existing is a point or multipoint feature class
+    min = minimum distance of random point from source point in (0,max)
+    max = maximum distance of random point from source point in (min,..)
+    returns a feature class called "in_memory\temp". The caller 
+    is responsible for deleting this feature class when they are done."""
+    newpts = arcpy.FeatureclassToFeatureclass_conversion(existing, "in_memory", "temp")
+    pts = arcpy.updateCursor(newpts)
+    pt = pts.next()
+    while pt != None:
+        if multipoint:
+            pt.shape = GetRandomizedMpoint(arcpy, pt.shape, min, max)
+        else:
+            pt.shape = GetRandomizedPoint(arcpy, pt.shape)
+        pts.updateRow(pt)
+        pt = pts.next()
+    del pt, pts
+    return newpts
+        
+def CreateCircles(arcpy, existing, min, max):
+    """returns a polygon feature class called "in_memory\circles". The
+    caller is responsible for deleting this feature class when they are
+    done. See CreatePoints for more information."""
+    newpts = CreatePoints(arcpy, existing, min, max)
+    circles = arcpy.Buffer_analysis(newpts, "in_memory\\circles", max)
+    arcpy.Delete_management(newpts)
+    del newpts
+    return circles
+
+def GetRandomizedPoint(geom):
+    """ The caller must ensure that point is a arcpy.Point object,
+    or else an exception will surely be thrown.
+    This routine will return the same point object with the
+    X and Y randomly offset."""
+    
+    # A point can be an array of 1 point, or a single point
+    # A multipoint is an array of n (where n > 1) points.
+    
+    if ((geom == None) or (geom.Type.lower() != "point")):
+        return []
+    
+    arcpy.AddMessage("code pt 1.1.1 (point)")
+    pnt = geom.getpart(0)
+    arcpy.AddMessage("code pt 1.1.2")
+    esri_pt =  arcpy.CreateObject("Point")
+    arcpy.AddMessage("code pt 1.1.3")
+    while True:
+        arcpy.AddMessage("code pt 1.1.3.1")
+        newpt = RandomizePoint(pnt.x, pnt.y,minOffset, maxOffset)
+        esri_pt.X,esri_pt.Y = newpt
+        pt_geom = arcpy.createobject("geometry", "point", esri_pt)
+        arcpy.AddMessage("code pt 1.1.3.2")
+        if (NotInNoGo(pt_geom,nogoAreas)):
+            arcpy.AddMessage("break from 1.1.3.2")
+            break
+    
+    return esri_pt
+
+def GetRandomizedMpoint(geom):
+    # A point can be an array of 1 point, or a single point
+    # A multipoint is an array of n (where n > 1) points.
+    
+    if (geom == None) or (geom.Type.lower() not in ["point", "multipoint"]):
+        return []
+    
+    #try:
+    arcpy.AddMessage("code pt 1.1.1 (multipoint)")
+    pts = arcpy.createobject("Array")
+    arcpy.AddMessage("code pt 1.1.2")
+    partnum = 0
+    partcount = geom.partcount
+    arcpy.AddMessage("   part count = " + str(partcount))
+    while partnum < partcount:
+        arcpy.AddMessage("code pt 1.1.3")
+        pnt = geom.getpart(partnum)
+        esri_pt =  arcpy.CreateObject("Point")
+        arcpy.AddMessage("code pt 1.1.4")
+        
+        while True:
+            newpt = RandomizePoint(pnt.x, pnt.y,minOffset, maxOffset)
+            esri_pt.X,esri_pt.Y = newpt
+            pt_geom = arcpy.createobject("geometry", "point", esri_pt)
+            arcpy.AddMessage("code pt 1.1.4.1")
+            if (NotInNoGo(pt_geom,nogoAreas)):
+                arcpy.AddMessage("break from 1.1.4.1")
+                break
+
+        arcpy.AddMessage("code pt 1.1.5")
+        pts.Add(esri_pt)
+        arcpy.AddMessage("code pt 1.1.6")
+        partnum += 1
+    return pts
 
 def RandomizePoint(x,y,r1,r2):
     r = random.uniform(r1,r2)
@@ -85,83 +234,53 @@ def RandomizePoint(x,y,r1,r2):
     y2 = y + r*math.sin(phi)
     return (x2,y2)
 
-def GetRandomizedPoint(geom):
-    # A point can be an array of 1 point, or a single point
-    # A multipoint is an array of n (where n > 1) points.
-    
-    if ((geom == None) or (geom.Type.lower() != "point")):
-        return []
-    
-    gp.AddMessage("code pt 1.1.1 (point)")
-    pnt = geom.getpart(0)
-    gp.AddMessage("code pt 1.1.2")
-    esri_pt =  gp.CreateObject("Point")
-    gp.AddMessage("code pt 1.1.3")
-    while True:
-        gp.AddMessage("code pt 1.1.3.1")
-        newpt = RandomizePoint(pnt.x, pnt.y,minOffset, maxOffset)
-        esri_pt.X,esri_pt.Y = newpt
-        pt_geom = gp.createobject("geometry", "point", esri_pt)
-        gp.AddMessage("code pt 1.1.3.2")
-        if (NotInNoGo(pt_geom,nogoAreas)):
-            gp.AddMessage("break from 1.1.3.2")
-            break
-    
-    return esri_pt
+if __name__ == '__main__':
+    ObscurePoints()
 
-def GetRandomizedArray(geom):
-    # A point can be an array of 1 point, or a single point
-    # A multipoint is an array of n (where n > 1) points.
-    
-    if (geom == None) or (geom.Type.lower() not in ["point", "multipoint"]):
-        return []
-    
-    #try:
-    gp.AddMessage("code pt 1.1.1 (multipoint)")
-    pts = gp.createobject("Array")
-    gp.AddMessage("code pt 1.1.2")
-    partnum = 0
-    partcount = geom.partcount
-    gp.AddMessage("   part count = " + str(partcount))
-    while partnum < partcount:
-        gp.AddMessage("code pt 1.1.3")
-        pnt = geom.getpart(partnum)
-        esri_pt =  gp.CreateObject("Point")
-        gp.AddMessage("code pt 1.1.4")
-        
-        while True:
-            newpt = RandomizePoint(pnt.x, pnt.y,minOffset, maxOffset)
-            esri_pt.X,esri_pt.Y = newpt
-            pt_geom = gp.createobject("geometry", "point", esri_pt)
-            gp.AddMessage("code pt 1.1.4.1")
-            if (NotInNoGo(pt_geom,nogoAreas)):
-                gp.AddMessage("break from 1.1.4.1")
-                break
 
-        gp.AddMessage("code pt 1.1.5")
-        pts.Add(esri_pt)
-        gp.AddMessage("code pt 1.1.6")
-        partnum += 1
-    return pts
+#The rest is garbage    
+
+#clip circles to nogo area
+# this is a bad solution.  centroid in no go area will be mostly
+# eliminated, leaveing a potentially very small part of the circle
+# that is known to contain the "hidden" point.  Need to ensure
+# centroid is not in no go area.
+
+#no longer needed
+def MakeCircle(pt, radius):
+    x,y = RandomizePoint(pt.X,pt.Y,0,radius)
+    ptgeom = arcpy.PointGeometry(arcpy.Point(x,y))
+    empty = arcpy.geometry()
+    circle = arcpy.Buffer_analysis(ptgeom,empty,str(radius))
+    return circle
+  
+#not needed 
+def MakeMultiCircle(pt, circle, minOffset, maxOffset, nogoAreas):
+    arcpy.AddWarning("Unable to make multi circles from multipoint input")
+    return None
 
 def NotInNoGo(pt, FCList):
-    gp.AddMessage("code pt 1.1.4.1.1")
+    arcpy.AddMessage("code pt 1.1.4.1.1")
     if (len(FCList) == 0):
-        gp.AddMessage("code pt 1.1.4.1.2 - empty fc list")
+        arcpy.AddMessage("code pt 1.1.4.1.2 - empty fc list")
         return true;
     for fc in FCList:
-        gp.AddMessage("code pt 1.1.4.1.2")
+        arcpy.AddMessage("code pt 1.1.4.1.2")
         if PointInFC(pt, fc):
-            gp.AddMessage("code pt 1.1.4.1.2 - false")
+            arcpy.AddMessage("code pt 1.1.4.1.2 - false")
             return False
-    gp.AddMessage("code pt 1.1.4.1.3")
+    arcpy.AddMessage("code pt 1.1.4.1.3")
     return True
 
 def PointInFC(pt, fc):
-    outGeom = gp.createobject("geometry")
-    gp.AddMessage("code pt 1.1.4.1.3.1")
+    #Currently this is too expensive an operation to do with GP
+    # so we ignore the no go area and say it is not in the no go area.
+    return false
+
+    outGeom = arcpy.createobject("geometry")
+    arcpy.AddMessage("code pt 1.1.4.1.3.1")
     start = time.time()
-    gp.AddMessage("fc = "+fc+" point = ("+str(pt.getpart(0).X)+","+str(pt.getpart(0).Y)+")")
+    arcpy.AddMessage("fc = "+fc+" point = ("+str(pt.getpart(0).X)+","+str(pt.getpart(0).Y)+")")
     # Clip the point geometry object with the area FC.  The 
     #   resulting geometry is in the NewOutGeom list; outGeom is just a placeholder
     #   to indicate that expected output is a geometry object and not a FC
@@ -171,14 +290,14 @@ def PointInFC(pt, fc):
     #  clip, spatialJoin - work, but are very slow (953 error problems)
     #  identity - works (very slowly ~1.3 second for 1 pt and 10 rectangles), but also always returns a result
     
-    #newOutGeom = gp.clip_analysis(pt, fc, outGeom)
-    #newOutGeom = gp.identity_analysis(pt, fc, outGeom)
-    newOutGeom = gp.erase_analysis(pt, fc, outGeom)
-    #newOutGeom = gp.SpatialJoin_analysis(pt, fc, outGeom, "JOIN_ONE_TO_ONE","KEEP_COMMON","#", "IS_WITHIN")
-    #newOutGeom = gp.Near_analysis(pt, fc, "0")
-    gp.AddMessage("erase took "+str(time.time() - start)+" sec.")
-    gp.AddMessage("code pt 1.1.4.1.3.2")
-    gp.AddMessage("Out Geom = " + str(newOutGeom))
+    #newOutGeom = arcpy.clip_analysis(pt, fc, outGeom)
+    #newOutGeom = arcpy.identity_analysis(pt, fc, outGeom)
+    newOutGeom = arcpy.erase_analysis(pt, fc, outGeom)
+    #newOutGeom = arcpy.SpatialJoin_analysis(pt, fc, outGeom, "JOIN_ONE_TO_ONE","KEEP_COMMON","#", "IS_WITHIN")
+    #newOutGeom = arcpy.Near_analysis(pt, fc, "0")
+    arcpy.AddMessage("erase took "+str(time.time() - start)+" sec.")
+    arcpy.AddMessage("code pt 1.1.4.1.3.2")
+    arcpy.AddMessage("Out Geom = " + str(newOutGeom))
     if (newOutGeom == None or len(newOutGeom) == 0):
         return False
     else:
@@ -189,42 +308,5 @@ def PointInPoly(pt,poly):
 
 
         
-#raise ValueError("Info: ShapeType = " + inType)
 
-if (outType == 'Points'):
-    gp.FeatureclassToFeatureclass_conversion(inFeatureClass, outPath, outName)
-    outFCdesc = gp.describe(outFeatureClass)
-    outShapeField = outFCdesc.ShapeFieldName
-    
-    pts = gp.UpdateCursor(outFeatureClass)
-    pt = pts.Next()
-    while pt != None:
-        gp.AddMessage("code pt 1")
-        FixPoint(pt, minOffset, maxOffset, nogoAreas)
-        gp.AddMessage("code pt 2")
-        pts.UpdateRow(pt)
-        gp.AddMessage("code pt 3")
-        pt = pts.Next()
-        gp.AddMessage("code pt 4")
-    #remove locks
-    del pt
-    del pts
-    
-else:
-    gp.CreateFeatureclass_management(outPath, outName, "POLYGON", inFeatureClass, "#", "SAME_AS_TEMPLATE")
-    outFCdesc = gp.describe(outFeatureClass)
-    outShapeField = outFCdesc.ShapeFieldName
 
-    pts = gp.SearchCursor(inFeatureClass)
-    circles = gp.InsertCursor(outFeatureClass)
-    pt = pts.Next()
-    while pt != None:
-        circle = circles.NewRow()
-        MakeCircle(pt, circle, minOffset, maxOffset, nogoAreas)
-        circles.InsertRow(circle)
-        pt = pts.Next()
-    #remove locks
-    del pt
-    del pts
-    del circle
-    del circles
