@@ -78,11 +78,11 @@ def ObscurePoints():
                                 arcpy.GetParameterAsText(3),
                                 arcpy.GetParameterAsText(4),
                                 arcpy.GetParameterAsText(5))
-    pts, multi, circles, workspace, name, min, max, nogo = cleanParams
+    pts, circles, workspace, name, min, max, nogo = cleanParams
 
     newFC = None    
     if nogo:
-        newFC = DoNoGo(arcpy, pts, multi, circles, min, max, nogo)
+        newFC = DoNoGo(arcpy, pts, circles, min, max, nogo)
     else:
         if circles:
             newFC = CreateCircles(arcpy, pts, min, max)
@@ -143,7 +143,7 @@ def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo):
         min = 0.0
         arcpy.AddMessage("Using a default value of 0.0 for the minimum offset")
     if max in ["","#"]:
-        max = 100.0
+        max = 500.0
         arcpy.AddMessage("Using a default value of 100.0 for the maximum offset")
     try:
         min = float(min)
@@ -191,8 +191,8 @@ def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo):
         sys.exit()
 
     arcpy.AddMessage("Input has been validated.")
-    #print inFC, multi, circles, workspace, name, min, max, nogo
-    return inFC, multi, circles, workspace, name, min, max, nogo
+    #print inFC, circles, workspace, name, min, max, nogo
+    return inFC, circles, workspace, name, min, max, nogo
 
           
 def DoNoGo(arcpy, pts, multi, circles, min, max, nogo):
@@ -251,7 +251,6 @@ def RandomizeGeom(arcpy, geom, min, max):
     """returns None, new pointGeometry or new multipoint
     depending on the input geometry.  Each new point is
     between min and max distance away from the input point"""
-    
     pc = geom.partCount
     if pc == 0:
         return None
