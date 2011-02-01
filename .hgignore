@@ -3,3 +3,4 @@ glob:AlaskaPak/bin
 glob:AlaskaPak/StyleCop.Cache
 glob:AlaskaPak/obj
 glob:AlaskaPak/AlaskaPak.csproj.*
+glob:*.pdf
