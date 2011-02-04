@@ -7,40 +7,74 @@
 # Obscure Points
 #
 # Tags:
-# Building, Offset, Width, Height, Square, Polygon
+# random, sensitive, offset, hide, buffer, obscure
 #
 # Summary:
-# This tool will derive rectangles from lines and associated offsets.
+# Creates a new data set from sensitive point data (like cabins and eagle nests), by adding a random offset to each point, so that the new dataset can be shared with the public.
 #
 # Usage:
-# Use this tool to build a polygon feature class containing rectangles derived from a line feature class.  The line feature class must contain an attribute for each feature which provides the perpendicular distance from the line to the far side of the rectangle.
-#
+# Creates a new data set from sensitive point data (like cabins and eagle nests), by adding a random offset to each point, so that the new dataset can be shared with the public.#
 # Parameter 1:
-# Line_Features
-# The full name of a polyline feature class.  Each line defines the base or first side of a generated rectangle. Each line can have 1 or more parts (i.e. it may be a multi-line), and there may be two or more vertices in each part, however only the first and last vertex of each part are used in the output rectangle.  If the line is a multi-part shape, then the rectangle is also a multi-part shape.  If any line (or part) is degenerate (i.e. a single vertex, or first vertex and last vertext are the same) then that line (or line part) is skipped. If all parts in the line are degenerate then no output is created for that line.
+# Sensitive_Points
+# The full name of a feature class of sensitive points.
+# The input features must be points or multipoints.  However multipoints cannot be used if there are No-Go or Must-Go areas specified.
+# The spatial reference should be a projected system. Calculating distances with a geographic system introduces errors.
 #
 # Parameter 2:
-# Rectangle_Width_Field
-# This is the name of an attribute (column/field) in the line feature class which specifies the width of the rectangle. Width may also be known as offset or height.  Specifically It is the distance perpendicular to the line at which the far side of the rectangle is drawn. If the width is positive, the rectangle is drawn on the right side of the line.  If it is negative it is drawn on the left side.  Right and left are from the prespective of the line looking from the first vertex to the last. The width must be a numeric (integer or real) field, and it must be in the same units/coordinate system as the line feature class. The field name can be either an actual field name, or the alias for the field name.  Actual field names are given priority in case of ambiguity.
+# Obscured_Features
+# The name and location of the feature class to create.
+# If the feature class already exists. You can only overwrite it if you have set that option in the geoprocessing tab in Tools->Options menu.
+# The output coordinate system will be determined by the environment settings. Typically it will default to the same as the input. Click on the Environment... button and then the General Settings tab to check and set the output coordinate system.
+# All attributes of the sensitive features will be copied to these output features. If there is sensitive information in these attributes, then that must be removed separately.
 #
 # Parameter 3:
-# Rectangle_Features
-# The full name of a polygon feature class to create.  Any existing feature class at that path will not be overwritten, and the script will issue an error if the feature class exists (unless the geoprocessing options are set to overwrite output). The output feature class will have the same spatial reference system as the input. If the input feature class has Z or M values then the output will as well, however no Z or M values will be written to the output. All attributes of the line feature class are copied to the output feature class, except Shape, OID, and any non-editable fields (i.e. Shape_Length).
+# Obscured_Feature_Type
+# What kind of output is desired. The default is Points.
+# Points:
+# <image>
+# The output will be a point or multipoint feature class to match the input. With multipoint, each of the individual points will be offset as though the feature class was individual points.
+# Circles:
+# <image>
+# The output feature class will be a circle (polygon) centered at the randomly offset location, with the radius of the circle equal to the Maximum Radius for the offset of center. This guarantees that the real point will fall somewhere in the circle.
+#
+# Parameter 4:
+# Minimum_Offset
+# The mimimum distance that the obscured point will be from the actual point. The default is zero.
+# The measurement units (feet/meters) are the same as the input feature class. If the input is in lat/long (geographic), Then the units are interpreted as meters.
+# <image> with caption: Non-zero minimum offset
+# <image> with caption: Default (0) minimum offset
+#
+# Parameter 5:
+# Maximum_Offset
+# The maximum distance that the obscured point will be from the actual point. The default is 500.
+# The measurement units (feet/meters) are the same as the input feature class. If the input is in lat/long (geographic), Then the units are interpreted as meters.
+#
+# Parameter 6:
+# No_Go_Areas
+# Areas in which points will not be placed. Typically this will be water bodies, but it could be any polygon areas that would not be a logical location for the obscured points.
+# What to do if there is no solution???
+#
+# Parameter 7:
+# Must_Go_Areas
+# Areas in which points must be placed. Typically this will be shorelines or park boundaries, but it could be any polygon areas outside of which would not be a logical location for the obscured points.
+# What to do if there is no solution???
 #
 # Scripting Syntax:
-# Line2Rect(Line_Features, Rectangle_Width_Field, Rectangle_Features)
+# ObscurePoints_AlaskaPak (Sensitive_Points, Obscured_Features, Obscured_Feature_Type, Minimum_Offset, Maximum_Offset, No_Go_Areas, Must_Go_Areas))
 #
 # Example1:
 # Scripting Example
 # The following example shows how this script can be used in another python script, or directly in the ArcGIS Python Window.  It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.
-#  lineFC = r"C:\tmp\gps_lines.shp"
-#  rectFC = r"C:\tmp\test.gdb\park\bldg"
-#  Line2Rect(lineFC, "width", rectFC)
+#  ptFC = r"C:\tmp\gps_lines.shp"
+#  newPtFC = r"C:\tmp\test.gdb\park\bldg"
+#  mustgo = r"C:\tmp\park.shp;c:\tmp\shoreline.shp"
+#  nogo = r"C:\tmp\lakes.shp;c:\tmp\bldgs.shp"
+#  Line2Rect(ptFC, newPtFC, "Circles", 25, 100, nogo, mustgo)
 #
 # Example2:
 # Command Line Example
 # The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
-#  C:\tmp> python Line2Rect.py "c:\tmp\gps_lines.shp" "width" "c:\tmp\test.gdb\park\bldg"
+#  C:\tmp> python ObscurePoints.py c:\tmp\nests.shp c:\tmp\newnests.shp Points 0 100 
 #
 # Credits:
 # Regan Sarwas, Alaska Region GIS Team, National Park Service
@@ -64,7 +98,7 @@
 # ------------------------------------------------------------------------------
 
 # Problems:
-#  * None yet.
+#  Source data canot have a CID field
 
 import sys, os
 import random, math
@@ -77,12 +111,16 @@ def ObscurePoints():
                                 arcpy.GetParameterAsText(2),
                                 arcpy.GetParameterAsText(3),
                                 arcpy.GetParameterAsText(4),
-                                arcpy.GetParameterAsText(5))
-    pts, circles, workspace, name, min, max, nogo = cleanParams
+                                arcpy.GetParameterAsText(5),
+                                arcpy.GetParameterAsText(6))
+    pts, circles, workspace, name, min, max, nogo, mustgo = cleanParams
 
     newFC = None    
-    if nogo:
-        newFC = DoNoGo(arcpy, pts, circles, min, max, nogo)
+    if nogo or mustgo:
+        if circles:
+            newFC = CreateLimitedCircles(arcpy, pts, min, max, nogo, mustgo)
+        else:
+            newFC = CreateLimitedPoints(arcpy, pts, min, max, nogo, mustgo)
     else:
         if circles:
             newFC = CreateCircles(arcpy, pts, min, max)
@@ -93,7 +131,7 @@ def ObscurePoints():
         arcpy.Delete_management(newFC)
         del newFC
 
-def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo):
+def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo, mustgo):
     # validate input feature class
     if inFC in ["","#"]:
         arcpy.AddError("No input feature class specified.")
@@ -134,7 +172,8 @@ def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo):
         if potential.startswith(type.lower()):
             type = potential
     if type not in choices:
-        arcpy.AddError("The output type specified ("+type+") is not in"+choices+".")
+        arcpy.AddError("The output type specified (" + type +
+                       ") is not in" + choices + ".")
         sys.exit()
     circles = (type == 'circles')
     
@@ -148,21 +187,24 @@ def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo):
     try:
         min = float(min)
     except ValueError:
-        arcpy.AddError("The minimum offset specified ("+min+") is not a number.")
+        arcpy.AddError("The minimum offset (" + min + ") is not a number.")
         sys.exit()
     try:
         max = float(max)
     except ValueError:
-        arcpy.AddError("The maximum offset specified ("+max+") is not a number.")
+        arcpy.AddError("The maximum offset (" + max + ") is not a number.")
         sys.exit()
     if (min < 0):
-        arcpy.AddError("The minimum offset specified (" + str(min) + ") is not greater than zero.")
+        arcpy.AddError("The minimum offset specified (" + str(min) +
+                       ") is not greater than zero.")
         sys.exit()
     if (max < min):
-        arcpy.AddError("The maximum offset specified (" + str(max) + ") is not greater than the minimum offset.")
+        arcpy.AddError("The maximum offset specified (" + str(max) +
+                       ") is not greater than the minimum offset.")
         sys.exit()
     if (max == 0):
-        arcpy.AddError("The maximum offset specified (" + str(max) + ") is not greater than zero.")
+        arcpy.AddError("The maximum offset specified (" + str(max) +
+                       ") is not greater than zero.")
         sys.exit()
 
     #validate nogo
@@ -174,32 +216,56 @@ def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo):
     removelist = []
     for fc in nogo:
         if not arcpy.Exists(fc):
-            arcpy.AddMessage("'No-Go' feature class ("+fc+") could not be found - skipping.")
+            arcpy.AddMessage("'No-Go' feature class (" + fc +
+                             ") could not be found - skipping.")
             removelist.append(fc)
+            continue
         desc = arcpy.Describe(fc)
         shape = desc.shapeType.lower()
         if shape not in ['polygon']:
-            arcpy.AddMessage("'No-Go' feature class ("+fc+") is not polygons - skipping.")
+            arcpy.AddMessage("'No-Go' feature class (" + fc +
+                             ") is not polygons - skipping.")
             removelist.append(fc)
     for fc in removelist:
         nogo.remove(fc)
 
-    if nogo and multi:
-        # Not supported because random point in polygon will only put 1 point in a
-        # multipart polygon
-        arcpy.AddError("Cannot use multipoint input when No-Go areas are specified.")
+    #validate mustgo
+    mustgo = mustgo.split(";")
+    for junk in [";","#",""," "]:
+        while mustgo.count(junk) > 0:
+            mustgo.remove(junk)
+    mustgo = list(set(mustgo)) #removes redundant feature classes
+    removelist = []
+    for fc in mustgo:
+        if not arcpy.Exists(fc):
+            arcpy.AddMessage("'Must-Go' feature class (" + fc +
+                             ") could not be found - skipping.")
+            removelist.append(fc)
+            continue
+        desc = arcpy.Describe(fc)
+        shape = desc.shapeType.lower()
+        if shape not in ['polygon']:
+            arcpy.AddMessage("'Must-Go' feature class (" + fc +
+                             ") is not polygons - skipping.")
+            removelist.append(fc)
+    for fc in removelist:
+        mustgo.remove(fc)
+
+    if (nogo or mustgo) and multi:
+        # Not supported because random point in polygon will only put 1
+        # point in a multipart polygon
+        arcpy.AddError("Cannot use multipoint input when No-Go or Must-Go " +
+                       " areas are specified.")
         sys.exit()
 
     arcpy.AddMessage("Input has been validated.")
-    #print inFC, circles, workspace, name, min, max, nogo
-    return inFC, circles, workspace, name, min, max, nogo
+    #print inFC, circles, workspace, name, min, max, nogo, mustgo
+    return inFC, circles, workspace, name, min, max, nogo, mustgo
 
           
-def DoNoGo(arcpy, pts, multi, circles, min, max, nogo):
-    arcpy.AddError("No-Go areas are not supported yet.")
-    return None
-    #It is very slow to create a random point, then check it against a no-go area
-    #New strategy:
+def CreateLimitedPoints(arcpy, pts, min, max, nogo, mustgo):
+    #It is very slow to create a random point, then check it against
+    #a no-go area.  The New strategy is:
     # buffer each input point with the max offset
     # erase with a buffer of each point with min offset (if not 0)
     # erase with each polygon in no go
@@ -208,26 +274,54 @@ def DoNoGo(arcpy, pts, multi, circles, min, max, nogo):
     allowed = arcpy.Buffer_analysis(pts,"in_memory\\allow",max)
     if min > 0:
         minbuf = arcpy.Buffer_analysis(pts,"in_memory\\minbuf",min)
-        allowed = arcpy.Erase_analysis(allowed, minbuf, "in_memory\\allow")
+        erase1 = arcpy.Erase_analysis(allowed, minbuf, "in_memory\\erase1")
+        arcpy.Delete_management(allowed)
         arcpy.Delete_management(minbuf)
         del minbuf
+        allowed = erase1
+    index = 0
     for fc in nogo:
-        allowed = arcpy.Erase_analysis(allowed, fc, "in_memory\\allow")
-    pts = arcpy.CreateRandomPoints_management("in_memory", "pts", allowed, "", 1, "", "POINT", "")
-    #join allowed to pts
+        newAllowed = arcpy.Erase_analysis(allowed, fc,
+                                          "in_memory\\allow"+ str(index))
+        index = index + 1
+        arcpy.Delete_management(allowed)
+        allowed = newAllowed
+    for fc in mustgo:
+        newAllowed = arcpy.Clip_analysis(allowed, fc,
+                                         "in_memory\\allow"+ str(index))
+        index = index + 1
+        arcpy.Delete_management(allowed)
+        allowed = newAllowed
+        
+    newpts = arcpy.CreateRandomPoints_management("in_memory", "pts", allowed, 
+                                                 "", 1, "", "POINT", "")
+
+    #CID is an attribute created by CreateRandomPoints to tie back to source
+    d = arcpy.Describe(allowed)
+    arcpy.JoinField_management (newpts, "CID", allowed, d.OIDFieldName)
+    arcpy.DeleteField_management(newpts, "CID")
     arcpy.Delete_management(allowed)
     del allowed
-    if circles:
-        pts = arcpy.Buffer_analysis(newpts, "in_memory\\pts", max)
-    return pts
+    return newpts
     
+def CreateLimitedCircles(arcpy, pts, min, max, nogo, mustgo):
+    """returns a polygon feature class called "in_memory\circles". The
+    caller is responsible for deleting this feature class when they are
+    done. See CreatePoints for more information."""
+    newpts = CreateLimitedPoints(arcpy, pts, min, max, nogo, mustgo)
+    circles = arcpy.Buffer_analysis(newpts, "in_memory\\circles", max)
+    arcpy.Delete_management(newpts)
+    del newpts
+    return circles
+
 def CreatePoints(arcpy, existing, min, max):
     """existing is a point or multipoint feature class
     min = minimum distance of random point from source point in (0,max)
     max = maximum distance of random point from source point in (min,..)
     returns a feature class called "in_memory\temp". The caller 
     is responsible for deleting this feature class when they are done."""
-    newpts = arcpy.FeatureClassToFeatureClass_conversion(existing, "in_memory", "temp")
+    newpts = arcpy.FeatureClassToFeatureClass_conversion(existing,
+                                                         "in_memory", "temp")
     pts = arcpy.UpdateCursor(newpts)
     pt = pts.next()
     while pt != None:
