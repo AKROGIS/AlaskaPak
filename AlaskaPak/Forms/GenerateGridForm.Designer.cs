@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GenerateGridForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.browseSpatialRefButton = new System.Windows.Forms.Button();
+            this.spatialReferenceTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.yMinTextBox = new System.Windows.Forms.TextBox();
@@ -40,6 +42,7 @@
             this.yMaxTextBox = new System.Windows.Forms.TextBox();
             this.xMaxTextBox = new System.Windows.Forms.TextBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.quantityBox = new System.Windows.Forms.GroupBox();
             this.yCountTextBox = new System.Windows.Forms.TextBox();
@@ -64,9 +67,6 @@
             this.outputPathTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.browseButton = new System.Windows.Forms.Button();
-            this.label12 = new System.Windows.Forms.Label();
-            this.browseSpatialRefButton = new System.Windows.Forms.Button();
-            this.spatialReferenceTextBox = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -84,7 +84,7 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Location = new System.Drawing.Point(15, 12);
+            this.tabControl1.Location = new System.Drawing.Point(15, 11);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(427, 330);
@@ -111,6 +111,27 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Extents";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // browseSpatialRefButton
+            // 
+            this.browseSpatialRefButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.browseSpatialRefButton.Location = new System.Drawing.Point(390, 272);
+            this.browseSpatialRefButton.Name = "browseSpatialRefButton";
+            this.browseSpatialRefButton.Size = new System.Drawing.Size(23, 23);
+            this.browseSpatialRefButton.TabIndex = 20;
+            this.browseSpatialRefButton.Text = "...";
+            this.browseSpatialRefButton.UseVisualStyleBackColor = true;
+            // 
+            // spatialReferenceTextBox
+            // 
+            this.spatialReferenceTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.spatialReferenceTextBox.Location = new System.Drawing.Point(6, 273);
+            this.spatialReferenceTextBox.Name = "spatialReferenceTextBox";
+            this.spatialReferenceTextBox.ReadOnly = true;
+            this.spatialReferenceTextBox.Size = new System.Drawing.Size(378, 23);
+            this.spatialReferenceTextBox.TabIndex = 19;
+            this.spatialReferenceTextBox.Text = "Alaska Albers NAD 83";
             // 
             // label5
             // 
@@ -189,6 +210,15 @@
             this.pictureBox2.Size = new System.Drawing.Size(179, 179);
             this.pictureBox2.TabIndex = 9;
             this.pictureBox2.TabStop = false;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 255);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(100, 15);
+            this.label12.TabIndex = 18;
+            this.label12.Text = "Spatial Reference:";
             // 
             // tabPage2
             // 
@@ -369,7 +399,7 @@
             // 
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(417, 325);
+            this.tabPage3.Size = new System.Drawing.Size(419, 302);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Labels";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -378,7 +408,7 @@
             // 
             this.tabPage4.Location = new System.Drawing.Point(4, 24);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(417, 325);
+            this.tabPage4.Size = new System.Drawing.Size(419, 302);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Advanced";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -435,36 +465,6 @@
             this.browseButton.Text = "...";
             this.browseButton.UseVisualStyleBackColor = true;
             this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 255);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(100, 15);
-            this.label12.TabIndex = 18;
-            this.label12.Text = "Spatial Reference:";
-            // 
-            // browseSpatialRefButton
-            // 
-            this.browseSpatialRefButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.browseSpatialRefButton.Location = new System.Drawing.Point(390, 272);
-            this.browseSpatialRefButton.Name = "browseSpatialRefButton";
-            this.browseSpatialRefButton.Size = new System.Drawing.Size(23, 23);
-            this.browseSpatialRefButton.TabIndex = 20;
-            this.browseSpatialRefButton.Text = "...";
-            this.browseSpatialRefButton.UseVisualStyleBackColor = true;
-            // 
-            // spatialReferenceTextBox
-            // 
-            this.spatialReferenceTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.spatialReferenceTextBox.Location = new System.Drawing.Point(6, 273);
-            this.spatialReferenceTextBox.Name = "spatialReferenceTextBox";
-            this.spatialReferenceTextBox.ReadOnly = true;
-            this.spatialReferenceTextBox.Size = new System.Drawing.Size(378, 23);
-            this.spatialReferenceTextBox.TabIndex = 19;
-            this.spatialReferenceTextBox.Text = "Alaska Albers NAD 83";
             // 
             // GenerateGridForm
             // 

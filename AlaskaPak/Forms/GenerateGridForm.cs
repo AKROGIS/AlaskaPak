@@ -40,5 +40,13 @@ namespace NPS.AKRO.ArcGIS.Forms
         {
 
         }
+
+        public void UpdateExtents(double x1, double y1, double x2, double y2)
+        {
+            xMinTextBox.Text = x1.ToString();
+            xMaxTextBox.Text = x2.ToString();
+            yMinTextBox.Text = y1.ToString();
+            yMaxTextBox.Text = y2.ToString();
+        }
     }
 }
