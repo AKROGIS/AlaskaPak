@@ -61,18 +61,36 @@
             this.quantityRadioButton = new System.Windows.Forms.RadioButton();
             this.sizeRadioButton = new System.Windows.Forms.RadioButton();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label20 = new System.Windows.Forms.Label();
+            this.pageNumberComboBox = new System.Windows.Forms.ComboBox();
+            this.delimiterTextBox = new System.Windows.Forms.TextBox();
+            this.conventionComboBox = new System.Windows.Forms.ComboBox();
+            this.columnStyleComboBox = new System.Windows.Forms.ComboBox();
+            this.suffixTextBox = new System.Windows.Forms.TextBox();
+            this.ExampleTextBox = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.rowStyleComboBox = new System.Windows.Forms.ComboBox();
+            this.prefixTextBox = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.generateButton = new System.Windows.Forms.Button();
+            this.applyButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.outputPathTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.browseButton = new System.Windows.Forms.Button();
+            this.saveButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.quantityBox.SuspendLayout();
             this.sizeBox.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -157,7 +175,7 @@
             this.yMinTextBox.Name = "yMinTextBox";
             this.yMinTextBox.Size = new System.Drawing.Size(75, 23);
             this.yMinTextBox.TabIndex = 15;
-            this.yMinTextBox.TextChanged += new System.EventHandler(this.numericTextBox_TextChanged);
+            this.yMinTextBox.TextChanged += new System.EventHandler(this.doubleTextBox_TextChanged);
             // 
             // xMinTextBox
             // 
@@ -165,7 +183,7 @@
             this.xMinTextBox.Name = "xMinTextBox";
             this.xMinTextBox.Size = new System.Drawing.Size(75, 23);
             this.xMinTextBox.TabIndex = 14;
-            this.xMinTextBox.TextChanged += new System.EventHandler(this.numericTextBox_TextChanged);
+            this.xMinTextBox.TextChanged += new System.EventHandler(this.doubleTextBox_TextChanged);
             // 
             // label7
             // 
@@ -191,7 +209,7 @@
             this.yMaxTextBox.Name = "yMaxTextBox";
             this.yMaxTextBox.Size = new System.Drawing.Size(75, 23);
             this.yMaxTextBox.TabIndex = 11;
-            this.yMaxTextBox.TextChanged += new System.EventHandler(this.numericTextBox_TextChanged);
+            this.yMaxTextBox.TextChanged += new System.EventHandler(this.doubleTextBox_TextChanged);
             // 
             // xMaxTextBox
             // 
@@ -199,7 +217,7 @@
             this.xMaxTextBox.Name = "xMaxTextBox";
             this.xMaxTextBox.Size = new System.Drawing.Size(75, 23);
             this.xMaxTextBox.TabIndex = 10;
-            this.xMaxTextBox.TextChanged += new System.EventHandler(this.numericTextBox_TextChanged);
+            this.xMaxTextBox.TextChanged += new System.EventHandler(this.doubleTextBox_TextChanged);
             // 
             // pictureBox2
             // 
@@ -242,7 +260,6 @@
             this.quantityBox.Controls.Add(this.xCountTextBox);
             this.quantityBox.Controls.Add(this.label11);
             this.quantityBox.Controls.Add(this.label10);
-            this.quantityBox.Enabled = false;
             this.quantityBox.Location = new System.Drawing.Point(9, 210);
             this.quantityBox.Name = "quantityBox";
             this.quantityBox.Size = new System.Drawing.Size(222, 87);
@@ -256,6 +273,7 @@
             this.yCountTextBox.Name = "yCountTextBox";
             this.yCountTextBox.Size = new System.Drawing.Size(100, 23);
             this.yCountTextBox.TabIndex = 11;
+            this.yCountTextBox.TextChanged += new System.EventHandler(this.integerTextBox_TextChanged);
             // 
             // xCountTextBox
             // 
@@ -263,7 +281,7 @@
             this.xCountTextBox.Name = "xCountTextBox";
             this.xCountTextBox.Size = new System.Drawing.Size(100, 23);
             this.xCountTextBox.TabIndex = 10;
-            this.xCountTextBox.TextChanged += new System.EventHandler(this.numericTextBox_TextChanged);
+            this.xCountTextBox.TextChanged += new System.EventHandler(this.integerTextBox_TextChanged);
             // 
             // label11
             // 
@@ -304,7 +322,8 @@
             this.widthTextBox.Name = "widthTextBox";
             this.widthTextBox.Size = new System.Drawing.Size(100, 23);
             this.widthTextBox.TabIndex = 5;
-            this.widthTextBox.TextChanged += new System.EventHandler(this.numericTextBox_TextChanged);
+            this.widthTextBox.TextChanged += new System.EventHandler(this.doubleTextBox_TextChanged);
+            this.widthTextBox.Leave += new System.EventHandler(this.sizeTextBox_Leave);
             // 
             // label3
             // 
@@ -330,7 +349,8 @@
             this.heightTextBox.Name = "heightTextBox";
             this.heightTextBox.Size = new System.Drawing.Size(100, 23);
             this.heightTextBox.TabIndex = 6;
-            this.heightTextBox.TextChanged += new System.EventHandler(this.numericTextBox_TextChanged);
+            this.heightTextBox.TextChanged += new System.EventHandler(this.doubleTextBox_TextChanged);
+            this.heightTextBox.Leave += new System.EventHandler(this.sizeTextBox_Leave);
             // 
             // unitsComboBox
             // 
@@ -394,15 +414,192 @@
             this.sizeRadioButton.TabStop = true;
             this.sizeRadioButton.Text = "Size and Extents";
             this.sizeRadioButton.UseVisualStyleBackColor = true;
+            this.sizeRadioButton.CheckedChanged += new System.EventHandler(this.sizeRadioButton_CheckedChanged);
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.label20);
+            this.tabPage3.Controls.Add(this.pageNumberComboBox);
+            this.tabPage3.Controls.Add(this.delimiterTextBox);
+            this.tabPage3.Controls.Add(this.conventionComboBox);
+            this.tabPage3.Controls.Add(this.columnStyleComboBox);
+            this.tabPage3.Controls.Add(this.suffixTextBox);
+            this.tabPage3.Controls.Add(this.ExampleTextBox);
+            this.tabPage3.Controls.Add(this.label19);
+            this.tabPage3.Controls.Add(this.label18);
+            this.tabPage3.Controls.Add(this.label17);
+            this.tabPage3.Controls.Add(this.label16);
+            this.tabPage3.Controls.Add(this.label15);
+            this.tabPage3.Controls.Add(this.label14);
+            this.tabPage3.Controls.Add(this.label13);
+            this.tabPage3.Controls.Add(this.rowStyleComboBox);
+            this.tabPage3.Controls.Add(this.prefixTextBox);
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(419, 302);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Labels";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(3, 212);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(100, 15);
+            this.label20.TabIndex = 15;
+            this.label20.Text = "Page Numbering:";
+            // 
+            // pageNumberComboBox
+            // 
+            this.pageNumberComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.pageNumberComboBox.FormattingEnabled = true;
+            this.pageNumberComboBox.Items.AddRange(new object[] {
+            "Left to Right then Top to Bottom",
+            "Left to Right then Bottom to Top",
+            "Top to Bottom then Left to Right",
+            "Bottom to Top then Left to Right"});
+            this.pageNumberComboBox.Location = new System.Drawing.Point(119, 209);
+            this.pageNumberComboBox.Name = "pageNumberComboBox";
+            this.pageNumberComboBox.Size = new System.Drawing.Size(187, 23);
+            this.pageNumberComboBox.TabIndex = 14;
+            // 
+            // delimiterTextBox
+            // 
+            this.delimiterTextBox.Location = new System.Drawing.Point(119, 93);
+            this.delimiterTextBox.Name = "delimiterTextBox";
+            this.delimiterTextBox.Size = new System.Drawing.Size(187, 23);
+            this.delimiterTextBox.TabIndex = 13;
+            this.delimiterTextBox.TextChanged += new System.EventHandler(this.applyButton_Click);
+            // 
+            // conventionComboBox
+            // 
+            this.conventionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.conventionComboBox.FormattingEnabled = true;
+            this.conventionComboBox.Items.AddRange(new object[] {
+            "Row-Column",
+            "Column-Row"});
+            this.conventionComboBox.Location = new System.Drawing.Point(119, 6);
+            this.conventionComboBox.Name = "conventionComboBox";
+            this.conventionComboBox.Size = new System.Drawing.Size(187, 23);
+            this.conventionComboBox.TabIndex = 12;
+            this.conventionComboBox.SelectedIndexChanged += new System.EventHandler(this.applyButton_Click);
+            // 
+            // columnStyleComboBox
+            // 
+            this.columnStyleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.columnStyleComboBox.FormattingEnabled = true;
+            this.columnStyleComboBox.Items.AddRange(new object[] {
+            "Uppercase Alphabetic (A..Z,AA..AZ,BA..BZ,...)",
+            "Lowercase Alphabetic (a..z,aa..az,ba..bz,...)",
+            "Integer (1,2,3,...)",
+            "Zero padded Integers (01,02,03,...)"});
+            this.columnStyleComboBox.Location = new System.Drawing.Point(119, 122);
+            this.columnStyleComboBox.Name = "columnStyleComboBox";
+            this.columnStyleComboBox.Size = new System.Drawing.Size(187, 23);
+            this.columnStyleComboBox.TabIndex = 11;
+            this.columnStyleComboBox.SelectedIndexChanged += new System.EventHandler(this.applyButton_Click);
+            // 
+            // suffixTextBox
+            // 
+            this.suffixTextBox.Location = new System.Drawing.Point(119, 151);
+            this.suffixTextBox.Name = "suffixTextBox";
+            this.suffixTextBox.Size = new System.Drawing.Size(187, 23);
+            this.suffixTextBox.TabIndex = 10;
+            this.suffixTextBox.TextChanged += new System.EventHandler(this.applyButton_Click);
+            // 
+            // ExampleTextBox
+            // 
+            this.ExampleTextBox.Location = new System.Drawing.Point(119, 180);
+            this.ExampleTextBox.Name = "ExampleTextBox";
+            this.ExampleTextBox.Size = new System.Drawing.Size(187, 23);
+            this.ExampleTextBox.TabIndex = 9;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(3, 183);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(80, 15);
+            this.label19.TabIndex = 8;
+            this.label19.Text = "Example (3,5):";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(3, 154);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(39, 15);
+            this.label18.TabIndex = 7;
+            this.label18.Text = "Suffix:";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(3, 9);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(72, 15);
+            this.label17.TabIndex = 6;
+            this.label17.Text = "Convention:";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(3, 125);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(81, 15);
+            this.label16.TabIndex = 5;
+            this.label16.Text = "Column Style:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(3, 67);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(61, 15);
+            this.label15.TabIndex = 4;
+            this.label15.Text = "Row Style:";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(3, 96);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(58, 15);
+            this.label14.TabIndex = 3;
+            this.label14.Text = "Delimiter:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(3, 38);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(39, 15);
+            this.label13.TabIndex = 2;
+            this.label13.Text = "Prefix:";
+            // 
+            // rowStyleComboBox
+            // 
+            this.rowStyleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.rowStyleComboBox.FormattingEnabled = true;
+            this.rowStyleComboBox.Items.AddRange(new object[] {
+            "Uppercase Alphabetic (A..Z,AA..AZ,BA..BZ,...)",
+            "Lowercase Alphabetic (a..z,aa..az,ba..bz,...)",
+            "Integer (1,2,3,...)",
+            "Zero padded Integers (01,02,03,...)"});
+            this.rowStyleComboBox.Location = new System.Drawing.Point(119, 64);
+            this.rowStyleComboBox.Name = "rowStyleComboBox";
+            this.rowStyleComboBox.Size = new System.Drawing.Size(187, 23);
+            this.rowStyleComboBox.TabIndex = 1;
+            this.rowStyleComboBox.SelectedIndexChanged += new System.EventHandler(this.applyButton_Click);
+            // 
+            // prefixTextBox
+            // 
+            this.prefixTextBox.Location = new System.Drawing.Point(119, 35);
+            this.prefixTextBox.Name = "prefixTextBox";
+            this.prefixTextBox.Size = new System.Drawing.Size(187, 23);
+            this.prefixTextBox.TabIndex = 0;
+            this.prefixTextBox.TextChanged += new System.EventHandler(this.applyButton_Click);
             // 
             // tabPage4
             // 
@@ -413,16 +610,16 @@
             this.tabPage4.Text = "Advanced";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // generateButton
+            // applyButton
             // 
-            this.generateButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.generateButton.Location = new System.Drawing.Point(286, 397);
-            this.generateButton.Name = "generateButton";
-            this.generateButton.Size = new System.Drawing.Size(75, 23);
-            this.generateButton.TabIndex = 11;
-            this.generateButton.Text = "Ok";
-            this.generateButton.UseVisualStyleBackColor = true;
-            this.generateButton.Click += new System.EventHandler(this.generateButton_Click);
+            this.applyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.applyButton.Location = new System.Drawing.Point(286, 397);
+            this.applyButton.Name = "applyButton";
+            this.applyButton.Size = new System.Drawing.Size(75, 23);
+            this.applyButton.TabIndex = 11;
+            this.applyButton.Text = "Apply";
+            this.applyButton.UseVisualStyleBackColor = true;
+            this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
             // 
             // cancelButton
             // 
@@ -466,17 +663,27 @@
             this.browseButton.UseVisualStyleBackColor = true;
             this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
+            // saveButton
+            // 
+            this.saveButton.Location = new System.Drawing.Point(205, 396);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(75, 23);
+            this.saveButton.TabIndex = 16;
+            this.saveButton.Text = "Save";
+            this.saveButton.UseVisualStyleBackColor = true;
+            // 
             // GenerateGridForm
             // 
-            this.AcceptButton = this.generateButton;
+            this.AcceptButton = this.applyButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(454, 432);
+            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.browseButton);
             this.Controls.Add(this.outputPathTextBox);
             this.Controls.Add(this.cancelButton);
-            this.Controls.Add(this.generateButton);
+            this.Controls.Add(this.applyButton);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -493,6 +700,8 @@
             this.quantityBox.PerformLayout();
             this.sizeBox.ResumeLayout(false);
             this.sizeBox.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -514,7 +723,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.Button generateButton;
+        private System.Windows.Forms.Button applyButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.TextBox outputPathTextBox;
         private System.Windows.Forms.Label label1;
@@ -538,6 +747,23 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Button browseSpatialRefButton;
         private System.Windows.Forms.TextBox spatialReferenceTextBox;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.TextBox delimiterTextBox;
+        private System.Windows.Forms.ComboBox conventionComboBox;
+        private System.Windows.Forms.ComboBox columnStyleComboBox;
+        private System.Windows.Forms.TextBox suffixTextBox;
+        private System.Windows.Forms.TextBox ExampleTextBox;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ComboBox rowStyleComboBox;
+        private System.Windows.Forms.TextBox prefixTextBox;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.ComboBox pageNumberComboBox;
 
     }
 }

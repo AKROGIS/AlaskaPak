@@ -22,7 +22,7 @@ namespace NPS.AKRO.ArcGIS
             _controller = AlaskaPak.Controller;
             //_controller.LayersChanged += Controller_LayersChanged;
             //_selectableLayers = _controller.GetSelectableLayers();
-            Enabled = CheckForCoordinateSystem();
+            Enabled = CheckForCoordinateSystem(); 
         }
 
         protected override void OnMouseDown(MouseEventArgs arg)
@@ -32,14 +32,16 @@ namespace NPS.AKRO.ArcGIS
                 IEnvelope env = GetExtents();
                 if (_form != null) //User may click when form is already loaded.
                 {
-                    _form.Activate();
                     UpdateForm(env);
+                    _form.Activate();
                 }
                 else
                 {
+                    IndexGrid grid = new IndexGrid(env);
                     _form = new GenerateGridForm();
                     //_form.SelectedLayer += Form_SelectedLayer;
                     _form.FormClosed += Form_Closed;
+                    _form.Grid = grid;
                     UpdateForm(env);
                     _form.Show();
                 }
@@ -62,7 +64,12 @@ namespace NPS.AKRO.ArcGIS
 
         private void UpdateForm(IEnvelope env)
         {
-            _form.UpdateExtents(env.XMin, env.YMin, env.XMax, env.YMax);
+            //_form.UpdateExtents(env.XMin, env.YMin, env.XMax, env.YMax);
+            _form.Grid.Map = ArcMap.Document.ActiveView.FocusMap;
+            _form.Grid.Extents = env;
+            _form.Grid.AdjustSize();
+            _form.Grid.Draw();
+            _form.UpdateFromGrid();
         }
 
         private IEnvelope GetExtents()
@@ -100,14 +107,93 @@ namespace NPS.AKRO.ArcGIS
         AdjustCountThenAdjustSize
     }
 
-    class IndexGrid
+    public enum IndexGridLabelOrder
+    {
+        RowFirst,
+        ColumnFirst,
+    }
+    public enum IndexGridLabelStyle
+    {
+        UpperCaseAlphabetic,
+        LowerCaseAlphabetic,
+        NumericWithoutZeroPadding,
+        NumericWithZeroPadding,
+    }
+
+    public enum IndexGridPageNumbering
+    {
+        LeftToRightThenTopToBottom,
+        LeftToRightThenBottomToTop,
+        TopToBottomThenLeftToRight,
+        BottomToTopThenLeftToRight,
+    }
+
+    public class IndexGrid
     {
         public IndexGrid()
         {
-            CellSize = new SizeF(1000f, 1000f);
-            CellCount = new Size(10,10);
-            Extents = new RectangleF(0f,0f,10000f,10000f);
+            RowCount = 18;
+            ColumnCount = 22;
+            RowHeight = 1000;
+            ColumnWidth = 1000;
+            Suffix = "";
+            Prefix = "";
+            Delimiter = "-";
+            LabelOrder = IndexGridLabelOrder.RowFirst;
+            RowLabelStyle = IndexGridLabelStyle.UpperCaseAlphabetic;
+            ColumnLabelStyle = IndexGridLabelStyle.NumericWithZeroPadding;
+            PageNumbering = IndexGridPageNumbering.LeftToRightThenTopToBottom;
         }
+
+        public IndexGrid(IEnvelope env):this()
+        {
+            Extents = env;
+            AdjustSize();
+        }
+
+        public IEnvelope Extents { get; set; }
+
+        public int RowCount { get; set; }
+        public int ColumnCount { get; set; }
+        public double RowHeight { get; set; }
+        public double ColumnWidth { get; set; }
+        public string Prefix { get; set; }
+        public string Suffix { get; set; }
+        public string Delimiter { get; set; }
+        public IndexGridLabelOrder LabelOrder { get; set; }
+        public IndexGridLabelStyle RowLabelStyle { get; set; }
+        public IndexGridLabelStyle ColumnLabelStyle { get; set; }
+        public IndexGridPageNumbering PageNumbering { get; set; }
+
+
+
+        //row name style
+        //column name style
+        //feature class (for existing)
+        //spatial reference (for new)
+        //need spatial ref of display
+        //need draw method
+
+
+        public IMap Map
+        {
+            get
+            {
+                return _map;
+            }
+            set
+            {
+                if (_map != value)
+                {
+                    if (_map != null)
+                        ((IGraphicsContainer)_map).DeleteElement(_group as IElement);
+                    _map = value;
+                    ((IGraphicsContainer)_map).AddElement(_group as IElement, 0);
+                }
+            }
+        }
+        private IMap _map;
+
 
         static IndexGrid From(IFeatureLayer fl)
         {
@@ -124,79 +210,196 @@ namespace NPS.AKRO.ArcGIS
             throw new NotImplementedException();
         }
 
-        //row name style
-        //column name style
-        //feature class (for existing)
-        //spatial reference (for new)
-        //need spatial ref of display
-        //need draw method
 
-        public RectangleF Extents { get; set; }
-
-        public Size CellCount { get; set; }
-
-        public SizeF CellSize { get; set; }
-
-        public Size CalcCount()
-        {
-            int x = (int)(Extents.Width / CellSize.Width);
-            int y = (int)(Extents.Height / CellSize.Height);
-            return new Size(x, y);
-        }
-
-        public SizeF CalcSize()
-        {
-            float w = Extents.Width / CellCount.Width;
-            float h = Extents.Height / CellCount.Height;
-            return new SizeF(w, h);
-        }
-
-        public RectangleF CalcExtents()
-        {
-            float widthDiff = (CellSize.Width * CellCount.Width) - Extents.Width;
-            float heightDiff = CellSize.Height * CellCount.Height;
-            return RectangleF.Inflate(Extents, widthDiff, heightDiff);
-        }
 
         public bool isValid
         {
             get
             {
-                if (CellCount.Width < 1 || CellCount.Height < 1)
+                if (ColumnCount < 1 || RowCount < 1)
                     return false;
-                if (CellSize.Width < 0 || CellSize.Height < 0)
+                if (ColumnWidth < 0 || RowHeight < 0)
                     return false;
                 if (Extents.IsEmpty)
                     return false;
-                if (CellCount.Width * CellSize.Width == Extents.Size.Width ||
-                    CellCount.Height * CellSize.Height == Extents.Size.Height)
+                if (ColumnCount * ColumnWidth == Extents.Width ||
+                    RowCount * RowHeight == Extents.Height)
                     return true;
                 else
                     return false;
             }
         }
 
-        void AdjustSize()
+        public void AdjustSize()
         {
-            CellSize = CalcSize();
+            ColumnWidth = Extents.Width / ColumnCount;
+            RowHeight = Extents.Height / RowCount;
         }
 
-        void AdjustExtents()
+        public void AdjustExtents()
         {
-            Extents = CalcExtents();
+            if (Extents == null)
+                return;
+            double widthDiff = ((ColumnWidth * ColumnCount) - Extents.Width) / 2.0;
+            double heightDiff = ((RowHeight * RowCount) - Extents.Height) / 2.0;
+            Extents.Expand(widthDiff, heightDiff, false);
         }
 
-        void AdjustCountThenSize()
+        public void AdjustCountThenSize()
         {
-            CellCount = CalcCount();
-            CellSize = CalcSize();
+            AdjustCount();
+            AdjustSize();
         }
 
-        void AdjustCountThenExtents()
+        public void AdjustCountThenExtents()
         {
-            CellCount = CalcCount();
-            Extents = CalcExtents();
+            AdjustCount();
+            AdjustExtents();
         }
+
+        private void AdjustCount()
+        {
+            ColumnCount = (int)(Extents.Width / ColumnWidth);
+            RowCount = (int)(Extents.Height / RowHeight);
+        }
+
+        public string GetLabel(int row, int column)
+        {
+            if (LabelOrder == IndexGridLabelOrder.RowFirst)
+                return Prefix + GetLabel(RowCount - 1 - row, RowLabelStyle, RowCount) + Delimiter + GetLabel(column, ColumnLabelStyle, ColumnCount) + Suffix;
+            if (LabelOrder == IndexGridLabelOrder.ColumnFirst)
+                return Prefix + GetLabel(column, ColumnLabelStyle, ColumnCount) + Delimiter + GetLabel(RowCount - 1 - row, RowLabelStyle, RowCount) + Suffix;
+            throw new ArgumentException("LabelOrder");
+        }
+
+        private string GetLabel(int index, IndexGridLabelStyle labelStyle, int max)
+        {
+            switch (labelStyle)
+            {
+                case IndexGridLabelStyle.LowerCaseAlphabetic:
+                    //Express in base 26: a..z,aa..az,ba..bz...  bc = 2*26 + 2
+                    //Assume less than 26^2 (676) cells
+                    if (index < 26)
+                        return string.Format("{0}", Convert.ToChar(97 + index));
+                    if (index < 26 * 26)
+                        return string.Format("{0}{1}", Convert.ToChar(97 + (index / 26)), Convert.ToChar(97 + (index % 26)));
+                    if (index < 26 * 26 * 26)
+                    {
+                        int basis = 26 * 26;
+                        return string.Format("{0}{1}{2}", Convert.ToChar(97 + (index / basis)), Convert.ToChar(97 + ((index % basis) / 26)), Convert.ToChar(97 + (index % 26)));
+                    }
+                    return "OutOfBounds";
+                case IndexGridLabelStyle.UpperCaseAlphabetic:
+                    //Express in base 26: A..Z,AA..AZ,BA..BZ...  BC = 2*26 + 2
+                    //Assume less than 26^2 (676) cells
+                    if (index < 26)
+                        return string.Format("{0}", Convert.ToChar(65 + index));
+                    if (index < 26 * 26)
+                        return string.Format("{0}{1}", Convert.ToChar(65 + (index / 26)), Convert.ToChar(65 + (index % 26)));
+                    if (index < 26 * 26 * 26)
+                    {
+                        int basis = 26 * 26;
+                        return string.Format("{0}{1}{2}", Convert.ToChar(65 + (index / basis)), Convert.ToChar(65 + ((index % basis) / 26)), Convert.ToChar(65 + (index % 26)));
+                    }
+                    return "OutOfBounds";
+                case IndexGridLabelStyle.NumericWithZeroPadding:
+                    //FIXME Column or Row - How do I know
+                    if (max < 10)
+                        return (index + 1).ToString("D1");
+                    if (max < 100)
+                        return (index + 1).ToString("D2");
+                    if (max < 1000)
+                        return (index + 1).ToString("D3");
+                    if (max < 10000)
+                        return (index + 1).ToString("D4");
+                    return "OutOfBounds";
+                case IndexGridLabelStyle.NumericWithoutZeroPadding:
+                    return (index + 1).ToString();
+                default:
+                    throw new ArgumentException("labelStyle");
+            }
+        }
+
+        public void Draw()
+        {
+            if (Map == null)
+                return;
+            var view = Map as IActiveView;
+            if (view == null)
+                return;
+            var container = Map as IGraphicsContainer;
+            if (container == null)
+                return;
+
+            IPoint point1 = new PointClass();
+            IPoint point2 = new PointClass();
+            IPolyline line = new PolylineClass();
+            //erase all elements in the group.
+            _group.ClearElements();
+
+            //add vertical lines to the group
+            point1.Y = Extents.YMin;
+            point2.Y = Extents.YMax;
+            for (int i = 0; i <= ColumnCount; i++)
+            {
+                point1.X = Extents.XMin + ColumnWidth * i;
+                point2.X = point1.X;
+                line.SetEmpty();
+                ((IPointCollection)line).AddPoint(point1);
+                ((IPointCollection)line).AddPoint(point2);
+                DrawLine(_group, line);
+            }
+
+            //add horizontal lines to the group
+            point1.X = Extents.XMin;
+            point2.X = Extents.XMax;
+            for (int j = 0; j <= RowCount; j++)
+            {
+                point1.Y = Extents.YMin + RowHeight * j;
+                point2.Y = point1.Y;
+                line.SetEmpty();
+                ((IPointCollection)line).AddPoint(point1);
+                ((IPointCollection)line).AddPoint(point2);
+                DrawLine(_group, line);
+            }
+
+            //Add labels to the group
+            for (int row = 0; row < RowCount; row++)
+            {
+                for (int column = 0; column < ColumnCount; column++)
+                {
+                    point1.X = Extents.XMin + ColumnWidth * (column + 0.5f);
+                    point1.Y = Extents.YMin + RowHeight * (row + 0.5f);
+                    string label = GetLabel(row, column);
+                    DrawLabel(_group, label, point1);
+                }
+            }
+            //refresh the display
+            container.UpdateElement(_group as IElement);
+            view.ScreenDisplay.FinishDrawing();
+            view.Refresh();
+        }
+        private IGroupElement3 _group = new GroupElementClass();
+
+        private void DrawLabel(IGroupElement3 group, string label, IPoint point)
+        {
+            var text = new TextElementClass();
+            text.AnchorPoint = esriAnchorPointEnum.esriCenterPoint;
+            text.Text = label;
+            text.Geometry = point as IGeometry;
+            group.AddElement(text);
+        }
+
+        private void DrawLine(IGroupElement3 group, IPolyline line)
+        {
+            //LineGraphics (LineElementClass) will only accept IPolyline (not ILine)
+            var element = new LineElementClass();
+            element.Geometry = line;
+            group.AddElement(element);
+        }
+        // as ESRI.ArcGIS.Carto.IElement;
+        //IGeometry geom = line as IGeometry;
+        //((IElement)element).Geometry = geom; // line as IGeometry;
 
     }
 
