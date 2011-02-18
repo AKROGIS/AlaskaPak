@@ -100,6 +100,15 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\AddXYForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AddXYForm.designer.cs">
+      <DependentUpon>AddXYForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Coordinates\Formatter.cs" />
+    <Compile Include="Coordinates\FormatterOutputFormat.cs" />
+    <Compile Include="Coordinates\FormData.cs" />
     <Compile Include="Buttons\AddID.cs" />
     <Compile Include="Buttons\AlaskaPakAbout.cs" />
     <Compile Include="Buttons\AddArea.cs" />
@@ -167,7 +176,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Tools\Coordinates.cs" />
     <Compile Include="Tools\GenerateGrid.cs" />
     <Compile Include="Buttons\LinkInternal.cs" />
     <Compile Include="Buttons\AlaskaPakHelp.cs" />
@@ -231,6 +239,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\AddXYForm.resx">
+      <DependentUpon>AddXYForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutAlaskaPak.resx">
       <DependentUpon>AboutAlaskaPak.cs</DependentUpon>
     </EmbeddedResource>

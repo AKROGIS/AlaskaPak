@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using System.Linq;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Desktop.AddIns;
 using ESRI.ArcGIS.esriSystem;
-using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Geometry;
 using NPS.AKRO.ArcGIS.Common;
-using ESRI.ArcGIS.Carto;
 
 namespace NPS.AKRO.ArcGIS
 {
@@ -77,7 +76,7 @@ namespace NPS.AKRO.ArcGIS
 
         void MapEvents_ContentsChanged()
         {
-            //Notify subsribers of changes in map contents.
+            //Notify subscribers of changes in map contents.
             OnLayersChanged();
         }
 
@@ -132,6 +131,12 @@ namespace NPS.AKRO.ArcGIS
             return GetFeatureLayers().Where(x => ((IFeatureLayer)x.Layer).Selectable).ToList();
         }
 
+        internal List<NamedLayer> GetPointLayers()
+        {
+            return GetFeatureLayers().Where(x => 
+                ((IFeatureLayer)x.Layer).FeatureClass.ShapeType == esriGeometryType.esriGeometryPoint).ToList();
+        }
+
         internal List<NamedLayer> GetFeatureLayers()
         {
             return GetLayers("{40A9E885-5533-11d0-98BE-00805F7CED21}"); // IFeatureLayer
@@ -166,6 +171,7 @@ namespace NPS.AKRO.ArcGIS
         }
 
         #endregion
+
     }
 
 }
