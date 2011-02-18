@@ -105,36 +105,8 @@
         <Button id="NPS_Alaska_Pak_Help" class="AlaskaPakHelp" message="Get help on NPS AlaskaPak" caption="&amp;Help on AlaskaPak" tip="Help" category="NPS Alaska" image="Images\Help.png">
           <Help heading="Alaska Pak Help">Get help on NPS AlaskaPak.</Help>
         </Button>
-        <Button id="NPS_Alaska_Pak_Coordinates_Place_Marker" class="CoordinatesPlaceMarker" message="Place a marker on the map at the specified coordinates" caption="&amp;Place Marker" tip="Help" category="NPS Alaska Coordinates" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Coordinates Place Marker">Place a marker on the map at the specified coordinates.</Help>
-        </Button>
-        <Button id="NPS_Alaska_Pak_Coordinates_Copy_Text" class="CoordinatesCopyText" message="Copy coordinate text to the clipboard" caption="&amp;Copy Text" tip="Help" category="NPS Alaska Coordinates" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Coordinates Copy Text">Copy coordinate text to the clipboard.</Help>
-        </Button>
-        <Button id="NPS_Alaska_Pak_Coordinates_Zoom_To_Marker" class="CoordinatesZoomToMarker" message="Zoom and pan to the coordinate marker" caption="&amp;Zoom/Pan to Marker" tip="Help" category="NPS Alaska Coordinates" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Coordinates Zoom To Marker">Zoom and pan to the coordinate marker.</Help>
-        </Button>
-        <Button id="NPS_Alaska_Pak_Coordinates_Set_Mode_Interactive" class="CoordinatesSetModeInteractive" message="Update coordinate display as the cursor is moved" caption="&amp;Interactive" tip="Coordinates of cursor" category="NPS Alaska Coordinates" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Coordinates Set Mode Interactive">Update coordinate display as the cursor is moved.</Help>
-        </Button>
-        <Button id="NPS_Alaska_Pak_Coordinates_Set_Mode_Locked" class="CoordinatesSetModeLocked" message="Update coordinate display when the mouse is clicked" caption="&amp;Locked" tip="Coordinates of mouse click" category="NPS Alaska Coordinates" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Coordinates Set Mode Locked">Update coordinate display when the mouse is clicked.</Help>
-        </Button>
-        <Button id="NPS_Alaska_Pak_Coordinates_Set_Mode_Feature" class="CoordinatesSetModeFeature" message="Update coordinates based on nearest point feature" caption="&amp;Feature Select" tip="Coordinates of nearest point feature" category="NPS Alaska Coordinates" image="Images\Hammer.png">
-          <Help heading="Alaska Pak Coordinates Set Mode Feature">Update coordinates based on nearest point feature.</Help>
-        </Button>
       </Commands>
       <Menus>
-        <Menu id="NPS_Alaska_Pak_Coordinates_Menu" caption="&amp;Coordinates" isRootMenu="false" isShortcutMenu="true">
-          <Items>
-            <Button refID="NPS_Alaska_Pak_Coordinates_Place_Marker" />
-            <Button refID="NPS_Alaska_Pak_Coordinates_Copy_Text" />
-            <Button refID="NPS_Alaska_Pak_Coordinates_Zoom_To_Marker" />
-            <Button refID="NPS_Alaska_Pak_Coordinates_Set_Mode_Interactive" separator="true" />
-            <Button refID="NPS_Alaska_Pak_Coordinates_Set_Mode_Locked" />
-            <Button refID="NPS_Alaska_Pak_Coordinates_Set_Mode_Feature" />
-          </Items>
-        </Menu>
         <Menu id="NPS_Alaska_Pak_Add_Menu" caption="&amp;Add Attributes" isRootMenu="false">
           <Items>
             <Button refID="NPS_Alaska_Pak_Add_GUID" />
@@ -196,7 +168,6 @@
             <Button refID="NPS_Alaska_Pak_ThemeManager" />
             <Menu refID="NPS_Alaska_Pak_Menu" />
             <Button refID="esriControls.ControlsMapGoToCommand" />
-            <!-- <Tool refID="NPS_Alaska_Pak_Coordinates" /> -->
             <Tool refID="NPS_Alaska_Pak_Generate_Grid" />
           </Items>
         </Toolbar>
