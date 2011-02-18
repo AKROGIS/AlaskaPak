@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GenerateGridForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -44,6 +45,7 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label12 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
             this.quantityBox = new System.Windows.Forms.GroupBox();
             this.yCountTextBox = new System.Windows.Forms.TextBox();
             this.xCountTextBox = new System.Windows.Forms.TextBox();
@@ -56,10 +58,6 @@
             this.heightTextBox = new System.Windows.Forms.TextBox();
             this.unitsComboBox = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.sizeAndQuantityRadioButton = new System.Windows.Forms.RadioButton();
-            this.label2 = new System.Windows.Forms.Label();
-            this.quantityRadioButton = new System.Windows.Forms.RadioButton();
-            this.sizeRadioButton = new System.Windows.Forms.RadioButton();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.label20 = new System.Windows.Forms.Label();
             this.pageNumberComboBox = new System.Windows.Forms.ComboBox();
@@ -84,6 +82,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.browseButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -133,6 +132,7 @@
             // browseSpatialRefButton
             // 
             this.browseSpatialRefButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.browseSpatialRefButton.Enabled = false;
             this.browseSpatialRefButton.Location = new System.Drawing.Point(390, 272);
             this.browseSpatialRefButton.Name = "browseSpatialRefButton";
             this.browseSpatialRefButton.Size = new System.Drawing.Size(23, 23);
@@ -240,12 +240,9 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label2);
             this.tabPage2.Controls.Add(this.quantityBox);
             this.tabPage2.Controls.Add(this.sizeBox);
-            this.tabPage2.Controls.Add(this.sizeAndQuantityRadioButton);
-            this.tabPage2.Controls.Add(this.label2);
-            this.tabPage2.Controls.Add(this.quantityRadioButton);
-            this.tabPage2.Controls.Add(this.sizeRadioButton);
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -254,13 +251,22 @@
             this.tabPage2.Text = "Spacing";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 220);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(408, 105);
+            this.label2.TabIndex = 16;
+            this.label2.Text = resources.GetString("label2.Text");
+            // 
             // quantityBox
             // 
             this.quantityBox.Controls.Add(this.yCountTextBox);
             this.quantityBox.Controls.Add(this.xCountTextBox);
             this.quantityBox.Controls.Add(this.label11);
             this.quantityBox.Controls.Add(this.label10);
-            this.quantityBox.Location = new System.Drawing.Point(9, 210);
+            this.quantityBox.Location = new System.Drawing.Point(6, 130);
             this.quantityBox.Name = "quantityBox";
             this.quantityBox.Size = new System.Drawing.Size(222, 87);
             this.quantityBox.TabIndex = 15;
@@ -274,6 +280,7 @@
             this.yCountTextBox.Size = new System.Drawing.Size(100, 23);
             this.yCountTextBox.TabIndex = 11;
             this.yCountTextBox.TextChanged += new System.EventHandler(this.integerTextBox_TextChanged);
+            this.yCountTextBox.Leave += new System.EventHandler(this.countTextBox_Leave);
             // 
             // xCountTextBox
             // 
@@ -282,6 +289,7 @@
             this.xCountTextBox.Size = new System.Drawing.Size(100, 23);
             this.xCountTextBox.TabIndex = 10;
             this.xCountTextBox.TextChanged += new System.EventHandler(this.integerTextBox_TextChanged);
+            this.xCountTextBox.Leave += new System.EventHandler(this.countTextBox_Leave);
             // 
             // label11
             // 
@@ -309,7 +317,7 @@
             this.sizeBox.Controls.Add(this.heightTextBox);
             this.sizeBox.Controls.Add(this.unitsComboBox);
             this.sizeBox.Controls.Add(this.label4);
-            this.sizeBox.Location = new System.Drawing.Point(9, 86);
+            this.sizeBox.Location = new System.Drawing.Point(6, 6);
             this.sizeBox.Name = "sizeBox";
             this.sizeBox.Size = new System.Drawing.Size(222, 118);
             this.sizeBox.TabIndex = 14;
@@ -372,50 +380,6 @@
             this.label4.TabIndex = 7;
             this.label4.Text = "Cell Height:";
             // 
-            // sizeAndQuantityRadioButton
-            // 
-            this.sizeAndQuantityRadioButton.AutoSize = true;
-            this.sizeAndQuantityRadioButton.Location = new System.Drawing.Point(76, 36);
-            this.sizeAndQuantityRadioButton.Name = "sizeAndQuantityRadioButton";
-            this.sizeAndQuantityRadioButton.Size = new System.Drawing.Size(117, 19);
-            this.sizeAndQuantityRadioButton.TabIndex = 3;
-            this.sizeAndQuantityRadioButton.Text = "Size and Quantity";
-            this.sizeAndQuantityRadioButton.UseVisualStyleBackColor = true;
-            this.sizeAndQuantityRadioButton.CheckedChanged += new System.EventHandler(this.radioButton_CheckedChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 13);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(64, 15);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Specify by:";
-            // 
-            // quantityRadioButton
-            // 
-            this.quantityRadioButton.AutoSize = true;
-            this.quantityRadioButton.Location = new System.Drawing.Point(76, 61);
-            this.quantityRadioButton.Name = "quantityRadioButton";
-            this.quantityRadioButton.Size = new System.Drawing.Size(134, 19);
-            this.quantityRadioButton.TabIndex = 1;
-            this.quantityRadioButton.Text = "Quantity and Extents";
-            this.quantityRadioButton.UseVisualStyleBackColor = true;
-            this.quantityRadioButton.CheckedChanged += new System.EventHandler(this.radioButton_CheckedChanged);
-            // 
-            // sizeRadioButton
-            // 
-            this.sizeRadioButton.AutoSize = true;
-            this.sizeRadioButton.Checked = true;
-            this.sizeRadioButton.Location = new System.Drawing.Point(76, 11);
-            this.sizeRadioButton.Name = "sizeRadioButton";
-            this.sizeRadioButton.Size = new System.Drawing.Size(108, 19);
-            this.sizeRadioButton.TabIndex = 0;
-            this.sizeRadioButton.TabStop = true;
-            this.sizeRadioButton.Text = "Size and Extents";
-            this.sizeRadioButton.UseVisualStyleBackColor = true;
-            this.sizeRadioButton.CheckedChanged += new System.EventHandler(this.sizeRadioButton_CheckedChanged);
-            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.label20);
@@ -463,6 +427,7 @@
             this.pageNumberComboBox.Name = "pageNumberComboBox";
             this.pageNumberComboBox.Size = new System.Drawing.Size(187, 23);
             this.pageNumberComboBox.TabIndex = 14;
+            this.pageNumberComboBox.SelectedIndexChanged += new System.EventHandler(this.OptionalPreviewButton_Click);
             // 
             // delimiterTextBox
             // 
@@ -470,7 +435,7 @@
             this.delimiterTextBox.Name = "delimiterTextBox";
             this.delimiterTextBox.Size = new System.Drawing.Size(187, 23);
             this.delimiterTextBox.TabIndex = 13;
-            this.delimiterTextBox.TextChanged += new System.EventHandler(this.applyButton_Click);
+            this.delimiterTextBox.TextChanged += new System.EventHandler(this.OptionalPreviewButton_Click);
             // 
             // conventionComboBox
             // 
@@ -483,7 +448,7 @@
             this.conventionComboBox.Name = "conventionComboBox";
             this.conventionComboBox.Size = new System.Drawing.Size(187, 23);
             this.conventionComboBox.TabIndex = 12;
-            this.conventionComboBox.SelectedIndexChanged += new System.EventHandler(this.applyButton_Click);
+            this.conventionComboBox.SelectedIndexChanged += new System.EventHandler(this.OptionalPreviewButton_Click);
             // 
             // columnStyleComboBox
             // 
@@ -498,7 +463,7 @@
             this.columnStyleComboBox.Name = "columnStyleComboBox";
             this.columnStyleComboBox.Size = new System.Drawing.Size(187, 23);
             this.columnStyleComboBox.TabIndex = 11;
-            this.columnStyleComboBox.SelectedIndexChanged += new System.EventHandler(this.applyButton_Click);
+            this.columnStyleComboBox.SelectedIndexChanged += new System.EventHandler(this.OptionalPreviewButton_Click);
             // 
             // suffixTextBox
             // 
@@ -506,12 +471,13 @@
             this.suffixTextBox.Name = "suffixTextBox";
             this.suffixTextBox.Size = new System.Drawing.Size(187, 23);
             this.suffixTextBox.TabIndex = 10;
-            this.suffixTextBox.TextChanged += new System.EventHandler(this.applyButton_Click);
+            this.suffixTextBox.TextChanged += new System.EventHandler(this.OptionalPreviewButton_Click);
             // 
             // ExampleTextBox
             // 
             this.ExampleTextBox.Location = new System.Drawing.Point(119, 180);
             this.ExampleTextBox.Name = "ExampleTextBox";
+            this.ExampleTextBox.ReadOnly = true;
             this.ExampleTextBox.Size = new System.Drawing.Size(187, 23);
             this.ExampleTextBox.TabIndex = 9;
             // 
@@ -591,7 +557,7 @@
             this.rowStyleComboBox.Name = "rowStyleComboBox";
             this.rowStyleComboBox.Size = new System.Drawing.Size(187, 23);
             this.rowStyleComboBox.TabIndex = 1;
-            this.rowStyleComboBox.SelectedIndexChanged += new System.EventHandler(this.applyButton_Click);
+            this.rowStyleComboBox.SelectedIndexChanged += new System.EventHandler(this.OptionalPreviewButton_Click);
             // 
             // prefixTextBox
             // 
@@ -599,7 +565,7 @@
             this.prefixTextBox.Name = "prefixTextBox";
             this.prefixTextBox.Size = new System.Drawing.Size(187, 23);
             this.prefixTextBox.TabIndex = 0;
-            this.prefixTextBox.TextChanged += new System.EventHandler(this.applyButton_Click);
+            this.prefixTextBox.TextChanged += new System.EventHandler(this.OptionalPreviewButton_Click);
             // 
             // tabPage4
             // 
@@ -617,9 +583,9 @@
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
             this.applyButton.TabIndex = 11;
-            this.applyButton.Text = "Apply";
+            this.applyButton.Text = "Preview";
             this.applyButton.UseVisualStyleBackColor = true;
-            this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
+            this.applyButton.Click += new System.EventHandler(this.PreviewButton_Click);
             // 
             // cancelButton
             // 
@@ -637,6 +603,7 @@
             // 
             this.outputPathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.outputPathTextBox.Enabled = false;
             this.outputPathTextBox.Location = new System.Drawing.Point(12, 365);
             this.outputPathTextBox.Name = "outputPathTextBox";
             this.outputPathTextBox.Size = new System.Drawing.Size(401, 23);
@@ -655,22 +622,26 @@
             // browseButton
             // 
             this.browseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.browseButton.Enabled = false;
             this.browseButton.Location = new System.Drawing.Point(419, 364);
             this.browseButton.Name = "browseButton";
             this.browseButton.Size = new System.Drawing.Size(23, 23);
             this.browseButton.TabIndex = 15;
             this.browseButton.Text = "...";
+            this.toolTip1.SetToolTip(this.browseButton, "Browsing not implemented yet");
             this.browseButton.UseVisualStyleBackColor = true;
             this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
             // saveButton
             // 
+            this.saveButton.Enabled = false;
             this.saveButton.Location = new System.Drawing.Point(205, 396);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 16;
             this.saveButton.Text = "Save";
             this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // GenerateGridForm
             // 
@@ -728,10 +699,6 @@
         private System.Windows.Forms.TextBox outputPathTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button browseButton;
-        private System.Windows.Forms.RadioButton sizeAndQuantityRadioButton;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.RadioButton quantityRadioButton;
-        private System.Windows.Forms.RadioButton sizeRadioButton;
         private System.Windows.Forms.GroupBox quantityBox;
         private System.Windows.Forms.TextBox yCountTextBox;
         private System.Windows.Forms.TextBox xCountTextBox;
@@ -764,6 +731,8 @@
         private System.Windows.Forms.TextBox prefixTextBox;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ComboBox pageNumberComboBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ToolTip toolTip1;
 
     }
 }

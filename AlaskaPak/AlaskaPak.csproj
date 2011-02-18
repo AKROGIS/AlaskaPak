@@ -116,12 +116,6 @@
     <Compile Include="Buttons\AddGUID.cs" />
     <Compile Include="Buttons\AddXY.cs" />
     <Compile Include="Buttons\AnimateFeatures.cs" />
-    <Compile Include="Buttons\CoordinatesSetModeFeature.cs" />
-    <Compile Include="Buttons\CoordinatesSetModeInteractive.cs" />
-    <Compile Include="Buttons\CoordinatesSetModeLocked.cs" />
-    <Compile Include="Buttons\CoordinatesZoomToMarker.cs" />
-    <Compile Include="Buttons\CoordinatesCopyText.cs" />
-    <Compile Include="Buttons\CoordinatesPlaceMarker.cs" />
     <Compile Include="Buttons\CopyRasterSymbology.cs" />
     <Compile Include="Buttons\GenerateGridPoints.cs" />
     <Compile Include="Buttons\LineToRectangle.cs" />
@@ -171,6 +165,8 @@
     <Compile Include="Forms\RandomFeatureSelectionForm.Designer.cs">
       <DependentUpon>RandomFeatureSelectionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Grids\Enums.cs" />
+    <Compile Include="Grids\Grid.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

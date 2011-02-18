@@ -6,19 +6,20 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using NPS.AKRO.ArcGIS.Grids;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
     public partial class GenerateGridForm : Form
     {
-        public IndexGrid Grid { get; set; }
+        public Grid Grid { get; set; }
 
         public GenerateGridForm()
         {
             InitializeComponent();
         }
 
-        private void applyButton_Click(object sender, EventArgs e)
+        private void PreviewButton_Click(object sender, EventArgs e)
         {
             if (!_updating)
             {
@@ -36,29 +37,41 @@ namespace NPS.AKRO.ArcGIS.Forms
                 Grid.Suffix = suffixTextBox.Text;
                 // The requires me to keep the combo box text and ordering in sync with my enums
                 // but it allows me to be more descriptive in my combo box text
-                Grid.RowLabelStyle = (IndexGridLabelStyle)rowStyleComboBox.SelectedIndex;
-                Grid.ColumnLabelStyle = (IndexGridLabelStyle)columnStyleComboBox.SelectedIndex;
-                Grid.LabelOrder = (IndexGridLabelOrder)conventionComboBox.SelectedIndex;
-                Grid.PageNumbering = (IndexGridPageNumbering)pageNumberComboBox.SelectedIndex;
+                Grid.RowLabelStyle = (GridLabelStyle)rowStyleComboBox.SelectedIndex;
+                Grid.ColumnLabelStyle = (GridLabelStyle)columnStyleComboBox.SelectedIndex;
+                Grid.LabelOrder = (GridLabelOrder)conventionComboBox.SelectedIndex;
+                Grid.PageNumbering = (GridPageNumbering)pageNumberComboBox.SelectedIndex;
 
                 Grid.Draw();
             }
         }
 
+        private void OptionalPreviewButton_Click(object sender, EventArgs e)
+        {
+            if (Grid.ColumnCount * Grid.RowCount <= 250)
+                PreviewButton_Click(sender, e);
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Tool is not fully functional yet");
+        }
+
         private void cancelButton_Click(object sender, EventArgs e)
         {
-
+            this.Close();
         }
 
         private void browseButton_Click(object sender, EventArgs e)
         {
-
+            MessageBox.Show("Function not implemented yet");
         }
 
         private void radioButton_CheckedChanged(object sender, EventArgs e)
         {
 
         }
+
         private void sizeRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             if (((RadioButton)sender).Checked)
@@ -94,6 +107,43 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
         }
 
+        private void sizeTextBox_Leave(object sender, EventArgs e)
+        {
+            if (AllInputIsValid)
+            {
+                Grid.ColumnWidth = Convert.ToDouble(widthTextBox.Text);
+                Grid.RowHeight = Convert.ToDouble(heightTextBox.Text);
+                if (!Grid.isValid)
+                    Grid.AdjustCountThenExtents();
+                OptionalPreviewButton_Click(sender, e);
+            }
+        }
+
+        private void countTextBox_Leave(object sender, EventArgs e)
+        {
+            if (AllInputIsValid)
+            {
+                Grid.ColumnCount = Convert.ToInt32(xCountTextBox.Text);
+                Grid.RowCount = Convert.ToInt32(yCountTextBox.Text);
+                if (!Grid.isValid)
+                    Grid.AdjustSize();
+                OptionalPreviewButton_Click(sender, e);
+            }
+        }
+
+        private void extentTextBox_Leave(object sender, EventArgs e)
+        {
+            if (AllInputIsValid)
+            {
+                Grid.Extents.XMin = Convert.ToDouble(xMinTextBox.Text);
+                Grid.Extents.XMax = Convert.ToDouble(xMaxTextBox.Text);
+                Grid.Extents.YMin = Convert.ToDouble(yMinTextBox.Text);
+                Grid.Extents.YMax = Convert.ToDouble(yMaxTextBox.Text);
+                if (!Grid.isValid)
+                    Grid.AdjustCountThenSize();
+                OptionalPreviewButton_Click(sender, e);
+            }
+        }
 
         private void xTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -228,23 +278,13 @@ namespace NPS.AKRO.ArcGIS.Forms
         }
         private bool _updating;
 
-        public bool IsValid
+
+        public bool AllInputIsValid
         {
             get
             {
+                //FIXME - do something intelligent
                 return true;
-            }
-        }
-
-        private void sizeTextBox_Leave(object sender, EventArgs e)
-        {
-            if (this.IsValid)
-            {
-                Grid.ColumnWidth = Convert.ToDouble(widthTextBox.Text);
-                Grid.RowHeight = Convert.ToDouble(heightTextBox.Text);
-                if (!Grid.isValid)
-                    Grid.AdjustCountThenExtents();
-                Grid.Draw();
             }
         }
 
