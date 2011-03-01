@@ -1,10 +1,9 @@
 # ------------------------------------------------------------------------------
-# ObscurePoints.py
-# Created: 2010-08-30 (9.3)
-# Updated: 2011-01-31 (10.0)
+# RandomTransects.py
+# Created: 2011-02-28 (10.0)
 #
 # Title:
-# Obscure Points
+# RandomTransects
 #
 # Tags:
 # random, sensitive, offset, hide, buffer, obscure
@@ -97,9 +96,6 @@
 # software and aggregate use with other software.
 # ------------------------------------------------------------------------------
 
-# Problems:
-#  Source data canot have a CID field
-
 import sys, os
 import random, math
 
@@ -118,18 +114,9 @@ def RandomTransects():
     lines = CreateFeatureClass(arcpy, polygons, workspace, name)
     featureCount = GetFeatureCount(arcpy, polygons)
     arcpy.SetProgressor("step", "Creating Transects...", 0, featureCount, 1)
-    
-    #polyList = arcpy.CopyFeatures_management(polygons, arcpy.Geometry())
-    #for polygon in polyList:
-    #    lines = GetLines(arcpy, polygon, linesPerPoly, maxTrys,
-    #             minLength, maxLength, allowOverlap, None)
-    #print lines
-    #sys.exit()
-    
     CreateLines(arcpy, polygons, lines, linesPerPoly, maxTrys,
                 minLength, maxLength, allowOverlap)
     arcpy.ResetProgressor()
-
 
 
 def SanitizeInput(arcpy, inFC, outFC, linesPerPoly, min, max, maxTrys, allowOverlap):
@@ -224,9 +211,9 @@ def SanitizeInput(arcpy, inFC, outFC, linesPerPoly, min, max, maxTrys, allowOver
 
     # validate allowOverlap
     if allowOverlap in ["","#"]:
-        allowOverlap = 100
-        arcpy.AddMessage("Using a default value of 100 for number of attempts")
-    if allowOverlap == True:
+        allowOverlap = "True"
+        arcpy.AddMessage("Allowing overlaping transects (by default)")
+    if allowOverlap.lower() == "true":
         allowOverlap = True
     else:
         allowOverlap = False
@@ -253,24 +240,29 @@ def CreateFeatureClass(arcpy, template, workspace, name):
 def CreateLines(arcpy, polygons, lines, lineGoal, maxAttempts,
                 minLength, maxLength, allowOverlap):
     description = arcpy.Describe(polygons)
-    sr = description.SpatialReference
+    spatialReference = description.SpatialReference
+    shapeFieldName = description.shapeFieldName
+    oidFieldName = description.OIDFieldName
 
     d = arcpy.Describe(lines)
     polyCursor = arcpy.SearchCursor(polygons)
-    lineCursor = arcpy.InsertCursor(lines, sr)
+    lineCursor = arcpy.InsertCursor(lines)
     polygon = polyCursor.next()
     newLine = None  #positive assignment so del at end will not fail
+    count = 1
     while (polygon):
-        #FIXME - make this more informative
-        arcpy.SetProgressorLabel("Processing polygon X")
-        lines = GetLines(arcpy, polygon.Shape, lineGoal, maxAttempts,
-                         minLength, maxLength, allowOverlap, sr)
+        oid = polygon.getValue(oidFieldName)
+        arcpy.SetProgressorLabel("Processing polygon "+ str(count))
+        shape = polygon.getValue(shapeFieldName)
+        name = oidFieldName + " = " + str(oid)
+        lines = GetLines(arcpy, name, shape, lineGoal, maxAttempts,
+                         minLength, maxLength, allowOverlap, spatialReference)
         for line in lines:
             newLine = lineCursor.newRow()
-            newLine.Shape = line
-            #newLine.setValue(d.shapeFieldName, line)
+            newLine.setValue(d.shapeFieldName, line)
             lineCursor.insertRow(newLine)
         arcpy.SetProgressorPosition()
+        count = count + 1
         polygon = polyCursor.next()
         
     del polyCursor, lineCursor
@@ -289,36 +281,27 @@ def GetFeatureCount(arcpy, data):
     return count
 
     
-def GetLines(arcpy, polygon, lineGoal, maxAttempts,
-             minLength, maxLength, allowOverlap, sr):
+def GetLines(arcpy, polygonName, polygonShape, lineGoal, maxAttempts,
+             minLength, maxLength, allowOverlap, spatialReference):
     attemptCount = 0
     linesInPoly = []
     
     while (len(linesInPoly) < lineGoal and attemptCount < maxAttempts):
-        #print attemptCount
-        x,y = GetRandomPointInPolygon(arcpy, polygon)
-        #print "got point"
-        line = GetRandomLine(arcpy, x, y, minLength, maxLength, sr)
-        #print "Got line"
-        #print polygon, line
-        #Debug(polygon, line, None)
-        #t1 = polygon.contains(line)
-        #t1 = line.within(polygon)
-        #t2 = DoesOverlap(line, linesInPoly)
-        #print t1, allowOverlap, t2
-        #print polygon.contains(line) and (allowOverlap or not DoesOverlap(line, linesInPoly))
-        #sys.exit()
-        if (polygon.contains(line) and (allowOverlap or
-                                        not DoesOverlap(line, linesInPoly))):
-            #print "good line"
+        x,y = GetRandomPointInPolygon(arcpy, polygonShape)
+        pt1, pt2 = GetRandomLineEnds(x, y, minLength, maxLength)
+        # Spatial compare (i.e. contains) will always fail if the two geometries
+        # have different spatial refereces (including null and not null).
+        line = arcpy.Polyline(arcpy.Array([arcpy.Point(pt1[0], pt1[1]),
+                                           arcpy.Point(pt2[0], pt2[1])]), spatialReference)
+        if (polygonShape.contains(line) and
+            (allowOverlap or
+             not DoesOverlap(line, linesInPoly))):
             linesInPoly.append(line)
             attemptCount = 0;
         else:
-            #print "bad line"
             attemptCount = attemptCount + 1;
     if attemptCount == maxAttempts:
-        #FIXME - make warning more useful
-        arcpy.AddWarning("Exceeded maximum attempts at finding transects for polygon X.")
+        arcpy.AddWarning("Polygon " + polygonName + " exceeded maximum attempts at finding all transects.")
     return linesInPoly
 
 
@@ -329,18 +312,18 @@ def DoesOverlap(myLine, otherLines):
     return False
 
 
-def GetRandomLine(arcpy, x1, y1, minLength, maxLength, sr):
+def GetRandomLineEnds(x1, y1, minLength, maxLength):
     length = random.uniform(minLength, maxLength)
     angle = random.uniform(0,2*math.pi)
     x2 = x1 + length* math.cos(angle)
     y2 = y1 + length* math.sin(angle)
-    return arcpy.Polyline(arcpy.Array([arcpy.Point(x1,y1),
-                                       arcpy.Point(x2,y2)]), sr)
-
+    return ((x1,y1),(x2,y2))
     
 def GetRandomPointInPolygon(arcpy, polygon):
     while True:
         x,y = GetRandomPointInEnvelope(polygon.extent)
+        # do not use a point geometry unless you create it with the
+        # same spatial reference as polygon.
         if polygon.contains(arcpy.Point(x,y)):
             return (x,y)
 
@@ -349,17 +332,6 @@ def GetRandomPointInEnvelope(env):
     x = random.uniform(env.XMin, env.XMax) 
     y = random.uniform(env.YMin, env.YMax)
     return (x,y)
-
-def Debug(poly,line,pt):
-    if poly:
-        print "Polygon"
-        print "   Extents:",poly.extent.XMin, poly.extent.YMin, poly.extent.XMax, poly.extent.YMax
-        print "   Parts, Area, Centroid:",poly.partCount, poly.area, poly.centroid
-    if line:
-        print "Line: from: (" + str(line.firstPoint.X) + "," + str(line.firstPoint.Y)+ ")"
-        print "        to: (" + str(line.lastPoint.X) + "," + str(line.lastPoint.Y)+ ")"
-    if pt:
-        print "Point: (" + str(pt.X) + "," + str(pt.Y)+ ")"
 
 if __name__ == '__main__':
     RandomTransects()
