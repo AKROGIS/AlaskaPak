@@ -1,0 +1,2 @@
+robocopy "C:\Users\resarwas\Documents\Visual Studio 2010\Projects\AlaskaPak\Scripts" "T:\PROJECTS\Development\Toolboxes\10.0" /S
+robocopy "C:\Users\resarwas\Documents\Visual Studio 2010\Projects\AlaskaPak\AlaskaPak\bin\Release" "T:\PROJECTS\Development\AddIns\10.0" "AlaskaPak3.esriAddIn"
