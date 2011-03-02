@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NPS.AKRO.ArcGIS.Coordinates
+namespace NPS.AKRO.ArcGIS.AddCoordinates
 {
     class Formatter
     {

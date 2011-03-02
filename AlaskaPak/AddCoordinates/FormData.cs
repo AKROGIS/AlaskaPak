@@ -5,7 +5,7 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
 using NPS.AKRO.ArcGIS.Common;
 
-namespace NPS.AKRO.ArcGIS.Coordinates
+namespace NPS.AKRO.ArcGIS.AddCoordinates
 {
     class FormData
     {

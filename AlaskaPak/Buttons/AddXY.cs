@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Geometry;
-using NPS.AKRO.ArcGIS.Coordinates;
+using NPS.AKRO.ArcGIS.AddCoordinates;
 using NPS.AKRO.ArcGIS.Forms;
 
 /*

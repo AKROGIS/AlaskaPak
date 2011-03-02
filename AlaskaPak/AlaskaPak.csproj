@@ -106,9 +106,9 @@
     <Compile Include="Forms\AddXYForm.designer.cs">
       <DependentUpon>AddXYForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Coordinates\Formatter.cs" />
-    <Compile Include="Coordinates\FormatterOutputFormat.cs" />
-    <Compile Include="Coordinates\FormData.cs" />
+    <Compile Include="AddCoordinates\Formatter.cs" />
+    <Compile Include="AddCoordinates\FormatterOutputFormat.cs" />
+    <Compile Include="AddCoordinates\FormData.cs" />
     <Compile Include="Buttons\AddID.cs" />
     <Compile Include="Buttons\AlaskaPakAbout.cs" />
     <Compile Include="Buttons\AddArea.cs" />

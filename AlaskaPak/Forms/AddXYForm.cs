@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using ESRI.ArcGIS.Geodatabase;  // for esriFieldNameErrorType
-using NPS.AKRO.ArcGIS.Coordinates;
+using NPS.AKRO.ArcGIS.AddCoordinates;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
