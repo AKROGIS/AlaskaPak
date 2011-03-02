@@ -133,7 +133,8 @@ namespace NPS.AKRO.ArcGIS
 
         internal List<NamedLayer> GetPointLayers()
         {
-            return GetFeatureLayers().Where(x => 
+            return GetFeatureLayers().Where(x =>
+                ((IFeatureLayer)x.Layer).FeatureClass != null &&
                 ((IFeatureLayer)x.Layer).FeatureClass.ShapeType == esriGeometryType.esriGeometryPoint).ToList();
         }
 

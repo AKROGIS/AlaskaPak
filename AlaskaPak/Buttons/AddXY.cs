@@ -7,6 +7,7 @@ using NPS.AKRO.ArcGIS.Forms;
 
 /*
  * Enhancements/Bug Fixes
+ *  - Can we get the users display units/settings and use that as a default?
  *  - Enable selection of Feature Class from form
  *  - Allow selection of a SR in form
  *  - If table is open do a refresh

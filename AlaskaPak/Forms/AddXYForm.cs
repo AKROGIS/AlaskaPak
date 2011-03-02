@@ -26,11 +26,11 @@ namespace NPS.AKRO.ArcGIS.Forms
                 if (value != _data)
                 {
                     _data = value;
-                    formatStyleComboBox.Items.AddRange(Data.Format.Names.ToArray());
-                    formatStyleComboBox.SelectedIndex = (int)Data.Format.OutputFormat;
+                    formatStyleComboBox.Items.AddRange(_data.Format.Names.ToArray());
+                    formatStyleComboBox.SelectedIndex = (int)_data.Format.OutputFormat;
                     PointLayersChanged();
-                    xFieldComboBox.Text = Data.DefaultXFieldName;
-                    yFieldComboBox.Text = Data.DefaultYFieldName;
+                    xFieldComboBox.Text = _data.DefaultXFieldName;
+                    yFieldComboBox.Text = _data.DefaultYFieldName;
                 }
             }
         }
@@ -46,6 +46,7 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
             else
                 featureClassComboBox.SelectedIndex = Data.LayerIndex;
+            UpdateOkButton();
         }
 
 

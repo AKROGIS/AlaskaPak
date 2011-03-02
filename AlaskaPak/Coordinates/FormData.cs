@@ -77,6 +77,9 @@ namespace NPS.AKRO.ArcGIS.Coordinates
                     // Make sure the index is not out of bounds
                     if (LayerIndex != -1 && _pointLayers.Count <= LayerIndex)
                         LayerIndex = _pointLayers.Count - 1;
+                    //if no featureclass is set, give layerIndex a deault value
+                    if (string.IsNullOrEmpty(FeatureClassPath) && LayerIndex == -1 && PointLayers.Count > 0)
+                        LayerIndex = 0;
                 }
             }
         }
@@ -208,8 +211,12 @@ namespace NPS.AKRO.ArcGIS.Coordinates
 
         internal esriFieldNameErrorType ValidateFieldName(string name)
         {
-            IFields fields = ((IFeatureLayer)PointLayers[LayerIndex].Layer).FeatureClass.Fields;
-            IWorkspace workspace = ((IDataset)((IFeatureLayer)PointLayers[LayerIndex].Layer).FeatureClass).Workspace;
+            IFeatureClass featureClass = GetFeatureClass();
+            if (featureClass == null)
+                return esriFieldNameErrorType.esriNoFieldError;
+
+            IFields fields = featureClass.Fields;
+            IWorkspace workspace = ((IDataset)featureClass).Workspace;
             IField newField = new FieldClass();
             ((IFieldEdit)newField).Name_2 = name;
             ((IFieldsEdit)fields).AddField(newField);
