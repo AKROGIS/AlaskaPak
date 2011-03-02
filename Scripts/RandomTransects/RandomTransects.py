@@ -3,77 +3,106 @@
 # Created: 2011-02-28 (10.0)
 #
 # Title:
-# RandomTransects
+# Random Transects
 #
 # Tags:
-# random, sensitive, offset, hide, buffer, obscure
+# survey, inventory, animal, tracking, plane, monitoring, line,
 #
 # Summary:
-# Creates a new data set from sensitive point data (like cabins and eagle nests), by adding a random offset to each point, so that the new dataset can be shared with the public.
+# Creates random survey transects (lines) within a polygon boundary.
 #
 # Usage:
-# Creates a new data set from sensitive point data (like cabins and eagle nests), by adding a random offset to each point, so that the new dataset can be shared with the public.#
+# This tool uses CreateFeature_Mangement to create a new polyline feature class
+# (See the help for that tool regarding the environment variables that will
+# control the feature class creation).  These feature will have no attributes.
+# the geometry will be simple straight lines that are wholey within the
+# boundary polygon.
+#
 # Parameter 1:
-# Sensitive_Points
-# The full name of a feature class of sensitive points.
-# The input features must be points or multipoints.  However multipoints cannot be used if there are No-Go or Must-Go areas specified.
-# The spatial reference should be a projected system. Calculating distances with a geographic system introduces errors.
+# Polygon_Boundaries
+# A polygon layer in ArcMap, or the full path of a polygon feature class with
+# boundaries for sets of transect lines.
 #
 # Parameter 2:
-# Obscured_Features
+# New_Transects
 # The name and location of the feature class to create.
-# If the feature class already exists. You can only overwrite it if you have set that option in the geoprocessing tab in Tools->Options menu.
-# The output coordinate system will be determined by the environment settings. Typically it will default to the same as the input. Click on the Environment... button and then the General Settings tab to check and set the output coordinate system.
-# All attributes of the sensitive features will be copied to these output features. If there is sensitive information in these attributes, then that must be removed separately.
+# If the feature class already exists. You can only overwrite it if you have set
+# that option in the geoprocessing tab in Tools->Options menu.
+# The output coordinate system will be determined by the environment settings.
+# Typically it will default to the same as the input. Click on the
+# Environment... button and then the General Settings tab to check and set the
+# output coordinate system.  The output coordinate system must be projected
+# or the length of the line will be undefined.
+# No attributes are created form the transect lines.
+# Transects may be M/Z aware (based on environment), but no M/Z values are
+# added to the vertices.
 #
 # Parameter 3:
-# Obscured_Feature_Type
-# What kind of output is desired. The default is Points.
-# Points:
-# <image>
-# The output will be a point or multipoint feature class to match the input. With multipoint, each of the individual points will be offset as though the feature class was individual points.
-# Circles:
-# <image>
-# The output feature class will be a circle (polygon) centered at the randomly offset location, with the radius of the circle equal to the Maximum Radius for the offset of center. This guarantees that the real point will fall somewhere in the circle.
+# Transects_per_boundary
+# The number of transects to try and create for each boundary.
+# This parameter is optional.  The default value is 5.
+# This parameter must be greater than zero.
 #
 # Parameter 4:
-# Minimum_Offset
-# The mimimum distance that the obscured point will be from the actual point. The default is zero.
-# The measurement units (feet/meters) are the same as the input feature class. If the input is in lat/long (geographic), Then the units are interpreted as meters.
-# <image> with caption: Non-zero minimum offset
-# <image> with caption: Default (0) minimum offset
+# Minimum_length
+# The minimum length of the transect line.
+# This parameter is optional.  The default value is 1 Meters.
+# This parameter must be greater than zero and less or equal to Maximum_length.
+# The distance can include a space and units (surround with quotes).
+# The units (and spelling) understood are predetermined by ArcTool box.
+# The DecimalDegrees units cannot be used.  Unknown units are an error.
+# Not specifing the units defaults to meters.
 #
 # Parameter 5:
-# Maximum_Offset
-# The maximum distance that the obscured point will be from the actual point. The default is 500.
-# The measurement units (feet/meters) are the same as the input feature class. If the input is in lat/long (geographic), Then the units are interpreted as meters.
+# Maximum_length
+# The maximum length of the transect line.
+# This parameter is optional.  The default value is 1000 Meters.
+# This parameter must be greater than or equal to Minimum_length.
+# See Minimum_length for a discussion of units.
+# If the length is too large then finding a transcect that fits within the
+# boundary may not by possible.
 #
 # Parameter 6:
-# No_Go_Areas
-# Areas in which points will not be placed. Typically this will be water bodies, but it could be any polygon areas that would not be a logical location for the obscured points.
-# What to do if there is no solution???
+# Maximum_Attempts
+# Since it may be impossible to find as many transects as requested, the tool
+# will stop looking after Maximum_Attempts have failed to find a transect.
+# The larger this number, the longer the program will take to run.
+# Increasing this number helps find all the transects requested, but does not
+# guarantee success, as the input conditions may be impossible to satisfy. 
+# This parameter is optional.  The default value is 100.
 #
 # Parameter 7:
-# Must_Go_Areas
-# Areas in which points must be placed. Typically this will be shorelines or park boundaries, but it could be any polygon areas outside of which would not be a logical location for the obscured points.
-# What to do if there is no solution???
+# Allow_Overlap
+# If transects can overlap one another, then specify True. To ensure that
+# no transects cross each other, specify False.
+# This parameter is optional.  The default value is True.
+#
+# Environment:
+#  same as arcpy.CreateFeatureclass_management() 
 #
 # Scripting Syntax:
-# ObscurePoints_AlaskaPak (Sensitive_Points, Obscured_Features, Obscured_Feature_Type, Minimum_Offset, Maximum_Offset, No_Go_Areas, Must_Go_Areas))
+# RandomTransects_AlaskaPak (Polygon_Boundaries, New_Transects, 
+#    Transects_per_boundary, Minimum_length, Maximum_length,
+#    Maximum_Attempts, Allow_Overlap)
 #
 # Example1:
 # Scripting Example
-# The following example shows how this script can be used in another python script, or directly in the ArcGIS Python Window.  It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.
-#  ptFC = r"C:\tmp\gps_lines.shp"
-#  newPtFC = r"C:\tmp\test.gdb\park\bldg"
-#  mustgo = r"C:\tmp\park.shp;c:\tmp\shoreline.shp"
-#  nogo = r"C:\tmp\lakes.shp;c:\tmp\bldgs.shp"
-#  Line2Rect(ptFC, newPtFC, "Circles", 25, 100, nogo, mustgo)
+# The following example shows how this script can be used in another python
+# script, or directly in the ArcGIS Python Window.  It assumes that the script
+# has been loaded into a toolbox, and the toolbox has been loaded into the
+# active session of ArcGIS.
+#  polyFC = r"C:\tmp\game_units.shp"
+#  lineFC = r"C:\tmp\test.gdb\park\transects"
+#  # Create 2 transects less than 500 feet long for each game unit.
+#  RandomTransects_AlaskaPak (polyFC, lineFC, 2, #, "500 Feet", 10, False)
 #
 # Example2:
 # Command Line Example
-# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
-#  C:\tmp> python ObscurePoints.py c:\tmp\nests.shp c:\tmp\newnests.shp Points 0 100 
+# The following example shows how the script can be used from the operating
+# system command line.  It assumes that the current directory is the location
+# of the script, and that the python interpeter is the path.
+# It will try to create 10 100 meter transects in each polygon in polys.shp
+#  C:\tmp> python ObscurePoints.py polys.shp c:\tmp\lines.shp 10 100 100
 #
 # Credits:
 # Regan Sarwas, Alaska Region GIS Team, National Park Service
@@ -95,6 +124,8 @@
 # such warranty. This disclaimer applies both to individual use of the
 # software and aggregate use with other software.
 # ------------------------------------------------------------------------------
+
+#FIXME - use environment SR, Z, M, when creating feature class
 
 import sys, os
 import random, math
@@ -119,7 +150,8 @@ def RandomTransects():
     arcpy.ResetProgressor()
 
 
-def SanitizeInput(arcpy, inFC, outFC, linesPerPoly, min, max, maxTrys, allowOverlap):
+def SanitizeInput(arcpy, inFC, outFC, linesPerPoly,
+                  min, max, maxTrys, allowOverlap):
     # validate input feature class
     if inFC in ["","#"]:
         arcpy.AddError("No input feature class specified.")
@@ -158,7 +190,8 @@ def SanitizeInput(arcpy, inFC, outFC, linesPerPoly, min, max, maxTrys, allowOver
     try:
         linesPerPoly = int(linesPerPoly)
     except ValueError:
-        arcpy.AddError("The transects per feature (" + linesPerPoly + ") is not a whole number.")
+        arcpy.AddError("The transects per feature (" + linesPerPoly + 
+                       ") is not a whole number.")
         sys.exit()
     if (linesPerPoly < 0):
         arcpy.AddError("The transects per feature (" + str(linesPerPoly) +
@@ -167,12 +200,13 @@ def SanitizeInput(arcpy, inFC, outFC, linesPerPoly, min, max, maxTrys, allowOver
 
     # validate maxTrys
     if maxTrys in ["","#"]:
-        maxTrys = 100
+        maxTrys = 20
         arcpy.AddMessage("Using a default value of 100 for number of attempts")
     try:
         maxTrys = int(maxTrys)
     except ValueError:
-        arcpy.AddError("The number of attempts (" + maxTrys + ") is not a whole number.")
+        arcpy.AddError("The number of attempts (" + maxTrys +
+                       ") is not a whole number.")
         sys.exit()
     if (maxTrys < 0):
         arcpy.AddError("The number of attempts (" + str(maxTrys) +
@@ -180,33 +214,33 @@ def SanitizeInput(arcpy, inFC, outFC, linesPerPoly, min, max, maxTrys, allowOver
         sys.exit()
     
     #validate min/max
+    min_input, max_input = min, max
     if min in ["","#"]:
-        min = 1000.0
-        arcpy.AddMessage("Using a default value of 1000.0 for the minimum offset")
+        min = "1 Meters"
+        arcpy.AddMessage("Using a default value of 1 Meter " +
+                         "for the minimum transect length.")
     if max in ["","#"]:
-        max = 2000.0
-        arcpy.AddMessage("Using a default value of 2000.0 for the maximum offset")
-    try:
-        min = float(min)
-    except ValueError:
-        arcpy.AddError("The minimum offset (" + min + ") is not a number.")
+        max = "1000 Meters"
+        arcpy.AddMessage("Using a default value of 1000 Meters " +
+                         "for the minimum transect length.")
+    min = LinearUnitsToMeters(min)
+    if min == -1:
+        arcpy.AddError("The minimum transect length (" + min_input +
+                       ") is not a number or the units are invalid.")
         sys.exit()
-    try:
-        max = float(max)
-    except ValueError:
-        arcpy.AddError("The maximum offset (" + max + ") is not a number.")
+    max = LinearUnitsToMeters(max)
+    if max == -1:
+        arcpy.AddError("The maximum transect length (" + max_input +
+                       ") is not a number or the units are invalid.")
         sys.exit()
-    if (min < 0):
-        arcpy.AddError("The minimum offset specified (" + str(min) +
-                       ") is not greater than zero.")
+    if (min <= 0):
+        arcpy.AddError("The minimum transect length specified (" + str(min) +
+                       " Meters) is not greater than zero.")
         sys.exit()
     if (max < min):
-        arcpy.AddError("The maximum offset specified (" + str(max) +
-                       ") is not greater than the minimum offset.")
-        sys.exit()
-    if (max == 0):
-        arcpy.AddError("The maximum offset specified (" + str(max) +
-                       ") is not greater than zero.")
+        arcpy.AddError("The maximum transect length specified (" + str(max) +
+                       " Meters) is not greater than the minimum transect " +
+                        "length (" + str(min) + " Meters) .")
         sys.exit()
 
     # validate allowOverlap
@@ -222,6 +256,54 @@ def SanitizeInput(arcpy, inFC, outFC, linesPerPoly, min, max, maxTrys, allowOver
     #print inFC, workspace, name, linesPerPoly, min, max, maxTrys, allowOverlap
     return inFC, workspace, name, linesPerPoly, min, max, maxTrys, allowOverlap
 
+def LinearUnitsToMeters(distance):
+    """ Toolbox parameters can have a linear unit type which translates a real
+    number and a pick UOM pick box to a string like '10.3 Meters'.  This
+    function will convert the known units to meters.
+    Return -1 if there is an error."""
+    parts = distance.split()
+    #Too many or two few parts
+    if len(parts) < 1 or 2 < len(parts):
+        return -1
+    #first part must be a number, if no second part assume units are meters
+    number = parts[0]
+    try:
+        val = float(number)
+    except ValueError:
+        val = -1
+    if len(parts) == 1:
+        return val
+    #second part (if given) must be a well known units - these come from toolbox
+    units = parts[1]
+    units = units.lower()
+    if units == "centimeters":
+        return val / 100.0
+    elif units == "decimaldegrees":
+        return -1
+    elif units == "decimeters":
+        return val / 10.0
+    elif units == "feet": #international
+        return val * 12 * 2.54 / 100.0
+    elif units == "inches": #international: 2.54 cm == 1 in
+        return val * 2.54 / 100.0
+    elif units == "kilometers":
+        return val * 1000
+    elif units == "meters":
+        return val
+    elif units == "miles":
+        return val * 5280 * 12 * 2.54 / 100.0
+    elif units == "millimeters":
+        return val / 1000.0
+    elif units == "nauticalmiles":
+        return val * 1852 
+    elif units == "points": # 72 points per inch
+        return val  * 2.54 / 100.0 / 72
+    elif units == "unknown": #assume meters
+        return val
+    elif units == "yards": #international
+        return val * 3 * 12 * 2.54 / 100.0
+    else:
+        return -1
 
 def CreateFeatureClass(arcpy, template, workspace, name):
     shape = "Polyline"
@@ -277,7 +359,7 @@ def GetFeatureCount(arcpy, data):
         count = count + 1
         row = cursor.next()
     del cursor, row
-    print count
+    #print count
     return count
 
     
@@ -292,7 +374,8 @@ def GetLines(arcpy, polygonName, polygonShape, lineGoal, maxAttempts,
         # Spatial compare (i.e. contains) will always fail if the two geometries
         # have different spatial refereces (including null and not null).
         line = arcpy.Polyline(arcpy.Array([arcpy.Point(pt1[0], pt1[1]),
-                                           arcpy.Point(pt2[0], pt2[1])]), spatialReference)
+                                           arcpy.Point(pt2[0], pt2[1])]),
+                                           spatialReference)
         if (polygonShape.contains(line) and
             (allowOverlap or
              not DoesOverlap(line, linesInPoly))):
@@ -301,7 +384,14 @@ def GetLines(arcpy, polygonName, polygonShape, lineGoal, maxAttempts,
         else:
             attemptCount = attemptCount + 1;
     if attemptCount == maxAttempts:
-        arcpy.AddWarning("Polygon " + polygonName + " exceeded maximum attempts at finding all transects.")
+        if len(linesInPoly) == 0:
+            arcpy.AddWarning("No transect could be created for polygon " +
+                             polygonName + ". Try reducing the length.")
+        else:
+            arcpy.AddWarning("Polygon " + polygonName + " exceeded maximum " + 
+                             "attempts at finding all transects.")
+            arcpy.AddWarning("   Try increasing the number of attempts, or " + 
+                             "reducing the transect length.")
     return linesInPoly
 
 
