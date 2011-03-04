@@ -319,7 +319,7 @@
             this.sizeBox.Controls.Add(this.label4);
             this.sizeBox.Location = new System.Drawing.Point(6, 6);
             this.sizeBox.Name = "sizeBox";
-            this.sizeBox.Size = new System.Drawing.Size(222, 118);
+            this.sizeBox.Size = new System.Drawing.Size(307, 118);
             this.sizeBox.TabIndex = 14;
             this.sizeBox.TabStop = false;
             this.sizeBox.Text = "Size";
@@ -362,13 +362,14 @@
             // 
             // unitsComboBox
             // 
+            this.unitsComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.unitsComboBox.FormattingEnabled = true;
             this.unitsComboBox.Items.AddRange(new object[] {
             "Feet",
             "Meters"});
             this.unitsComboBox.Location = new System.Drawing.Point(84, 80);
             this.unitsComboBox.Name = "unitsComboBox";
-            this.unitsComboBox.Size = new System.Drawing.Size(121, 23);
+            this.unitsComboBox.Size = new System.Drawing.Size(217, 23);
             this.unitsComboBox.TabIndex = 8;
             // 
             // label4

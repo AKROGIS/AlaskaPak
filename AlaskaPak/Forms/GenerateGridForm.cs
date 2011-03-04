@@ -17,6 +17,7 @@ namespace NPS.AKRO.ArcGIS.Forms
         public GenerateGridForm()
         {
             InitializeComponent();
+            unitsComboBox.Items.AddRange(LinearUnitsConverter.KnownUnits.ToArray());
         }
 
         private void PreviewButton_Click(object sender, EventArgs e)
@@ -27,15 +28,15 @@ namespace NPS.AKRO.ArcGIS.Forms
                 Grid.Extents.XMax = Convert.ToDouble(xMaxTextBox.Text);
                 Grid.Extents.YMin = Convert.ToDouble(yMinTextBox.Text);
                 Grid.Extents.YMax = Convert.ToDouble(yMaxTextBox.Text);
-                Grid.RowHeight = Convert.ToDouble(heightTextBox.Text);
-                Grid.ColumnWidth = Convert.ToDouble(widthTextBox.Text);
+                Grid.RowHeight = LinearUnitsConverter.ToMeters(Convert.ToDouble(heightTextBox.Text), unitsComboBox.Text);
+                Grid.ColumnWidth = LinearUnitsConverter.ToMeters(Convert.ToDouble(widthTextBox.Text), unitsComboBox.Text);
                 Grid.RowCount = Convert.ToInt32(yCountTextBox.Text);
                 Grid.ColumnCount = Convert.ToInt32(xCountTextBox.Text);
 
                 Grid.Delimiter = delimiterTextBox.Text;
                 Grid.Prefix = prefixTextBox.Text;
                 Grid.Suffix = suffixTextBox.Text;
-                // The requires me to keep the combo box text and ordering in sync with my enums
+                // This requires me to keep the combo box text and ordering in sync with my enums
                 // but it allows me to be more descriptive in my combo box text
                 Grid.RowLabelStyle = (GridLabelStyle)rowStyleComboBox.SelectedIndex;
                 Grid.ColumnLabelStyle = (GridLabelStyle)columnStyleComboBox.SelectedIndex;

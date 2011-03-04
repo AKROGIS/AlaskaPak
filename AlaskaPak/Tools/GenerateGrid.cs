@@ -97,5 +97,16 @@ namespace NPS.AKRO.ArcGIS
                     return true;
             return false;
         }
+
+/*
+ * Original Grid Schema
+ * pFieldsEdit.AddField CreateField("ID", esriFieldTypeInteger, 10)
+ * pFieldsEdit.AddField CreateField("Col", esriFieldTypeInteger, 10)
+ * pFieldsEdit.AddField CreateField("Row", esriFieldTypeInteger, 10)
+ * pFieldsEdit.AddField CreateField("Col_Label", esriFieldTypeString, 20)
+ * pFieldsEdit.AddField CreateField("Row_Label", esriFieldTypeString, 20)
+ * pFieldsEdit.AddField CreateField("Cell_Label", esriFieldTypeString, 20)
+ * */
+
     }
 }

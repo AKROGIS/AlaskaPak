@@ -28,12 +28,38 @@ namespace NPS.AKRO.ArcGIS.Grids
             AdjustSize();
         }
 
+        /// <summary>
+        /// Extents (envelope) of the selected area in map display units
+        /// </summary>
         public IEnvelope Extents { get; set; }
 
         public int RowCount { get; set; }
         public int ColumnCount { get; set; }
+        /// <summary>
+        /// Height of each cell and each rows in meters
+        /// </summary>
         public double RowHeight { get; set; }
+        /// <summary>
+        /// Height of each cell and each rows in display units
+        /// </summary>
+        public double DisplayRowHeight
+        {
+            get
+            {
+                return RowHeight / ((IProjectedCoordinateSystem)Extents.SpatialReference).CoordinateUnit.ConversionFactor;
+            }
+        }
+        /// <summary>
+        /// Width of each cells and each columns in meters
+        /// </summary>
         public double ColumnWidth { get; set; }
+        public double DisplayColumnWidth
+        {
+            get
+            {
+                return ColumnWidth / ((IProjectedCoordinateSystem)Extents.SpatialReference).CoordinateUnit.ConversionFactor;
+            }
+        }
         public string Prefix { get; set; }
         public string Suffix { get; set; }
         public string Delimiter { get; set; }
@@ -99,8 +125,8 @@ namespace NPS.AKRO.ArcGIS.Grids
                     return false;
                 if (Extents.IsEmpty)
                     return false;
-                if (ColumnCount * ColumnWidth == Extents.Width ||
-                    RowCount * RowHeight == Extents.Height)
+                if (ColumnCount * DisplayColumnWidth == Extents.Width ||
+                    RowCount * DisplayRowHeight == Extents.Height)
                     return true;
                 else
                     return false;
@@ -109,16 +135,17 @@ namespace NPS.AKRO.ArcGIS.Grids
 
         public void AdjustSize()
         {
-            ColumnWidth = Extents.Width / ColumnCount;
-            RowHeight = Extents.Height / RowCount;
+            double displayToMetersFactor = ((IProjectedCoordinateSystem)Extents.SpatialReference).CoordinateUnit.ConversionFactor;
+            ColumnWidth = Extents.Width * displayToMetersFactor / ColumnCount;
+            RowHeight = Extents.Height * displayToMetersFactor / RowCount;
         }
 
         public void AdjustExtents()
         {
             if (Extents == null)
                 return;
-            double widthDiff = ((ColumnWidth * ColumnCount) - Extents.Width) / 2.0;
-            double heightDiff = ((RowHeight * RowCount) - Extents.Height) / 2.0;
+            double widthDiff = ((DisplayColumnWidth * ColumnCount) - Extents.Width) / 2.0;
+            double heightDiff = ((DisplayRowHeight * RowCount) - Extents.Height) / 2.0;
             Extents.Expand(widthDiff, heightDiff, false);
         }
 
@@ -136,8 +163,8 @@ namespace NPS.AKRO.ArcGIS.Grids
 
         private void AdjustCount()
         {
-            ColumnCount = (int)(Extents.Width / ColumnWidth);
-            RowCount = (int)(Extents.Height / RowHeight);
+            ColumnCount = (int)(Extents.Width / DisplayColumnWidth);
+            RowCount = (int)(Extents.Height / DisplayRowHeight);
         }
 
         public string GetLabel(int row, int column)
@@ -219,7 +246,7 @@ namespace NPS.AKRO.ArcGIS.Grids
             point2.Y = Extents.YMax;
             for (int i = 0; i <= ColumnCount; i++)
             {
-                point1.X = Extents.XMin + ColumnWidth * i;
+                point1.X = Extents.XMin + DisplayColumnWidth * i;
                 point2.X = point1.X;
                 line.SetEmpty();
                 ((IPointCollection)line).AddPoint(point1);
@@ -232,7 +259,7 @@ namespace NPS.AKRO.ArcGIS.Grids
             point2.X = Extents.XMax;
             for (int j = 0; j <= RowCount; j++)
             {
-                point1.Y = Extents.YMin + RowHeight * j;
+                point1.Y = Extents.YMin + DisplayRowHeight * j;
                 point2.Y = point1.Y;
                 line.SetEmpty();
                 ((IPointCollection)line).AddPoint(point1);
@@ -245,8 +272,8 @@ namespace NPS.AKRO.ArcGIS.Grids
             {
                 for (int column = 0; column < ColumnCount; column++)
                 {
-                    point1.X = Extents.XMin + ColumnWidth * (column + 0.5f);
-                    point1.Y = Extents.YMin + RowHeight * (row + 0.5f);
+                    point1.X = Extents.XMin + DisplayColumnWidth * (column + 0.5f);
+                    point1.Y = Extents.YMin + DisplayRowHeight * (row + 0.5f);
                     string label = GetLabel(row, column);
                     DrawLabel(_group, label, point1);
                 }

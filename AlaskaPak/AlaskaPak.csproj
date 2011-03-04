@@ -167,6 +167,7 @@
     </Compile>
     <Compile Include="Grids\Enums.cs" />
     <Compile Include="Grids\Grid.cs" />
+    <Compile Include="Grids\Units.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
