@@ -7,12 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using NPS.AKRO.ArcGIS.Grids;
+using System.Diagnostics;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
     public partial class GenerateGridForm : Form
     {
         public Grid Grid { get; set; }
+        public ESRI.ArcGIS.Geodatabase.IFeatureWorkspace Workspace { get; set; }
+        public ESRI.ArcGIS.Geodatabase.IFeatureDataset Dataset { get; set; }
+        public string FeatureClassName { get; set; }
 
         public GenerateGridForm()
         {
@@ -20,16 +24,74 @@ namespace NPS.AKRO.ArcGIS.Forms
             unitsComboBox.Items.AddRange(LinearUnitsConverter.KnownUnits.ToArray());
         }
 
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void browseButton_Click(object sender, EventArgs e)
+        {
+            ESRI.ArcGIS.CatalogUI.IGxDialog browser = new ESRI.ArcGIS.CatalogUI.GxDialog();
+            browser.ObjectFilter = new ESRI.ArcGIS.Catalog.GxFilterFeatureClassesClass();
+            browser.Title = "Name of Feature Class to Create";
+            if (browser.DoModalSave((int)this.Handle))
+            {
+                if (browser.ReplacingObject)
+                {
+                    MessageBox.Show("Cannot overwrite an existing feature class.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    // shapefile folder
+                    if (browser.FinalLocation is ESRI.ArcGIS.Catalog.IGxFolder)
+                    {
+                        Dataset = null;
+                        ESRI.ArcGIS.Geodatabase.IWorkspaceFactory wsf = new ESRI.ArcGIS.DataSourcesFile.ShapefileWorkspaceFactory();
+                        Workspace = wsf.OpenFromFile(browser.FinalLocation.FullName, 0) as ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
+                    }
+
+                    // geodatabase (root level)
+                    if (browser.FinalLocation is ESRI.ArcGIS.Catalog.IGxDatabase)
+                    {
+                        Dataset = null;
+                        Workspace = ((ESRI.ArcGIS.Catalog.IGxDatabase)browser.FinalLocation).Workspace as ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
+                    }
+
+                    // feature dataset in a geodatabase
+                    if (browser.FinalLocation is ESRI.ArcGIS.Catalog.IGxDataset)
+                    {
+                        Dataset = ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset as ESRI.ArcGIS.Geodatabase.IFeatureDataset;
+                        Workspace = ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset.Workspace as ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
+                        spatialReferenceTextBox.Text = ((ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset).SpatialReference.Name;
+                    }
+
+                    if (Workspace == null)
+                    {
+                        MessageBox.Show("Location is not a valid feature workspace.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.outputPathTextBox.Text = "";
+                        saveButton.Enabled = false;
+                    }
+                    else
+                    {
+                        FeatureClassName = browser.Name;
+                        this.outputPathTextBox.Text = browser.FinalLocation.FullName + "\\" + FeatureClassName;
+                        saveButton.Enabled = true;
+                    }
+                    if (Dataset == null)
+                        spatialReferenceTextBox.Text = "Unknown";
+                    else
+                        spatialReferenceTextBox.Text = ((ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset).SpatialReference.Name;
+
+                }
+            }
+        }
+
         private void PreviewButton_Click(object sender, EventArgs e)
         {
             if (!_updating)
             {
-                Grid.Extents.XMin = Convert.ToDouble(xMinTextBox.Text);
-                Grid.Extents.XMax = Convert.ToDouble(xMaxTextBox.Text);
-                Grid.Extents.YMin = Convert.ToDouble(yMinTextBox.Text);
-                Grid.Extents.YMax = Convert.ToDouble(yMaxTextBox.Text);
-                Grid.RowHeight = LinearUnitsConverter.ToMeters(Convert.ToDouble(heightTextBox.Text), unitsComboBox.Text);
-                Grid.ColumnWidth = LinearUnitsConverter.ToMeters(Convert.ToDouble(widthTextBox.Text), unitsComboBox.Text);
+                Grid.RowHeight = LinearUnitsConverter.ToMeters(Convert.ToDouble(heightTextBox.Text), unitsComboBox.Text) / Grid.MetersPerUnit;
+                Grid.ColumnWidth = LinearUnitsConverter.ToMeters(Convert.ToDouble(widthTextBox.Text), unitsComboBox.Text) / Grid.MetersPerUnit;
                 Grid.RowCount = Convert.ToInt32(yCountTextBox.Text);
                 Grid.ColumnCount = Convert.ToInt32(xCountTextBox.Text);
 
@@ -53,19 +115,21 @@ namespace NPS.AKRO.ArcGIS.Forms
                 PreviewButton_Click(sender, e);
         }
 
-        private void saveButton_Click(object sender, EventArgs e)
+        private void unitsComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("Tool is not fully functional yet");
-        }
+            //don't do anything if we are called while updating.
+            if (_updating)
+                return;
 
-        private void cancelButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+            //Turn off redraws triggered by changes in the form.
+            _updating = true;
 
-        private void browseButton_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Function not implemented yet");
+            double metersPerUserUnit = LinearUnitsConverter.ToMeters(1, unitsComboBox.Text);
+            //RowHeight and ColumnWidth are in Grid units, convert to meters to convert to user units
+            heightTextBox.Text = (Grid.RowHeight * Grid.MetersPerUnit / metersPerUserUnit).ToString();
+            widthTextBox.Text = (Grid.ColumnWidth * Grid.MetersPerUnit / metersPerUserUnit).ToString();
+
+            _updating = false;
         }
 
         private void radioButton_CheckedChanged(object sender, EventArgs e)
@@ -82,10 +146,13 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
         }
 
-        private void doubleTextBox_TextChanged(object sender, EventArgs e)
+        private void DoubleTextBox_TextChanged(object sender, EventArgs e)
         {
+             TextBox textBox = sender as TextBox;
+            Debug.Assert(textBox != null, "non TextBox object hooked up to DoubleTextBox_TextChanged()");
+            if (textBox == null)
+                return;
             double number;
-            TextBox textBox = sender as TextBox;
             if (Double.TryParse(textBox.Text, out number))
                 textBox.ForeColor = Color.Black;
             else
@@ -95,10 +162,13 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
         }
 
-        private void integerTextBox_TextChanged(object sender, EventArgs e)
+        private void IntegerTextBox_TextChanged(object sender, EventArgs e)
         {
-            int number;
             TextBox textBox = sender as TextBox;
+            Debug.Assert(textBox != null, "non TextBox object hooked up to IntTextBox_TextChanged()");
+            if (textBox == null)
+                return;
+            int number;
             if (Int32.TryParse(textBox.Text, out number))
                 textBox.ForeColor = Color.Black;
             else
@@ -108,161 +178,60 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
         }
 
-        private void sizeTextBox_Leave(object sender, EventArgs e)
+        private void SizeTextBox_Leave(object sender, EventArgs e)
         {
             if (AllInputIsValid)
             {
-                Grid.ColumnWidth = Convert.ToDouble(widthTextBox.Text);
-                Grid.RowHeight = Convert.ToDouble(heightTextBox.Text);
-                if (!Grid.isValid)
-                    Grid.AdjustCountThenExtents();
-                OptionalPreviewButton_Click(sender, e);
+                double w = Convert.ToDouble(widthTextBox.Text);
+                double h = Convert.ToDouble(heightTextBox.Text);
+                if (Grid.ColumnWidth != w || Grid.RowHeight != h)
+                {
+                    Grid.RowHeight = LinearUnitsConverter.ToMeters(h, unitsComboBox.Text) / Grid.MetersPerUnit;
+                    Grid.ColumnWidth = LinearUnitsConverter.ToMeters(w, unitsComboBox.Text) / Grid.MetersPerUnit;
+                    if (!Grid.isValid)
+                    {
+                        //make it valid
+                        Grid.AdjustExtents();
+                        UpdateFormFromGrid();
+                    }
+                    OptionalPreviewButton_Click(sender, e);
+                }
             }
         }
 
-        private void countTextBox_Leave(object sender, EventArgs e)
+        private void CountTextBox_Leave(object sender, EventArgs e)
         {
             if (AllInputIsValid)
             {
-                Grid.ColumnCount = Convert.ToInt32(xCountTextBox.Text);
-                Grid.RowCount = Convert.ToInt32(yCountTextBox.Text);
-                if (!Grid.isValid)
-                    Grid.AdjustSize();
-                OptionalPreviewButton_Click(sender, e);
+                int x = Convert.ToInt32(xCountTextBox.Text);
+                int y = Convert.ToInt32(yCountTextBox.Text);
+                if (Grid.ColumnCount != x || Grid.RowCount != y)
+                {
+                    Grid.ColumnCount = x;
+                    Grid.RowCount = y;
+                    if (!Grid.isValid)
+                    {
+                        //make it valid
+                        Grid.AdjustExtents();
+                        UpdateFormFromGrid();
+                    }
+                    OptionalPreviewButton_Click(sender, e);
+                }
             }
         }
 
-        private void extentTextBox_Leave(object sender, EventArgs e)
-        {
-            if (AllInputIsValid)
-            {
-                Grid.Extents.XMin = Convert.ToDouble(xMinTextBox.Text);
-                Grid.Extents.XMax = Convert.ToDouble(xMaxTextBox.Text);
-                Grid.Extents.YMin = Convert.ToDouble(yMinTextBox.Text);
-                Grid.Extents.YMax = Convert.ToDouble(yMaxTextBox.Text);
-                if (!Grid.isValid)
-                    Grid.AdjustCountThenSize();
-                OptionalPreviewButton_Click(sender, e);
-            }
-        }
-
-        private void xTextBox_TextChanged(object sender, EventArgs e)
-        {
-            double number;
-            if (Double.TryParse(xMinTextBox.Text, out number))
-            {
-                Grid.Extents.XMin = Convert.ToDouble(xMinTextBox.Text);
-                Grid.AdjustCountThenSize();
-                Grid.Draw();
-            }
-            else
-            {
-                xMinTextBox.ForeColor = Color.Red;
-                xMinTextBox.Focus();
-                return;
-            }
-
-            if (Double.TryParse(xMaxTextBox.Text, out number))
-            {
-                Grid.Extents.XMax = Convert.ToDouble(xMaxTextBox.Text);
-                Grid.AdjustCountThenSize();
-                Grid.Draw();
-            }
-            else
-            {
-                xMaxTextBox.ForeColor = Color.Red;
-                xMaxTextBox.Focus();
-                return;
-            }
-
-            if (Double.TryParse(yMinTextBox.Text, out number))
-            {
-                Grid.Extents.YMin = Convert.ToDouble(yMinTextBox.Text);
-                Grid.AdjustCountThenSize();
-                Grid.Draw();
-            }
-            else
-            {
-                yMinTextBox.ForeColor = Color.Red;
-                yMinTextBox.Focus();
-                return;
-            }
-
-            if (Double.TryParse(yMaxTextBox.Text, out number))
-            {
-                Grid.Extents.YMax = Convert.ToDouble(yMaxTextBox.Text);
-                Grid.AdjustCountThenSize();
-                Grid.Draw();
-            }
-            else
-            {
-                yMaxTextBox.ForeColor = Color.Red;
-                yMaxTextBox.Focus();
-                return;
-            }
-
-            if (Double.TryParse(heightTextBox.Text, out number))
-            {
-                Grid.RowHeight = Convert.ToDouble(heightTextBox.Text);
-                Grid.AdjustCountThenExtents();
-                Grid.Draw();
-            }
-            else
-            {
-                heightTextBox.ForeColor = Color.Red;
-                heightTextBox.Focus();
-                return;
-            }
-            if (Double.TryParse(widthTextBox.Text, out number))
-            {
-                Grid.ColumnWidth = Convert.ToDouble(widthTextBox.Text);
-                Grid.AdjustCountThenExtents();
-                Grid.Draw();
-            }
-            else
-            {
-                widthTextBox.ForeColor = Color.Red;
-                widthTextBox.Focus();
-                return;
-            }
-
-            int count;
-            if (Int32.TryParse(xCountTextBox.Text, out count))
-            {
-                Grid.ColumnCount = Convert.ToInt32(xCountTextBox.Text);
-                Grid.AdjustSize();
-                Grid.Draw();
-            }
-            else
-            {
-                xCountTextBox.ForeColor = Color.Red;
-                xCountTextBox.Focus();
-                return;
-            }
-
-            if (Int32.TryParse(yCountTextBox.Text, out count))
-            {
-                Grid.RowCount = Convert.ToInt32(yCountTextBox.Text);
-                Grid.AdjustSize();
-                Grid.Draw();
-            }
-            else
-            {
-                yCountTextBox.ForeColor = Color.Red;
-                yCountTextBox.Focus();
-                return;
-            }
-        }
-
-        public void UpdateFromGrid()
+        public void UpdateFormFromGrid()
         {
             _updating = true;
-            xMinTextBox.Text = Grid.Extents.XMin.ToString();
-            xMaxTextBox.Text = Grid.Extents.XMax.ToString();
-            yMinTextBox.Text = Grid.Extents.YMin.ToString();
-            yMaxTextBox.Text = Grid.Extents.YMax.ToString();
-            heightTextBox.Text = Grid.RowHeight.ToString();
-            widthTextBox.Text = Grid.ColumnWidth.ToString();
+            //Set the default units to the map units, if that fails use meters.
+            if (unitsComboBox.SelectedIndex == -1)
+                unitsComboBox.SelectedItem = LinearUnitsConverter.Key(Grid.Map.MapUnits);
+
+            //RowHeight and ColumnWidth are in Grid units, convert to meters to convert to user units
+            double metersPerUserUnit = LinearUnitsConverter.ToMeters(1, unitsComboBox.Text);
+            heightTextBox.Text = (Grid.RowHeight * Grid.MetersPerUnit / metersPerUserUnit).ToString();
+            widthTextBox.Text = (Grid.ColumnWidth * Grid.MetersPerUnit / metersPerUserUnit).ToString();
+
             yCountTextBox.Text = Grid.RowCount.ToString();
             xCountTextBox.Text = Grid.ColumnCount.ToString();
 
@@ -288,6 +257,5 @@ namespace NPS.AKRO.ArcGIS.Forms
                 return true;
             }
         }
-
     }
 }
