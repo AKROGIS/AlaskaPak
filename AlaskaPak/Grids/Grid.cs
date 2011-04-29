@@ -251,9 +251,8 @@ namespace NPS.AKRO.ArcGIS.Grids
 
         public void Erase()
         {
-            if (_group == null || _group.ElementCount == 0)
+            if (_group == null)
                 return;
-
             if (Map == null)
                 return;
             var view = Map as IActiveView;
@@ -262,11 +261,17 @@ namespace NPS.AKRO.ArcGIS.Grids
             var container = Map as IGraphicsContainer;
             if (container == null)
                 return;
-
-            _group.ClearElements();
-            container.UpdateElement(_group as IElement);
-            view.ScreenDisplay.FinishDrawing();
-            view.Refresh();
+            if (_group.ElementCount != 0)
+            {
+                _group.ClearElements();
+                container.UpdateElement(_group as IElement);
+                view.ScreenDisplay.FinishDrawing();
+                view.Refresh();
+            }
+            container.DeleteElement(_group as IElement);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(_group);
+            //_group = null;
+            return;
         }
 
         public void Draw()

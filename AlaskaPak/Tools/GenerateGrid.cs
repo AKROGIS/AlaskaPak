@@ -47,6 +47,7 @@ namespace NPS.AKRO.ArcGIS
             if (Enabled)
             {
                 IEnvelope env = GetExtents();
+                //MessageBox.Show(string.Format("({0},{1}) to ({0},{1})", env.XMin, env.YMin, env.XMax, env.YMax), "Envelope");
                 if (_form != null) //User may click when form is already loaded.
                 {
                     UpdateForm(env);
@@ -286,7 +287,7 @@ namespace NPS.AKRO.ArcGIS
             featureLayer.Visible = true;
             ArcMap.Document.ActiveView.FocusMap.AddLayer(featureLayer);
             FixSymbology(featureLayer);
-
+            ArcMap.Document.UpdateContents();
             //ArcMap.Document.ActiveView.Extent = ((IGeoDataset)featureLayer).Extent;
             ArcMap.Document.ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGeography, null, null);
         }
