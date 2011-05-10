@@ -76,11 +76,61 @@ import arcpy
 featureList = arcpy.GetParameterAsText(0)
 fieldName = arcpy.GetParameterAsText(1)
 units = arcpy.GetParameterAsText(2)
+#sr = arcpy.GetParameter(3)
+#spatial reference must be a equal area projection with units of meters
+proj = 'PROJCS["NAD_1983_Alaska_Albers",GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Albers"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-154.0],PARAMETER["Standard_Parallel_1",55.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",50.0],UNIT["Meter",1.0],AUTHORITY["EPSG",3338]]'
+sr = arcpy.SpatialReference()
+sr.loadFromString(proj)
+
+def getFactor(units):
+    units = units.upper()
+    if units == "ACRES":
+        return 0.00024710538
+    if units == "ARES":
+        return 0.01
+    if units == "HECTARES":
+        return 0.0001
+    if units == "SQUARECENTIMETERS":
+        return 10000
+    if units == "SQUAREDECIMETERS":
+        return 100
+    if units == "SQUAREINCHES":
+        return 1550.0031
+    if units == "SQUAREFEET":
+        return 10.76391
+    if units == "SQUAREKILOMETERS":
+        return 1E-006
+    if units == "SQUAREMETERS":
+        return 1.0
+    if units == "SQUAREMILES":
+        return 3.8610216E-007
+    if units == "SQUAREMILLIMETERS":
+        return 1000000
+    if units == "SQUAREYARDS":
+        return 1.19599
+    
+def AddArea(feature, shapename, fieldname, units, sr):
+    rows = arcpy.UpdateCursor(feature,"",sr,fieldname + ","+shapename,"")
+    metersToUnits = getFactor(units)
+    for row in rows:
+        geom = row.getValue(shapename)
+        #assumes projection will return square meters
+        area = geom.area * metersToUnits
+        row.setValue(fieldname, area)
+        rows.updateRow(row)
+    del row
+    del rows
 
 for feature in featureList.split(";"):
+    featureDescription = arcpy.Describe(feature)
+    fsr = featureDescription.spatialReference
+    featureIsProjected = fsr.type == "Projected" and fsr.name != "Unknown" 
     if fieldName not in arcpy.ListFields(feature):
         arcpy.AddField_management(feature, fieldName, "Double", "", "", "", "",
                                   "NULLABLE", "NON_REQUIRED", "")
-    arcpy.CalculateField_management(feature, fieldName, "!shape.area@" +
-                                    units + "!", "PYTHON_9.3", "")
+        if featureIsProjected:
+            arcpy.CalculateField_management(feature, fieldName, "!shape.area@" +
+                                            units + "!", "PYTHON_9.3", "")
+        else:
+            AddArea(feature, featureDescription.shapeFieldName, fieldName, units, sr)
 
