@@ -4,3 +4,5 @@ glob:AlaskaPak/StyleCop.Cache
 glob:AlaskaPak/obj
 glob:AlaskaPak/AlaskaPak.csproj.*
 glob:*.pdf
+glob:_ReSharper.*/
+glob:*ReSharper.user
