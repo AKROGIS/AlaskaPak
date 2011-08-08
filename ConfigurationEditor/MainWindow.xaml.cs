@@ -1,4 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Ionic.Zip;
 
 namespace ConfigurationEditor
@@ -11,16 +16,11 @@ namespace ConfigurationEditor
             SetDefaults();
         }
 
-        //provide validation for all three text boxes
-        //provide validation for form
-        //disable save button until form validates
-
         private void SetDefaults()
         {
-            //try to find the addin;
-            //what about the others??
-                //programer defautls?
-                //read the addin for defaults?
+            addinPath.Text = Directory.GetFiles(AssemblyDirectory, "*.esriAddIn").FirstOrDefault();
+            ValidateFileName(addinPath);
+            ReadAddin();
         }
 
         private void BrowseForAddinPath(object sender, RoutedEventArgs e)
@@ -46,14 +46,25 @@ namespace ConfigurationEditor
 
         private void FixArchive(object sender, RoutedEventArgs e)
         {
-            UpdateArchive(addinPath.Text, themeManagerPath.Text, toolboxPath.Text);
-            Close();
+            bool saveIt = true;
+            if (!File.Exists(themeManagerPath.Text) || !File.Exists(toolboxPath.Text))
+            {
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to use an invalid path?", "File Not Found",
+                                               MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                saveIt = result == MessageBoxResult.Yes;
+            }
+            if (saveIt)
+            {
+                UpdateArchive(addinPath.Text, themeManagerPath.Text, toolboxPath.Text);
+                Close();
+            }
         }
 
         private void Cancel(object sender, RoutedEventArgs e)
         {
             Close();
         }
+        
         
         private static void UpdateArchive(string archive, string path1, string path2)
         {
@@ -76,5 +87,74 @@ namespace ConfigurationEditor
             return dlg.ShowDialog() == true ? dlg.FileName : null;
         }
 
+        private static string AssemblyDirectory
+        {
+            get
+            {
+                string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+                var uri = new UriBuilder(codeBase);
+                string path = Uri.UnescapeDataString(uri.Path);
+                return Path.GetDirectoryName(path);
+            }
+        }
+
+        private void ReadAddin()
+        {
+
+            try
+            {
+                themeManagerPath.Text = ReadArchive(addinPath.Text, "Install/PathToThemeManager.txt");
+                ValidateFileName(themeManagerPath);
+                toolboxPath.Text = ReadArchive(addinPath.Text, "Install/PathToToolbox.txt");
+                ValidateFileName(toolboxPath);
+                saveButton.IsEnabled = true;
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("No file at " + addinPath.Text, "File Not Found",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                saveButton.IsEnabled = false;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(addinPath.Text +"\nis not a valid AlaskaPak AddIn.", "Bad AddIn",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                saveButton.IsEnabled = false;
+            }
+        }
+
+        private void ValidateFileName(TextBox textBox)
+        {
+            if (textBox == null)
+                return;
+
+            textBox.Foreground = File.Exists(textBox.Text) ? SystemColors.ControlTextBrush : 
+                                                             Brushes.DarkRed;
+        }
+
+        private string ReadArchive(string archive, string path)
+        {
+            if (!File.Exists(addinPath.Text))
+                throw new FileNotFoundException(archive);
+
+            using (var zf = ZipFile.Read(archive))
+            {
+                var stream = new MemoryStream();
+                zf[path].Extract(stream);
+                stream.Position = 0;
+                var reader = new StreamReader(stream);
+                return reader.ReadToEnd();
+            }
+        }
+
+        private void TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ValidateFileName(sender as TextBox);
+        }
+
+        private void AddInChanged(object sender, RoutedEventArgs e)
+        {
+            ReadAddin();
+        }
     }
 }

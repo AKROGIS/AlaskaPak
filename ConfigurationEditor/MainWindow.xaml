@@ -17,9 +17,9 @@
             <Label Grid.Row="0" Grid.Column="0" Margin="0,5" HorizontalAlignment="Right">Addin:</Label>
             <Label Grid.Row="1" Grid.Column="0" Margin="0,5" HorizontalAlignment="Right">Theme Manager:</Label>
             <Label Grid.Row="2" Grid.Column="0" Margin="0,5" HorizontalAlignment="Right">Tool Box:</Label>
-            <TextBox Grid.Row="0" Grid.Column="1" Margin="0,5" Name="addinPath" ToolTip="Path to the AlaskaPak Addin"/>
-            <TextBox Grid.Row="1" Grid.Column="1" Margin="0,5" Name="themeManagerPath" ToolTip="Path to the Theme Manager executable"/>
-            <TextBox Grid.Row="2" Grid.Column="1" Margin="0,5" Name="toolboxPath" ToolTip="Path to the AlaskaPak Toolbox"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Margin="0,5" Name="addinPath" ToolTip="Path to the AlaskaPak Addin" TextChanged="TextChanged" LostFocus="AddInChanged" />
+            <TextBox Grid.Row="1" Grid.Column="1" Margin="0,5" Name="themeManagerPath" ToolTip="Path to the Theme Manager executable" TextChanged="TextChanged" />
+            <TextBox Grid.Row="2" Grid.Column="1" Margin="0,5" Name="toolboxPath" ToolTip="Path to the AlaskaPak Toolbox" TextChanged="TextChanged" />
             <Button Grid.Row="0" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse" Click="BrowseForAddinPath" >. . .</Button>
             <Button Grid.Row="1" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse" Click="BrowseForThemeManagerPathPath" >. . .</Button>
             <Button Grid.Row="2" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse" Click="BrowseForToolboxPath" >. . .</Button>
