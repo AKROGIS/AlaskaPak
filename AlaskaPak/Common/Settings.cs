@@ -32,33 +32,5 @@ namespace NPS.AKRO.ArcGIS.Common
             }
         }
 
-        public static bool IsEditable (string setting)
-        {
-            string datafile = Path.Combine(AssemblyDirectory, setting + ".txt");
-            try
-            {
-                using (var s = File.OpenWrite(datafile))
-                    return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public static void Set(string name, string setting)
-        {
-            string datafile = Path.Combine(AssemblyDirectory, name + ".txt");
-            try
-            {
-                File.WriteAllText(datafile, setting);
-            }
-            catch
-            {
-                ;
-            }
-        }
-
-
     }
 }
