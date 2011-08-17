@@ -68,10 +68,14 @@ namespace ConfigurationEditor
         
         private static void UpdateArchive(string archive, string path1, string path2)
         {
-            using (var zf = new ZipFile(archive))
+            using (var zf = ZipFile.Read(archive))
             {
+                //The standard ESRI addin has a '\' path separator, which fails to match in some cases.
+                //ReadArchive() and zipFile[name] == "path\\name" work,
+                //but RemoveEntry() and UpdateEntry() cannot delete the old entry, resulting in a corrupt archive.
+                //Extracting the contents, and creating the zip with Windows creates a zip file that work fine.
                 zf.UpdateEntry("Install/PathToThemeManager.txt", path1);
-                zf.UpdateEntry("Install/PathToToolbox.txt", path2);
+                zf.UpdateEntry("Install/PathToToolBox.txt", path2);
                 zf.Save();
             }
         }
