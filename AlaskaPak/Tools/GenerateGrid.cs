@@ -36,6 +36,11 @@ namespace NPS.AKRO.ArcGIS
 
         public GenerateGrid()
         {
+            AlaskaPak.RunProtected(GetType(), MyConstructor);
+        }
+
+        private void MyConstructor()
+        {
             _controller = AlaskaPak.Controller;
             //_controller.LayersChanged += Controller_LayersChanged;
             //_selectableLayers = _controller.GetSelectableLayers();
@@ -44,30 +49,39 @@ namespace NPS.AKRO.ArcGIS
 
         protected override void OnMouseDown(MouseEventArgs arg)
         {
-            if (Enabled)
+            try
             {
-                IEnvelope env = GetExtents();
-                //MessageBox.Show(string.Format("({0},{1}) to ({0},{1})", env.XMin, env.YMin, env.XMax, env.YMax), "Envelope");
-                if (_form != null) //User may click when form is already loaded.
+                 if (Enabled)
                 {
-                    UpdateForm(env);
-                    _form.Activate();
+                    IEnvelope env = GetExtents();
+                    //MessageBox.Show(string.Format("({0},{1}) to ({0},{1})", env.XMin, env.YMin, env.XMax, env.YMax), "Envelope");
+                    if (_form != null) //User may click when form is already loaded.
+                    {
+                        UpdateForm(env);
+                        _form.Activate();
+                    }
+                    else
+                    {
+                        //Grid grid = new Grid(env);
+                        _form = new GenerateGridForm();
+                        _form.saveButton.Click += Form_CreateGrid;
+                        _form.FormClosed += Form_Closed;
+                        _form.Grid = new Grid(env); //grid;
+                        UpdateForm(env);
+                        _form.Show();
+                    }
                 }
                 else
                 {
-                    //Grid grid = new Grid(env);
-                    _form = new GenerateGridForm();
-                    _form.saveButton.Click += Form_CreateGrid;
-                    _form.FormClosed += Form_Closed;
-                    _form.Grid = new Grid(env); //grid;
-                    UpdateForm(env);
-                    _form.Show();
+                    MessageBox.Show("The active data frame must be in a projected coordinate system.",
+                        "For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("The active data frame must be in a projected coordinate system.",
-                    "For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(GetType() + " encountered a problem." +
+                                Environment.NewLine + Environment.NewLine + ex.Message,
+                                "Unhandled Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

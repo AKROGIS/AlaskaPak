@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Desktop.AddIns;
@@ -42,6 +43,20 @@ namespace NPS.AKRO.ArcGIS
         //My events
         public event Action LayersChanged;
 
+        internal static void RunProtected(Type myType, Action myAction)
+        {
+            try
+            {
+                myAction();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(myType + " encountered a problem." +
+                                Environment.NewLine + Environment.NewLine + ex.Message,
+                                "Unhandled Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        }
 
         #region Extension methods
         

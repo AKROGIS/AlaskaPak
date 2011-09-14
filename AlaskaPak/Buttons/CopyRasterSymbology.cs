@@ -28,6 +28,11 @@ namespace NPS.AKRO.ArcGIS
 
         public CopyRasterSymbology()
         {
+            AlaskaPak.RunProtected(GetType(), MyConstructor);
+        }
+
+        private void MyConstructor()
+        {
             _controller = AlaskaPak.Controller;
             _controller.LayersChanged += Controller_LayersChanged;
             _rasterLayers = _controller.GetRasterLayers();
@@ -35,6 +40,11 @@ namespace NPS.AKRO.ArcGIS
         }
 
         protected override void OnClick()
+        {
+            AlaskaPak.RunProtected(GetType(), MyClick);
+        }
+
+        private void MyClick()
         {
             if (Enabled)
             {

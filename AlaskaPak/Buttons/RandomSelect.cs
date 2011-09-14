@@ -21,6 +21,11 @@ namespace NPS.AKRO.ArcGIS
 
         public RandomSelect()
         {
+            AlaskaPak.RunProtected(GetType(), MyConstructor);
+        }
+
+        private void MyConstructor()
+        {
             _controller = AlaskaPak.Controller;
             _controller.LayersChanged += Controller_LayersChanged;
             _selectableLayers = _controller.GetSelectableLayers();
@@ -28,6 +33,11 @@ namespace NPS.AKRO.ArcGIS
         }
 
         protected override void OnClick()
+        {
+            AlaskaPak.RunProtected(GetType(), MyClick);
+        }
+
+        private void MyClick()
         {
             if (Enabled)
             {

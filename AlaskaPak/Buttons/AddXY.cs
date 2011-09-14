@@ -30,6 +30,11 @@ namespace NPS.AKRO.ArcGIS
         
         public AddXY()
         {
+            AlaskaPak.RunProtected(GetType(), MyConstructor);
+        }
+
+        private void MyConstructor()
+        {
             _controller = AlaskaPak.Controller;
             _controller.LayersChanged += Controller_LayersChanged;
             _data = new FormData(_controller.GetPointLayers());
@@ -37,6 +42,11 @@ namespace NPS.AKRO.ArcGIS
         }
 
         protected override void OnClick()
+        {
+            AlaskaPak.RunProtected(GetType(), MyClick);
+        }
+
+        private void MyClick()
         {
             if (Enabled)
             {

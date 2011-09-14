@@ -24,6 +24,11 @@ namespace NPS.AKRO.ArcGIS
 
         protected override void OnClick()
         {
+            AlaskaPak.RunProtected(GetType(), MyClick);
+        }
+
+        private void MyClick()
+        {
             string file = Path.Combine(AssemblyDirectory, Path.Combine("Help", "help.html"));
             if (File.Exists(file))
             {

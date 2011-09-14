@@ -13,6 +13,11 @@ namespace NPS.AKRO.ArcGIS
 
         protected override void OnClick()
         {
+            AlaskaPak.RunProtected(GetType(), MyClick);
+        }
+
+        private void MyClick()
+        {
             string exe = Common.Settings.Get("PathToThemeManager");
             if (exe == null)
             {
@@ -45,6 +50,5 @@ namespace NPS.AKRO.ArcGIS
                 MessageBox.Show("Path to Theme Manager is not valid." + Environment.NewLine + exe, 
                     "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-
     }
 }

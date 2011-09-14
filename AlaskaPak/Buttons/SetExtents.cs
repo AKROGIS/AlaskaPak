@@ -12,6 +12,11 @@ namespace NPS.AKRO.ArcGIS
 
         protected override void OnClick()
         {
+            AlaskaPak.RunProtected(GetType(), MyClick);
+        }
+
+        private void MyClick()
+        {
             int mapCount = ArcMap.Document.Maps.Count;
             if (mapCount <= 1)
             {

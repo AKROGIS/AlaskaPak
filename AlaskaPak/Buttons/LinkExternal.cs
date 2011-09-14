@@ -8,6 +8,11 @@
 
         protected override void OnClick()
         {
+            AlaskaPak.RunProtected(GetType(), MyClick);
+        }
+
+        private void MyClick()
+        {
             System.Diagnostics.Process.Start("http://www.nps.gov/akso/gis/");
         }
     }
