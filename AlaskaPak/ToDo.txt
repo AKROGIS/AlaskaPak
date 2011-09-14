@@ -1,0 +1,9 @@
+﻿Check license levels for all tools
+if Add Grid Points, requires info license, make simple version
+Generate Grid: if active annotation target has display turned off, preview does not show.
+AddLength: Make work with geographic, and remove warning
+AddArea: Make work with geographic, and remove warning
+Random Select: crashes in some cases (Oregon FG)
+Random Select: use selection if provided
+Random Select: toggle for with or without replacement
+Obscure Points: NIM bug, provide workarount

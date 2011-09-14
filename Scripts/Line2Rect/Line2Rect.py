@@ -175,8 +175,9 @@ arcpy.CreateFeatureclass_management(workspace,featureClass,
 
 arcpy.AddMessage("Empty feature class has been created")
 
-# workaround for bug wherein ValidateFieldName(field,workspace\feature_dataset)
-# returns incorrect results.  Fix is to remove the feature_dataset"
+# workaround for bug (#NIM064306)
+# wherein ValidateFieldName(field,workspace\feature_dataset)
+# returns incorrect results.  Workaround: remove the feature_dataset
 workspace = workspace.lower()
 if workspace.rfind(".mdb") > 0:
     workspace = workspace[:workspace.rfind(".mdb")+4]
@@ -198,12 +199,14 @@ for field in lineDescription.fields:
 polys = arcpy.InsertCursor(rectFC)
 lines = arcpy.SearchCursor(lineFC)
 for line in lines:
+    #FIXME - only works if lineDescription.shapeFieldName = 'shape'
     if line.shape:
         poly = polys.newRow()
         rect = MakeRectFromLine(line.shape, line.getValue(offsetFN))
         if rect:
             for field in fields:
                 poly.setValue(fields[field], line.getValue(field))
+            #FIXME - only works if polyDescription.shapeFieldName = 'shape'
             poly.shape = rect
             polys.insertRow(poly)
 

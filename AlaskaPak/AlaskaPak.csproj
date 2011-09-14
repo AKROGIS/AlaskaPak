@@ -253,6 +253,7 @@
     <Content Include="PathToThemeManager.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\AddXYForm.resx">
