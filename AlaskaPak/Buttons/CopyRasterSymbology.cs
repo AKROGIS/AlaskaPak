@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.esriSystem;
 using NPS.AKRO.ArcGIS.Forms;
@@ -63,8 +61,8 @@ namespace NPS.AKRO.ArcGIS
             }
             else
             {
-                MessageBox.Show("You must have two or more raster layers in your map to use this command.",
-                    "For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(@"You must have two or more raster layers in your map to use this command.",
+                    @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -108,19 +106,19 @@ namespace NPS.AKRO.ArcGIS
 
         private void Copy(int sourceLayerIndex, IEnumerable<int> targetLayerIndices)
         {
-            IRasterLayer sourceLayer = _rasterLayers[sourceLayerIndex].Layer as IRasterLayer;
-            Debug.Assert(sourceLayer != null, "Source layer not found");
+            var sourceLayer = _rasterLayers[sourceLayerIndex].Layer as IRasterLayer;
+            //Debug.Assert(sourceLayer != null, "Source layer not found");
             if (sourceLayer != null)
             {
                 IObjectCopy objectCopier = new ObjectCopyClass(); 
                 IRasterRenderer sourceRender = sourceLayer.Renderer;
-                Debug.Assert(sourceRender != null, "Source layer has no renderer");
+                //Debug.Assert(sourceRender != null, "Source layer has no renderer");
                 if (sourceRender != null)
                 {
                     foreach (int index in targetLayerIndices)
                     {
-                        IRasterLayer destLayer = _rasterLayers[index].Layer as IRasterLayer;
-                        Debug.Assert(destLayer != null, "Destination layer not found");
+                        var destLayer = _rasterLayers[index].Layer as IRasterLayer;
+                        //Debug.Assert(destLayer != null, "Destination layer not found");
                         if (destLayer != null)
                             //destLayer.Renderer = sourceRender;  //layers share the same renderer
                             destLayer.Renderer = (IRasterRenderer)objectCopier.Copy(sourceRender);

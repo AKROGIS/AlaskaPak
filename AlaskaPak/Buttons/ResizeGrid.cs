@@ -4,6 +4,7 @@
     {
         public ResizeGrid()
         {
+            Enabled = false;
         }
 
         protected override void OnClick()
@@ -13,12 +14,7 @@
 
         private void MyClick()
         {
-            System.Windows.Forms.MessageBox.Show(this.GetType().Name + " Not Available");
-        }
-
-        protected override void OnUpdate()
-        {
-            Enabled = false;
+            System.Windows.Forms.MessageBox.Show(GetType() + @" Not Available");
         }
     }
 }

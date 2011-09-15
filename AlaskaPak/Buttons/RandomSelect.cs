@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geodatabase;
-using ESRI.ArcGIS.esriSystem;
 using NPS.AKRO.ArcGIS.Forms;
 using NPS.AKRO.ArcGIS.Common;
 
@@ -56,8 +53,8 @@ namespace NPS.AKRO.ArcGIS
             }
             else
             {
-                MessageBox.Show("You must have one or more selectable feature layers in your map to use this command.",
-                    "For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(@"You must have one or more selectable feature layers in your map to use this command.",
+                    @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -103,7 +100,7 @@ namespace NPS.AKRO.ArcGIS
 
         #region Helper Functions (Tool Specific Logic)
 
-        private int FeatureCount(ILayer layer)
+        private static int FeatureCount(ILayer layer)
         {
             //casting the layer to ITable gets only the features in the
             //layer's query definition (i.e. those being shown
@@ -114,53 +111,55 @@ namespace NPS.AKRO.ArcGIS
                         esriSelectionOption.esriSelectionOptionNormal, null);
                 return oids.Count;
             }
-            else
-                return 0;
+            return 0;
         }
 
         private void RandomSelection(int layerIndex, int count)
         {
-            IFeatureLayer layer = _selectableLayers[layerIndex].Layer as IFeatureLayer;
-            Debug.Assert(layer != null, "Selection layer not found");
-            if (layer != null)
+            var layer = _selectableLayers[layerIndex].Layer as IFeatureLayer;
+            //Debug.Assert(layer != null, "Selection layer not found");
+            if (layer == null)
+                return;
+
+            //IFeatureSelection controls which features in a layer are selected
+            var selectionLayer = layer as IFeatureSelection;
+            if (selectionLayer == null)
+                return;
+
+            selectionLayer.Clear();
+            //get the oids of just the features in the definition query
+            //Don't query the feature class, because it returns all features
+            ISelectionSet oids = ((ITable) layer).Select(null,
+                                                            esriSelectionType.esriSelectionTypeHybrid,
+                                                            esriSelectionOption.esriSelectionOptionNormal, null);
+            IGeoDatabaseBridge2 helper = new GeoDatabaseHelperClass();
+
+            if (count < oids.Count - count)
             {
-                //IFeatureSelection controls which features in a layer are selected
-                IFeatureSelection selectionLayer = layer as IFeatureSelection;
-                selectionLayer.Clear();
-
-                //get the oids of just the features in the definition query
-                //Don't query the feature class, because it returns all features
-                ISelectionSet oids = ((ITable)layer).Select(null,
-                    esriSelectionType.esriSelectionTypeHybrid,
-                    esriSelectionOption.esriSelectionOptionNormal, null);
-                IGeoDatabaseBridge2 helper = new GeoDatabaseHelperClass();
-
-                if (count < oids.Count - count)
-                {
-                    int[] oidsToAdd = BuildOidArray(oids, count); ;
-                    helper.AddList(selectionLayer.SelectionSet, oidsToAdd);
-                }
-                else
-                {
-                    int[] oidsToRemove = BuildOidArray(oids, oids.Count - count); ;
-                    helper.RemoveList(oids, oidsToRemove);
-                    selectionLayer.SelectionSet = oids;
-                }
+                int[] oidsToAdd = BuildOidArray(oids, count);
+                helper.AddList(selectionLayer.SelectionSet, oidsToAdd);
             }
+            else
+            {
+                int[] oidsToRemove = BuildOidArray(oids, oids.Count - count);
+                helper.RemoveList(oids, oidsToRemove);
+                selectionLayer.SelectionSet = oids;
+            }
+
             ArcMap.Document.UpdateContents();
             ArcMap.Document.ActiveView.Refresh();
         }
 
-        private int[] BuildOidArray(ISelectionSet set, int size)
+        private static int[] BuildOidArray(ISelectionSet set, int size)
         {
             if (size > set.Count)
                 size = set.Count;
             if (size < 1)
                 return new int[0];
             //int[] oids = new int[size];
-            HashSet<int> oids = new HashSet<int>();
+            var oids = new HashSet<int>();
 
-            Random rand = new Random();
+            var rand = new Random();
             IEnumIDs ids = set.IDs;
             while (oids.Count < size)
             {

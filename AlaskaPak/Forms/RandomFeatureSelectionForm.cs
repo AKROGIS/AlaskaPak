@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using NPS.AKRO.ArcGIS.Common;
 
@@ -29,11 +26,10 @@ namespace NPS.AKRO.ArcGIS.Forms
         {
             layerComboBox.DataSource = layerinfo.ToList();
             layerComboBox.DisplayMember = "Item1";
-            if (layerComboBox.Items.Count > 0)
-            {
-                layerComboBox.SelectedIndex = 0;
-                selectButton.Focus();
-            }
+            if (layerComboBox.Items.Count <= 0)
+                return;
+            layerComboBox.SelectedIndex = 0;
+            selectButton.Focus();
         }
 
         private void selectButton_Click(object sender, EventArgs e)
@@ -43,7 +39,7 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void layerComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -77,11 +73,11 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void UpdateQuantity()
         {
-            double n;
             int q;
             int t = _total;
             if (percentRadioButton.Checked)
             {
+                double n;
                 if (Double.TryParse(percentTextBox.Text, out n))
                 {
                     if (n < 0 || 100 < n)
@@ -126,12 +122,12 @@ namespace NPS.AKRO.ArcGIS.Forms
                 if (percentRadioButton.Checked)
                 {
                     percentTextBox.ForeColor = Color.Red;
-                    descriptionTextBox.Text = "Enter a percentage from 0 to 100";
+                    descriptionTextBox.Text = @"Enter a percentage from 0 to 100";
                 }
                 else
                 {
                     numberTextBox.ForeColor = Color.Red;
-                    descriptionTextBox.Text = "Enter an integer between 0 and " + t;
+                    descriptionTextBox.Text = @"Enter an integer between 0 and " + t;
                 }
             }
             else

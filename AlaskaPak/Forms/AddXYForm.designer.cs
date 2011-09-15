@@ -1,6 +1,6 @@
 ﻿namespace NPS.AKRO.ArcGIS.Forms
 {
-    partial class AddXYForm
+    partial class AddXyForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddXYForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddXyForm));
             this.formatStyleComboBox = new System.Windows.Forms.ComboBox();
             this.sampleInput = new System.Windows.Forms.TextBox();
             this.showTrailingZerosCheckBox = new System.Windows.Forms.CheckBox();
@@ -63,8 +63,8 @@
             // 
             // formatStyleComboBox
             // 
-            this.formatStyleComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.formatStyleComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.formatStyleComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.formatStyleComboBox.FormattingEnabled = true;
             this.formatStyleComboBox.Location = new System.Drawing.Point(166, 114);
@@ -249,8 +249,8 @@
             // 
             // xFieldComboBox
             // 
-            this.xFieldComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.xFieldComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.xFieldComboBox.FormattingEnabled = true;
             this.xFieldComboBox.Location = new System.Drawing.Point(166, 56);
             this.xFieldComboBox.Name = "xFieldComboBox";
@@ -262,8 +262,8 @@
             // 
             // yFieldComboBox
             // 
-            this.yFieldComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.yFieldComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.yFieldComboBox.FormattingEnabled = true;
             this.yFieldComboBox.Location = new System.Drawing.Point(166, 85);
             this.yFieldComboBox.Name = "yFieldComboBox";
@@ -287,8 +287,8 @@
             // 
             // featureClassComboBox
             // 
-            this.featureClassComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.featureClassComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.featureClassComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.featureClassComboBox.FormattingEnabled = true;
             this.featureClassComboBox.Location = new System.Drawing.Point(12, 27);
@@ -366,7 +366,7 @@
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MaximumSize = new System.Drawing.Size(800, 240);
             this.MinimumSize = new System.Drawing.Size(400, 240);
-            this.Name = "AddXYForm";
+            this.Name = "AddXyForm";
             this.Text = "Add Coordinates";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.panel1.ResumeLayout(false);

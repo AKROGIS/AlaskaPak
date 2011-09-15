@@ -119,21 +119,21 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\AddXYForm.cs">
+    <Compile Include="Forms\AddXyForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\AddXYForm.designer.cs">
-      <DependentUpon>AddXYForm.cs</DependentUpon>
+    <Compile Include="Forms\AddXyForm.designer.cs">
+      <DependentUpon>AddXyForm.cs</DependentUpon>
     </Compile>
     <Compile Include="AddCoordinates\Formatter.cs" />
     <Compile Include="AddCoordinates\FormatterOutputFormat.cs" />
     <Compile Include="AddCoordinates\FormData.cs" />
-    <Compile Include="Buttons\AddID.cs" />
+    <Compile Include="Buttons\AddId.cs" />
     <Compile Include="Buttons\AlaskaPakAbout.cs" />
     <Compile Include="Buttons\AddArea.cs" />
     <Compile Include="Buttons\AddLength.cs" />
-    <Compile Include="Buttons\AddGUID.cs" />
-    <Compile Include="Buttons\AddXY.cs" />
+    <Compile Include="Buttons\AddGuid.cs" />
+    <Compile Include="Buttons\AddCoords.cs" />
     <Compile Include="Buttons\AnimateFeatures.cs" />
     <Compile Include="Buttons\CopyRasterSymbology.cs" />
     <Compile Include="Buttons\GenerateGridPoints.cs" />
@@ -256,8 +256,8 @@
     <Content Include="ToDo.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\AddXYForm.resx">
-      <DependentUpon>AddXYForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\AddXyForm.resx">
+      <DependentUpon>AddXyForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutAlaskaPak.resx">

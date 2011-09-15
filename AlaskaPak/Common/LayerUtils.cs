@@ -28,7 +28,7 @@ namespace NPS.AKRO.ArcGIS.Common
             for (int i = 0; i < maps.Count; i++)
             {
                 IMap map = maps.Item[i];
-                IEnumLayer elayers = map.get_Layers(uid);
+                IEnumLayer elayers = map.Layers[uid];
                 ILayer layer = elayers.Next();
                 while (layer != null)
                 {
@@ -77,15 +77,12 @@ namespace NPS.AKRO.ArcGIS.Common
                 {
                     return layer.Name;
                 }
-                else
+                if (parent.Layer[i] is ICompositeLayer)
                 {
-                    if (parent.Layer[i] is ICompositeLayer)
+                    string name = GetFullName((ICompositeLayer)parent.Layer[i], layer, separator);
+                    if (name != null)
                     {
-                        string name = GetFullName((ICompositeLayer)parent.Layer[i], layer, separator);
-                        if (name != null)
-                        {
-                            return parent.Layer[i].Name + separator + name;
-                        }
+                        return parent.Layer[i].Name + separator + name;
                     }
                 }
             }
@@ -97,20 +94,14 @@ namespace NPS.AKRO.ArcGIS.Common
             for (int i = 0; i < parent.Count; i++)
             {
                 if (parent.Layer[i] == layer)
-                {
                     return layer.Name;
-                }
-                else
-                {
-                    if (parent.Layer[i] is ICompositeLayer)
-                    {
-                        string name = GetFullName((ICompositeLayer)parent.Layer[i], layer, separator);
-                        if (name != null)
-                        {
-                            return parent.Layer[i].Name + separator + name;
-                        }
-                    }
-                }
+
+                if (!(parent.Layer[i] is ICompositeLayer))
+                    continue;
+
+                string name = GetFullName((ICompositeLayer)parent.Layer[i], layer, separator);
+                if (name != null)
+                    return parent.Layer[i].Name + separator + name;
             }
             return null;
         }

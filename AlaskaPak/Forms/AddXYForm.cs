@@ -7,9 +7,9 @@ using NPS.AKRO.ArcGIS.AddCoordinates;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
-    public partial class AddXYForm : Form
+    public partial class AddXyForm : Form
     {
-        internal AddXYForm(FormData data)
+        internal AddXyForm(FormData data)
         {
             InitializeComponent();
             Data = data;
@@ -68,7 +68,7 @@ namespace NPS.AKRO.ArcGIS.Forms
             if (Data.Format.Formattable)
             {
                 formattingOptionsButton.Enabled = true;
-                if (_showAdvanced == true && !panel1.Visible)
+                if (_showAdvanced && !panel1.Visible)
                     formattingOptionsButton_Click(sender, e);
                 if (panel1.Visible)
                 {
@@ -90,7 +90,7 @@ namespace NPS.AKRO.ArcGIS.Forms
                 formattingOptionsButton.Enabled = false;
             }
         }
-        private bool _showAdvanced = false;
+        private bool _showAdvanced;
 
 
         private void UpdateFieldNameComboBoxes()
@@ -129,7 +129,7 @@ namespace NPS.AKRO.ArcGIS.Forms
             if (xFieldComboBox.Text == yFieldComboBox.Text &&
                 !string.IsNullOrEmpty(xFieldComboBox.Text))
             {
-                string msg = "Cannot use the same field name for both coordinates.";
+                const string msg = "Cannot use the same field name for both coordinates.";
                 invalidEntry.SetError(xFieldComboBox, msg);
                 overwriteWarning.SetError(xFieldComboBox, "");
                 invalidEntry.SetError(yFieldComboBox, msg);
@@ -138,7 +138,7 @@ namespace NPS.AKRO.ArcGIS.Forms
             else
             {
                 var validFieldNames = Data.GetAppropriateFieldNames();
-                foreach (ComboBox cb in new ComboBox[] { xFieldComboBox, yFieldComboBox })
+                foreach (ComboBox cb in new[] { xFieldComboBox, yFieldComboBox })
                 {
                     esriFieldNameErrorType err = Data.ValidateFieldName(cb.Text);
                     switch (err)
@@ -163,26 +163,23 @@ namespace NPS.AKRO.ArcGIS.Forms
                             overwriteWarning.SetError(cb, "");
                             invalidEntry.SetError(cb, "New field name is too long.\nShorten the field name.");
                             break;
-                        default:
-                        case esriFieldNameErrorType.esriNoFieldError:
-                            overwriteWarning.SetError(cb, "");
-                            invalidEntry.SetError(cb, "");
-                            break;
                         case esriFieldNameErrorType.esriSQLReservedWord:
                             overwriteWarning.SetError(cb, "");
                             invalidEntry.SetError(cb, "New field name is a reserved word.\nChange the field name.");
                             break;
+                        default:
+                            overwriteWarning.SetError(cb, "");
+                            invalidEntry.SetError(cb, "");
+                            break;
                     }
                 }
             }
-            if (string.IsNullOrEmpty(invalidEntry.GetError(xFieldComboBox)))
-                Data.XFieldName = xFieldComboBox.Text;
-            else
-                Data.XFieldName = string.Empty;
-            if (string.IsNullOrEmpty(invalidEntry.GetError(yFieldComboBox)))
-                Data.YFieldName = yFieldComboBox.Text;
-            else
-                Data.YFieldName = string.Empty;
+            Data.XFieldName = string.IsNullOrEmpty(invalidEntry.GetError(xFieldComboBox))
+                            ? xFieldComboBox.Text
+                            : string.Empty;
+            Data.YFieldName = string.IsNullOrEmpty(invalidEntry.GetError(yFieldComboBox))
+                            ? yFieldComboBox.Text
+                            : string.Empty;
         }
 
         private void UpdateOkButton()
@@ -192,12 +189,12 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void browseButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Browse not available yet.");
+            MessageBox.Show(@"Browse not available yet.");
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -213,19 +210,19 @@ namespace NPS.AKRO.ArcGIS.Forms
             {
                 formattingOptionsButton.ImageIndex = 1;
                 panel1.Visible = false;
-                int newHeight = 240;
-                this.MinimumSize = new Size(this.MinimumSize.Width, newHeight);
-                this.MaximumSize = new Size(this.MaximumSize.Width, newHeight);
-                this.Height = newHeight;
+                const int newHeight = 240;
+                MinimumSize = new Size(MinimumSize.Width, newHeight);
+                MaximumSize = new Size(MaximumSize.Width, newHeight);
+                Height = newHeight;
             }
             else
             {
                 formattingOptionsButton.ImageIndex = 0;
                 panel1.Visible = true;
-                int newHeight = 360;
-                this.MinimumSize = new Size(this.MinimumSize.Width, newHeight);
-                this.MaximumSize = new Size(this.MaximumSize.Width, newHeight);
-                this.Height = newHeight;
+                const int newHeight = 360;
+                MinimumSize = new Size(MinimumSize.Width, newHeight);
+                MaximumSize = new Size(MaximumSize.Width, newHeight);
+                Height = newHeight;
 
                 ValidateFormatOptions();
                 DoSafePreview();
@@ -234,7 +231,7 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void DoSafePreview()
         {
-            double decimalDegrees = 0;
+            double decimalDegrees;
             if (panel1.Visible && Double.TryParse(sampleInput.Text, out decimalDegrees))
             {
                 try
@@ -243,8 +240,8 @@ namespace NPS.AKRO.ArcGIS.Forms
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    sampleOutput.Text = "Error";
-                    MessageBox.Show(ex.Message, "Invalid Input");
+                    sampleOutput.Text = @"Error";
+                    MessageBox.Show(ex.Message, @"Invalid Input");
                 }
             }
         }
@@ -305,7 +302,7 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void input_TextChanged(object sender, EventArgs e)
         {
-            double decimalDegrees = 0;
+            double decimalDegrees;
             if (Double.TryParse(sampleInput.Text, out decimalDegrees))
             {
                 sampleInput.ForeColor = Color.Black;
@@ -316,13 +313,13 @@ namespace NPS.AKRO.ArcGIS.Forms
                 catch
                 {
                     sampleInput.ForeColor = Color.Red;
-                    sampleOutput.Text = "Out of range";
+                    sampleOutput.Text = @"Out of range";
                 }
             }
             else
             {
                 sampleInput.ForeColor = Color.Red;
-                sampleOutput.Text = "N/A";
+                sampleOutput.Text = @"N/A";
             }
 
         }

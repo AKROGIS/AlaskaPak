@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using ESRI.ArcGIS.esriSystem;
@@ -14,10 +13,10 @@ namespace NPS.AKRO.ArcGIS.Common
     {
         public static void Invoke(string tool)
         {
-            UID uID = new UIDClass();
-            uID.Value = "esriGeoprocessingUI.ArcToolboxExtension";
+            UID uniqueId = new UIDClass();
+            uniqueId.Value = "esriGeoprocessingUI.ArcToolboxExtension";
 
-            IArcToolboxExtension arcToolboxExtension = ArcMap.Application.FindExtensionByCLSID(uID) as IArcToolboxExtension;
+            var arcToolboxExtension = ArcMap.Application.FindExtensionByCLSID(uniqueId) as IArcToolboxExtension;
             if (arcToolboxExtension == null)
                 return;
 
@@ -28,8 +27,8 @@ namespace NPS.AKRO.ArcGIS.Common
             }
             catch (COMException)
             {
-                MessageBox.Show("Unable to find tool: " + tool + Environment.NewLine + "in the system toolbox.",
-                    "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Unable to find tool: " + tool + Environment.NewLine + @"in the system toolbox.",
+                    @"Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             if (gpTool == null)
                 return;
@@ -43,8 +42,8 @@ namespace NPS.AKRO.ArcGIS.Common
         {
             if (toolboxPath == null)
             {
-                MessageBox.Show("Can't find the Setting 'PathToToolbox'.",
-                    "Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Can't find the Setting 'PathToToolbox'.",
+                    @"Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             if (File.Exists(toolboxPath))
             {
@@ -56,20 +55,20 @@ namespace NPS.AKRO.ArcGIS.Common
                 }
                 catch (COMException)
                 {
-                    MessageBox.Show("Unable to find tool: " + tool + Environment.NewLine + "in toolbox: " + toolboxPath,
-                        "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(@"Unable to find tool: " + tool + Environment.NewLine + @"in toolbox: " + toolboxPath,
+                        @"Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
             }
             else
-                MessageBox.Show("Path to Alaska Pak Toolbox is not valid." + Environment.NewLine + toolboxPath,
-                    "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Path to Alaska Pak Toolbox is not valid." + Environment.NewLine + toolboxPath,
+                    @"Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private static void Invoke(string workspace, string toolbox, string tool)
         {
             IWorkspaceFactory factory = new ToolboxWorkspaceFactoryClass();
-            IToolboxWorkspace toolboxWorkspace = (IToolboxWorkspace)factory.OpenFromFile(workspace, 0);
+            var toolboxWorkspace = (IToolboxWorkspace)factory.OpenFromFile(workspace, 0);
             if (toolboxWorkspace == null)
                 return;
 

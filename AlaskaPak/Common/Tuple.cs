@@ -1,9 +1,9 @@
 ﻿
 namespace NPS.AKRO.ArcGIS.Common
 {
-    public struct Tuple<A, B>
+    public struct Tuple<TA, TB>
     {
-        public A Item1 { get; set; }
-        public B Item2 { get; set; }
+        public TA Item1 { get; set; }
+        public TB Item2 { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using NPS.AKRO.ArcGIS.AddCoordinates;
 using NPS.AKRO.ArcGIS.Forms;
 
 /*
- * Enhancements/Bug Fixes
+ * Enhancements/Bugs/Fixes
  *  - Can we get the users display units/settings and use that as a default?
  *  - Enable selection of Feature Class from form
  *  - Allow selection of a SR in form
@@ -21,14 +21,14 @@ using NPS.AKRO.ArcGIS.Forms;
 
 namespace NPS.AKRO.ArcGIS
 {
-    public class AddXY : ESRI.ArcGIS.Desktop.AddIns.Button
+    public class AddCoords : ESRI.ArcGIS.Desktop.AddIns.Button
     {
 
         private AlaskaPak _controller;
-        private AddXYForm _form;
+        private AddXyForm _form;
         private FormData _data;
         
-        public AddXY()
+        public AddCoords()
         {
             AlaskaPak.RunProtected(GetType(), MyConstructor);
         }
@@ -56,7 +56,7 @@ namespace NPS.AKRO.ArcGIS
                 }
                 else
                 {
-                    _form = new AddXYForm(_data);
+                    _form = new AddXyForm(_data);
                     //What we will do when the form says it is closing
                     _form.FormClosed += delegate { _form = null; };
                     //What we will do when the form says it is ready to process
@@ -66,8 +66,8 @@ namespace NPS.AKRO.ArcGIS
             }
             else
             {
-                MessageBox.Show("You must have one or more point feature layers in your map to use this command.",
-                    "For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(@"You must have one or more point feature layers in your map to use this command.",
+                    @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -91,42 +91,41 @@ namespace NPS.AKRO.ArcGIS
 
         #region Helper Functions (Tool Specific Logic)
 
-        private void EditLayer(FormData data)
+        private static void EditLayer(FormData data)
         {
             IFeatureClass featureClass = data.GetFeatureClass();
             if (featureClass == null)
             {
-                MessageBox.Show("No feature layer/class was selected.\n");
+                MessageBox.Show(@"No feature layer/class was selected.");
                 return;
             }
 
             if (featureClass.ShapeType != esriGeometryType.esriGeometryPoint)
             {
-                MessageBox.Show("Data is not a point feature.\n");
+                MessageBox.Show(@"Data is not a point feature.");
                 return;
             }
 
 
             //If fields don't exist, add them
-            foreach (string fieldName in new string[] { data.XFieldName, data.YFieldName })
+            foreach (string fieldName in new[] { data.XFieldName, data.YFieldName })
             {
                 if (!data.FieldNameExists(fieldName))
                 {
-                    esriFieldType fieldType;
-                    if (data.Format.Formattable)
-                        fieldType = esriFieldType.esriFieldTypeString;
-                    else
-                        fieldType = esriFieldType.esriFieldTypeDouble;
+                    esriFieldType fieldType = data.Format.Formattable ? esriFieldType.esriFieldTypeString
+                                                                      : esriFieldType.esriFieldTypeDouble;
                     try
                     {
                         AddField(featureClass, fieldName, fieldType);
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show("Unable to add new fields.\n" +
-                            "Check that the selected data is not open in Catalog.\n" +
-                            "Check that the selected layer is not being edited.\n" + 
-                            "System Message: " + e.Message);
+                        MessageBox.Show(
+@"Unable to add new fields.
+Check that the selected data is not open in Catalog.
+Check that the selected layer is not being edited.
+System Message: "
+                                        + e.Message);
                         return;
                     }
                 }
@@ -139,7 +138,7 @@ namespace NPS.AKRO.ArcGIS
             }
             catch (Exception e)
             {
-                Console.WriteLine("Unable edit the layer.\n" + e.Message);
+                Console.WriteLine(@"Unable to edit the layer: " + e.Message);
                 return;
             }
             int xIndex = cursor.FindField(data.XFieldName);
@@ -153,7 +152,7 @@ namespace NPS.AKRO.ArcGIS
             IFeature feature = cursor.NextFeature();
             while (feature != null)
             {
-                IPoint point = (IPoint)feature.Shape;
+                var point = (IPoint)feature.Shape;
                 if (spatialReference != null)
                     point.Project(spatialReference);
 
@@ -173,7 +172,7 @@ namespace NPS.AKRO.ArcGIS
             System.Runtime.InteropServices.Marshal.ReleaseComObject(cursor);
         }
 
-        private ISpatialReference GetGcsFromPcs(ISpatialReference spatialRef)
+        private static ISpatialReference GetGcsFromPcs(ISpatialReference spatialRef)
         {
             if (spatialRef == null || spatialRef is IUnknownCoordinateSystem)
                 return null;
@@ -182,13 +181,13 @@ namespace NPS.AKRO.ArcGIS
             return ((IProjectedCoordinateSystem)spatialRef).GeographicCoordinateSystem;
         }
 
-        private void AddField(IFeatureClass featureClass, string fieldName, esriFieldType fieldType)
+        private static void AddField(IFeatureClass featureClass, string fieldName, esriFieldType fieldType)
         {
             IField newField = new FieldClass();
             ((IFieldEdit)newField).Name_2 = fieldName;
             ((IFieldEdit)newField).Type_2 = fieldType;
                     
-            ISchemaLock schemaLock = (ISchemaLock)featureClass;
+            var schemaLock = (ISchemaLock)featureClass;
             try
             {
                 // Get an exclusive schema lock to change the schema. 

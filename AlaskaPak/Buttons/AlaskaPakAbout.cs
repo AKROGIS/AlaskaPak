@@ -2,19 +2,14 @@
 {
     public class AlaskaPakAbout : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-        public AlaskaPakAbout()
-        {
-        }
-
         protected override void OnClick()
         {
             AlaskaPak.RunProtected(GetType(), MyClick);
         }
 
-        private void MyClick()
+        private static void MyClick()
         {
-            Forms.AboutAlaskaPak _form = new Forms.AboutAlaskaPak();
-            _form.ShowDialog();
+            (new Forms.AboutAlaskaPak()).ShowDialog();
         }
     }
 }

@@ -87,9 +87,9 @@ namespace NPS.AKRO.ArcGIS.Forms
             // BeginInvoke() runs as soon as all events are dispatched, side-effects are complete and the UI thread goes idle again.
             // but it cannot be called until the window has a handle (has been shown).
             // see http://stackoverflow.com/questions/4454058/no-itemchecked-event-in-a-checkedlistbox/4454304#4454304
-            if (this.IsHandleCreated)
+            if (IsHandleCreated)
             {
-                this.BeginInvoke((MethodInvoker)delegate
+                BeginInvoke((MethodInvoker)delegate
                 {
                     copyButton.Enabled = targetsListBox.CheckedItems.Count > 0;
                 });

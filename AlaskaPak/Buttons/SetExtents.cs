@@ -6,22 +6,18 @@ namespace NPS.AKRO.ArcGIS
 {
     public class SetExtents : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-        public SetExtents()
-        {
-        }
-
         protected override void OnClick()
         {
             AlaskaPak.RunProtected(GetType(), MyClick);
         }
 
-        private void MyClick()
+        private static void MyClick()
         {
             int mapCount = ArcMap.Document.Maps.Count;
             if (mapCount <= 1)
             {
-                MessageBox.Show("You must have more than 1 data frame in the current map document.",
-                    "For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(@"You must have more than 1 data frame in the current map document.",
+                    @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -38,7 +34,7 @@ namespace NPS.AKRO.ArcGIS
             }
             if (warning != null)
             {
-                DialogResult answer = MessageBox.Show(warning, "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                DialogResult answer = MessageBox.Show(warning, @"Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
                 if (answer == DialogResult.Cancel)
                     return;
             }
@@ -63,7 +59,7 @@ namespace NPS.AKRO.ArcGIS
             }
             msg = msg + System.Environment.NewLine +  "were adjusted to match the extents of" +
                         System.Environment.NewLine + "\t" + focusMap.Name;
-            MessageBox.Show(msg, "Extents changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(msg, @"Extents changed", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
         }
 

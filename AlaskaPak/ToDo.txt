@@ -8,3 +8,8 @@ Random Select: use selection if provided
 Random Select: toggle for with or without replacement
 Obscure Points: NIM bug, provide workarount
 Line To Rectangle: See FIXMEs in code
+Generate Grid: There are unused methods in the form, and the functionality feels incomplete
+AddCoords: FormData class still needs some cleanup.
+AddCoords: Formatter class still needs some cleanup.
+Generate Grids: Grid class still needs some cleanup.
+Generate Grids: GenerateGrid class still needs major cleanup.

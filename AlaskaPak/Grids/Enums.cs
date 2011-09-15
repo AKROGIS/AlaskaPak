@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace NPS.AKRO.ArcGIS.Grids
+﻿namespace NPS.AKRO.ArcGIS.Grids
 {
     public enum GridLabelOrder
     {

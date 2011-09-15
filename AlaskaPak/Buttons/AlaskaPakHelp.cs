@@ -7,16 +7,12 @@ namespace NPS.AKRO.ArcGIS
 {
     public class AlaskaPakHelp : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-        public AlaskaPakHelp()
-        {
-        }
-
-        private string AssemblyDirectory
+        private static string AssemblyDirectory
         {
             get
             {
                 string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
-                UriBuilder uri = new UriBuilder(codeBase);
+                var uri = new UriBuilder(codeBase);
                 string path = Uri.UnescapeDataString(uri.Path);
                 return Path.GetDirectoryName(path);
             }
@@ -27,7 +23,7 @@ namespace NPS.AKRO.ArcGIS
             AlaskaPak.RunProtected(GetType(), MyClick);
         }
 
-        private void MyClick()
+        private static void MyClick()
         {
             string file = Path.Combine(AssemblyDirectory, Path.Combine("Help", "help.html"));
             if (File.Exists(file))
@@ -36,8 +32,8 @@ namespace NPS.AKRO.ArcGIS
             }
             else
             {
-                MessageBox.Show("Unable to find the help files.\n",
-                    "Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Unable to find the help files.",
+                    @"Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

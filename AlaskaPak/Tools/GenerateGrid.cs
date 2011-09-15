@@ -73,7 +73,7 @@ namespace NPS.AKRO.ArcGIS
                 }
                 else
                 {
-                    MessageBox.Show("The active data frame must be in a projected coordinate system.",
+                    MessageBox.Show(@"The active data frame must be in a projected coordinate system.",
                         "For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }

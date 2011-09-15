@@ -21,23 +21,23 @@ namespace NPS.AKRO.ArcGIS
                 // by calling FindExtension. (? assumed behavior)
                 // The first instance created will assign to singleton, so we
                 // only call FindExtension if we need to create the first instance.
-                if (singleton == null)
+                if (_singleton == null)
                 {
-                    UID extID = new UIDClass();
-                    extID.Value = ThisAddIn.IDs.AlaskaPak;
-                    ArcMap.Application.FindExtensionByCLSID(extID);
+                    UID extId = new UIDClass();
+                    extId.Value = ThisAddIn.IDs.AlaskaPak;
+                    ArcMap.Application.FindExtensionByCLSID(extId);
                 }
-                return singleton;
+                return _singleton;
             }
         }
-        private static AlaskaPak singleton;
+        private static AlaskaPak _singleton;
 
         //In a real singleton pattern, the constructor would be private.
         //However FindExtension() needs to create the instance, so we rely
         //on the good behavior of FindExtension, and my classes.
         public AlaskaPak()
         {
-            singleton = this;
+            _singleton = this;
         }
 
         //My events
@@ -51,9 +51,9 @@ namespace NPS.AKRO.ArcGIS
             }
             catch (Exception ex)
             {
-                MessageBox.Show(myType + " encountered a problem." +
+                MessageBox.Show(myType + @" encountered a problem." +
                                 Environment.NewLine + Environment.NewLine + ex.Message,
-                                "Unhandled Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                @"Unhandled Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             
         }
@@ -78,8 +78,8 @@ namespace NPS.AKRO.ArcGIS
         private void AttachEventHandlersToMapDocument()
         {
             IDocumentEvents_Event docEvents = ArcMap.Events;
-            docEvents.ActiveViewChanged += new IDocumentEvents_ActiveViewChangedEventHandler(MapEvents_ActiveViewChanged);
-            docEvents.MapsChanged += new IDocumentEvents_MapsChangedEventHandler(MapEvents_ContentsChanged);
+            docEvents.ActiveViewChanged += MapEvents_ActiveViewChanged;
+            docEvents.MapsChanged += MapEvents_ContentsChanged;
         }
 
         private void MapEvents_ActiveViewChanged()
@@ -97,11 +97,11 @@ namespace NPS.AKRO.ArcGIS
 
         private void AttachEventHandlersToActiveView()
         {
-            //Note: only the active map fires these events.  It is a COM error to add these events to a non-active map
+            //Only the active map fires these events.  It is a COM error to add these events to a non-active map
             //There does not appear to be any way to get item added events from a non-active map
             //If maps are added (MapsChanged event), but FocusMap did not, then we will be adding duplicate events, so
             //we conservatively clear the handler before adding it (it not an error to remove a handler that is not there)
-            IActiveViewEvents_Event ev = (IActiveViewEvents_Event)ArcMap.Document.FocusMap;
+            var ev = (IActiveViewEvents_Event)ArcMap.Document.FocusMap;
             ev.ItemAdded -= MapEvents_ItemAdded; //layer added to view/TOC
             ev.ItemAdded += MapEvents_ItemAdded;
             ev.ItemDeleted -= MapEvents_ItemDeleted;  //layer removed from view/TOC
@@ -155,35 +155,25 @@ namespace NPS.AKRO.ArcGIS
 
         internal List<NamedLayer> GetFeatureLayers()
         {
-            return GetLayers("{40A9E885-5533-11d0-98BE-00805F7CED21}"); // IFeatureLayer
+            return GetLayers("{40A9E885-5533-11d0-98BE-00805F7CED21}").ToList(); // IFeatureLayer
         }
 
         internal List<NamedLayer> GetRasterLayers()
         {
-            return GetLayers("{D02371C7-35F7-11D2-B1F2-00C04F8EDEFF}"); // IRasterLayer
+            return GetLayers("{D02371C7-35F7-11D2-B1F2-00C04F8EDEFF}").ToList(); // IRasterLayer
         }
 
-        internal List<NamedLayer> GetLayers(string type)
+        internal IEnumerable<NamedLayer> GetLayers(string type)
         {
-            List<NamedLayer> namedNayers = new List<NamedLayer>();
-            foreach (ILayer layer in LayerUtils.GetAllLayers(ArcMap.Document, type))
-            {
-                string name = null;
-                if (ArcMap.Document.Maps.Count > 1)
-                {
-                    name = LayerUtils.GetFullName(ArcMap.Document, layer);
-                }
-                else
-                {
-                    name = LayerUtils.GetFullName(ArcMap.Document.Maps.Item[0], layer);
-                }
-                namedNayers.Add(new NamedLayer
-                {
-                    Name = name,
-                    Layer = layer
-                });
-            }
-            return namedNayers;
+            return from layer in LayerUtils.GetAllLayers(ArcMap.Document, type)
+                   let name = ArcMap.Document.Maps.Count > 1
+                                  ? LayerUtils.GetFullName(ArcMap.Document, layer)
+                                  : LayerUtils.GetFullName(ArcMap.Document.Maps.Item[0], layer)
+                   select new NamedLayer
+                              {
+                                  Name = name,
+                                  Layer = layer
+                              };
         }
 
         #endregion

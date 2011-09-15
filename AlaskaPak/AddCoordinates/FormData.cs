@@ -27,7 +27,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                 if (value != _layerIndex)
                 {
                     if (value < -1 || value > PointLayers.Count)
-                        throw new ArgumentOutOfRangeException("LayerIndex");
+                        throw new ArgumentOutOfRangeException("value");
                     _layerIndex = value;
                     if (_layerIndex != -1)
                         _featureClassPath = string.Empty;
@@ -116,8 +116,6 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                 switch (Format.OutputFormat)
                 {
                     default:
-                    case FormatterOutputFormat.DataSource:
-                    case FormatterOutputFormat.DataFrame:
                         return "X_Coord";
                     case FormatterOutputFormat.DecimalDegress:
                         return "Lon_DD";
@@ -138,8 +136,6 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                 switch (Format.OutputFormat)
                 {
                     default:
-                    case FormatterOutputFormat.DataSource:
-                    case FormatterOutputFormat.DataFrame:
                         return "Y_Coord";
                     case FormatterOutputFormat.DecimalDegress:
                         return "Lat_DD";
@@ -160,8 +156,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         {
             if (Format.Formattable)
                 return GetFields("string");
-            else
-                return GetFields("double");
+            return GetFields("double");
         }
 
         public IFeatureClass GetFeatureClass()
@@ -195,7 +190,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         {
             IFeatureClass featureClass = GetFeatureClass();
             if (featureClass == null)
-                throw new ArgumentException("Feature class is null", "FeatureClass");
+                throw new ArgumentException(@"Feature class is null", "FeatureClass");
             IFields fields = ((IFeatureLayer)PointLayers[LayerIndex].Layer).FeatureClass.Fields;
             return fields.FindField(name) != -1;
         }
@@ -204,7 +199,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         {
             IFeatureClass featureClass = GetFeatureClass();
             if (featureClass == null)
-                throw new ArgumentException("Feature class is null", "FeatureClass");
+                throw new ArgumentException(@"Feature class is null", "FeatureClass");
             IFields fields = ((IFeatureLayer)PointLayers[LayerIndex].Layer).FeatureClass.Fields;
             return fields.FindField(name);
         }

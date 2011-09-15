@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using NPS.AKRO.ArcGIS.Grids;
-using System.Diagnostics;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
@@ -26,7 +21,7 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void browseButton_Click(object sender, EventArgs e)
@@ -34,11 +29,11 @@ namespace NPS.AKRO.ArcGIS.Forms
             ESRI.ArcGIS.CatalogUI.IGxDialog browser = new ESRI.ArcGIS.CatalogUI.GxDialog();
             browser.ObjectFilter = new ESRI.ArcGIS.Catalog.GxFilterFeatureClassesClass();
             browser.Title = "Name of Feature Class to Create";
-            if (browser.DoModalSave((int)this.Handle))
+            if (browser.DoModalSave((int)Handle))
             {
                 if (browser.ReplacingObject)
                 {
-                    MessageBox.Show("Cannot overwrite an existing feature class.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(@"Cannot overwrite an existing feature class.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
@@ -62,25 +57,26 @@ namespace NPS.AKRO.ArcGIS.Forms
                     {
                         Dataset = ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset as ESRI.ArcGIS.Geodatabase.IFeatureDataset;
                         Workspace = ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset.Workspace as ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
-                        spatialReferenceTextBox.Text = ((ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset).SpatialReference.Name;
+                        var geoDataset = (ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset;
+                        if (geoDataset != null)
+                            spatialReferenceTextBox.Text = geoDataset.SpatialReference.Name;
                     }
 
                     if (Workspace == null)
                     {
-                        MessageBox.Show("Location is not a valid feature workspace.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        this.outputPathTextBox.Text = "";
+                        MessageBox.Show(@"Location is not a valid feature workspace.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        outputPathTextBox.Text = "";
                         saveButton.Enabled = false;
                     }
                     else
                     {
                         FeatureClassName = browser.Name;
-                        this.outputPathTextBox.Text = browser.FinalLocation.FullName + "\\" + FeatureClassName;
+                        outputPathTextBox.Text = browser.FinalLocation.FullName + @"\" + FeatureClassName;
                         saveButton.Enabled = true;
                     }
-                    if (Dataset == null)
-                        spatialReferenceTextBox.Text = "Unknown";
-                    else
-                        spatialReferenceTextBox.Text = ((ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset).SpatialReference.Name;
+                    spatialReferenceTextBox.Text = (Dataset == null) 
+                                                 ? @"Unknown" 
+                                                 : ((ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset).SpatialReference.Name;
 
                 }
             }
@@ -148,8 +144,8 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void DoubleTextBox_TextChanged(object sender, EventArgs e)
         {
-             TextBox textBox = sender as TextBox;
-            Debug.Assert(textBox != null, "non TextBox object hooked up to DoubleTextBox_TextChanged()");
+            var textBox = sender as TextBox;
+            //Debug.Assert(textBox != null, "non TextBox object hooked up to DoubleTextBox_TextChanged()");
             if (textBox == null)
                 return;
             double number;
@@ -164,8 +160,8 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void IntegerTextBox_TextChanged(object sender, EventArgs e)
         {
-            TextBox textBox = sender as TextBox;
-            Debug.Assert(textBox != null, "non TextBox object hooked up to IntTextBox_TextChanged()");
+            var textBox = sender as TextBox;
+            //Debug.Assert(textBox != null, "non TextBox object hooked up to IntTextBox_TextChanged()");
             if (textBox == null)
                 return;
             int number;

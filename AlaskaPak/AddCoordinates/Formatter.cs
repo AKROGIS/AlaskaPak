@@ -24,25 +24,29 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         {
             get
             {
-                return new string[] {
+                return new[] {
                     "Data Source Coordinates",
                     "Data Frame Coordinates",
                     "Decimal Degrees (formated)",
                     "Degrees Decimal Minutes (formated)",
-                    "Degrees Minutes Seconds (formated)",
-                };
+                    "Degrees Minutes Seconds (formated)"
+                             };
             }
         }
 
-        /// <param name="ShowDirection">if true, then alphabetic direction (N-S-E-W) is appended, if false, sign (-) is used for direction</param>
+        // If true, then alphabetic direction (N-S-E-W) is appended, if false, sign (-) is used for direction
         public bool ShowDirection { get; set; }
-        /// <param name="ShowZeroParts">if true, then zero minutes and zero seconds are shown, if false, they are hidden</param>
+
+        // If true, then zero minutes and zero seconds are shown, if false, they are hidden
         public bool ShowZeroParts { get; set; }
-        /// <param name="ShowSpaces">if true, then spaces are added between parts, if false all spaces are removed</param>
+
+        // If true, then spaces are added between parts, if false all spaces are removed
         public bool ShowSpaces { get; set; }
-        /// <param name="outputFormat">The format of the result</param>
+
+        // The format of the result
         public FormatterOutputFormat OutputFormat { get; set; }
-        /// <param name="decimals">Number of decimals to use in the last number</param>
+
+        // The number of decimals to use in the last number
         public int Decimals
         {
             get { return _decimals; }
@@ -51,7 +55,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                 if (value != _decimals)
                 {
                     if (value < 0 || value > 9)
-                        throw new ArgumentOutOfRangeException("decimals", "decimal precision must be within (0..9)");
+                        throw new ArgumentOutOfRangeException("value", @"decimal precision must be within (0..9)");
                     _decimals = value;
                 }
             }
@@ -65,8 +69,6 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                 switch (OutputFormat)
                 {
                     default:
-                    case FormatterOutputFormat.DataSource:
-                    case FormatterOutputFormat.DataFrame:
                         return 6;
                     case FormatterOutputFormat.DecimalDegress:
                         return 6;
@@ -106,9 +108,9 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         public string Format(double decimalDegrees, bool isLatitude)
         {
             if (isLatitude && (decimalDegrees < -90 || decimalDegrees > 90))
-                throw new ArgumentOutOfRangeException("decimalDegrees", "Latitude must be within (-90..90)");
+                throw new ArgumentOutOfRangeException("decimalDegrees", @"Latitude must be within (-90..90)");
             if (!isLatitude && (decimalDegrees < -360 || decimalDegrees > 360))
-                throw new ArgumentOutOfRangeException("decimalDegrees", "Longititude must be within (-360..360)");
+                throw new ArgumentOutOfRangeException("decimalDegrees", @"Longititude must be within (-360..360)");
 
             //normalize the longitude within -180..180
             if (decimalDegrees < -180)
@@ -129,9 +131,9 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
 
             //get components
             decimalDegrees = Math.Abs(decimalDegrees);
-            int degrees = (int)decimalDegrees;
+            var degrees = (int)decimalDegrees;
             double decimalMinutes = (decimalDegrees - degrees) * 60.0;
-            int minutes = (int)(decimalMinutes);
+            var minutes = (int)(decimalMinutes);
             double seconds = (decimalDegrees - (degrees + minutes / 60.0)) * 3600.0;
 
             // create format string
@@ -161,7 +163,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     args = new object[] { sign, degrees, minutes, seconds, direction };
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("outputFormat", "Invalid output format requested");
+                    throw new ArgumentOutOfRangeException("outputFormat", @"Invalid output format requested");
             }
 
             //remove spaces
