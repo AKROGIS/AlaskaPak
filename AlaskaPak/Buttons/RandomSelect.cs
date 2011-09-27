@@ -54,7 +54,7 @@ namespace NPS.AKRO.ArcGIS
             else
             {
                 MessageBox.Show(@"You must have one or more selectable feature layers in your map to use this command.",
-                    @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -66,16 +66,16 @@ namespace NPS.AKRO.ArcGIS
         private void LoadFormList()
         {
             _form.LoadList(_selectableLayers.Select(sl => new Tuple<string, int>
-            {
-                Item1 = sl.Name,
-                Item2 = FeatureCount(sl.Layer)
-            }));
+                                                              {
+                                                                  Item1 = sl.Name,
+                                                                  Item2 = FeatureCount(sl.Layer)
+                                                              }));
         }
 
         #region Event Handlers
 
         //What we will do when the controller says the layers have changed
-        void Controller_LayersChanged()
+        private void Controller_LayersChanged()
         {
             _selectableLayers = _controller.GetSelectableLayers();
             Enabled = MapHasSelectableLayer;
@@ -107,8 +107,8 @@ namespace NPS.AKRO.ArcGIS
             if (layer is ITable)
             {
                 ISelectionSet oids = ((ITable)layer).Select(null,
-                        esriSelectionType.esriSelectionTypeHybrid,
-                        esriSelectionOption.esriSelectionOptionNormal, null);
+                                                            esriSelectionType.esriSelectionTypeHybrid,
+                                                            esriSelectionOption.esriSelectionOptionNormal, null);
                 return oids.Count;
             }
             return 0;
@@ -129,9 +129,9 @@ namespace NPS.AKRO.ArcGIS
             selectionLayer.Clear();
             //get the oids of just the features in the definition query
             //Don't query the feature class, because it returns all features
-            ISelectionSet oids = ((ITable) layer).Select(null,
-                                                            esriSelectionType.esriSelectionTypeHybrid,
-                                                            esriSelectionOption.esriSelectionOptionNormal, null);
+            ISelectionSet oids = ((ITable)layer).Select(null,
+                                                        esriSelectionType.esriSelectionTypeHybrid,
+                                                        esriSelectionOption.esriSelectionOptionNormal, null);
             IGeoDatabaseBridge2 helper = new GeoDatabaseHelperClass();
 
             if (count < oids.Count - count)
@@ -182,7 +182,5 @@ namespace NPS.AKRO.ArcGIS
         }
 
         #endregion
-
     }
-
 }

@@ -30,6 +30,7 @@ namespace NPS.AKRO.ArcGIS
                 return _singleton;
             }
         }
+
         private static AlaskaPak _singleton;
 
         //In a real singleton pattern, the constructor would be private.
@@ -41,7 +42,7 @@ namespace NPS.AKRO.ArcGIS
         }
 
         //My events
-        public event Action LayersChanged;
+        internal event Action LayersChanged;
 
         internal static void RunProtected(Type myType, Action myAction)
         {
@@ -55,11 +56,10 @@ namespace NPS.AKRO.ArcGIS
                                 Environment.NewLine + Environment.NewLine + ex.Message,
                                 @"Unhandled Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
         }
 
         #region Extension methods
-        
+
         protected override void OnStartup()
         {
             //Wire up event handlers
@@ -89,7 +89,7 @@ namespace NPS.AKRO.ArcGIS
             MapEvents_ContentsChanged();
         }
 
-        void MapEvents_ContentsChanged()
+        private void MapEvents_ContentsChanged()
         {
             //Notify subscribers of changes in map contents.
             OnLayersChanged();
@@ -104,11 +104,11 @@ namespace NPS.AKRO.ArcGIS
             var ev = (IActiveViewEvents_Event)ArcMap.Document.FocusMap;
             ev.ItemAdded -= MapEvents_ItemAdded; //layer added to view/TOC
             ev.ItemAdded += MapEvents_ItemAdded;
-            ev.ItemDeleted -= MapEvents_ItemDeleted;  //layer removed from view/TOC
+            ev.ItemDeleted -= MapEvents_ItemDeleted; //layer removed from view/TOC
             ev.ItemDeleted += MapEvents_ItemDeleted;
             ev.ItemReordered -= MapEvents_ItemReordered; //layer moved in view/TOC
             ev.ItemReordered += MapEvents_ItemReordered;
-            ev.ContentsChanged -= MapEvents_ContentsChanged;  //view changed (fired when layer changes)
+            ev.ContentsChanged -= MapEvents_ContentsChanged; //view changed (fired when layer changes)
             ev.ContentsChanged += MapEvents_ContentsChanged;
         }
 
@@ -118,13 +118,13 @@ namespace NPS.AKRO.ArcGIS
                 OnLayersChanged();
         }
 
-        void MapEvents_ItemDeleted(object item)
+        private void MapEvents_ItemDeleted(object item)
         {
             if (item is ILayer)
                 OnLayersChanged();
         }
 
-        void MapEvents_ItemReordered(object item, int index)
+        private void MapEvents_ItemReordered(object item, int index)
         {
             if (item is ILayer)
                 OnLayersChanged();
@@ -149,8 +149,9 @@ namespace NPS.AKRO.ArcGIS
         internal List<NamedLayer> GetPointLayers()
         {
             return GetFeatureLayers().Where(x =>
-                ((IFeatureLayer)x.Layer).FeatureClass != null &&
-                ((IFeatureLayer)x.Layer).FeatureClass.ShapeType == esriGeometryType.esriGeometryPoint).ToList();
+                                            ((IFeatureLayer)x.Layer).FeatureClass != null &&
+                                            ((IFeatureLayer)x.Layer).FeatureClass.ShapeType ==
+                                            esriGeometryType.esriGeometryPoint).ToList();
         }
 
         internal List<NamedLayer> GetFeatureLayers()
@@ -177,7 +178,5 @@ namespace NPS.AKRO.ArcGIS
         }
 
         #endregion
-
     }
-
 }

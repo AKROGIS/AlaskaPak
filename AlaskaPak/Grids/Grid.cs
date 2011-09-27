@@ -5,9 +5,8 @@ using System.Collections.Generic;
 
 namespace NPS.AKRO.ArcGIS.Grids
 {
-    public class Grid
+    internal class Grid
     {
-
         //row name style
         //column name style
         //feature class (for existing)
@@ -17,7 +16,7 @@ namespace NPS.AKRO.ArcGIS.Grids
 
         //If map's spatial reference changes, then we need to reproject extents, and scale sizes, then redraw
 
-        public Grid()
+        internal Grid()
         {
             RowCount = 10;
             ColumnCount = 10;
@@ -32,42 +31,42 @@ namespace NPS.AKRO.ArcGIS.Grids
             PageNumbering = GridPageNumbering.LeftToRightThenTopToBottom;
         }
 
-        public Grid(IEnvelope env)
+        internal Grid(IEnvelope env)
             : this()
         {
             Extents = env;
             AdjustSize();
-            ColumnWidth = Math.Round(ColumnWidth / 10.0) * 10;
-            RowHeight = Math.Round(RowHeight / 10.0) * 10;
+            ColumnWidth = Math.Round(ColumnWidth/10.0)*10;
+            RowHeight = Math.Round(RowHeight/10.0)*10;
             AdjustExtents();
         }
 
         /// <summary>
         /// Extents (envelope) of the grid in map display units
         /// </summary>
-        public IEnvelope Extents { get; set; }
+        internal IEnvelope Extents { get; set; }
 
         /// <summary>
         /// Total number of rows in grid. Rows are indexed in the direction of the Y-axis, starting with zero.
         /// </summary>
-        public int RowCount { get; set; }
+        internal int RowCount { get; set; }
 
         /// <summary>
         /// Total number of columns in grid. Columns are indexed in the direction of the X-axis, starting with zero.
         /// </summary>
-        public int ColumnCount { get; set; }
+        internal int ColumnCount { get; set; }
 
         /// <summary>
         /// Height of each cell and each rows in map display units
         /// </summary>
-        public double RowHeight { get; set; }
+        internal double RowHeight { get; set; }
 
         /// <summary>
         /// Width of each cells and each columns in map display units
         /// </summary>
-        public double ColumnWidth { get; set; }
+        internal double ColumnWidth { get; set; }
 
-        public double MetersPerUnit
+        internal double MetersPerUnit
         {
             get
             {
@@ -76,20 +75,17 @@ namespace NPS.AKRO.ArcGIS.Grids
             }
         }
 
-        public string Prefix { get; set; }
-        public string Suffix { get; set; }
-        public string Delimiter { get; set; }
-        public GridLabelOrder LabelOrder { get; set; }
-        public GridLabelStyle RowLabelStyle { get; set; }
-        public GridLabelStyle ColumnLabelStyle { get; set; }
-        public GridPageNumbering PageNumbering { get; set; }
+        internal string Prefix { get; set; }
+        internal string Suffix { get; set; }
+        internal string Delimiter { get; set; }
+        internal GridLabelOrder LabelOrder { get; set; }
+        internal GridLabelStyle RowLabelStyle { get; set; }
+        internal GridLabelStyle ColumnLabelStyle { get; set; }
+        internal GridPageNumbering PageNumbering { get; set; }
 
-        public IMap Map
+        internal IMap Map
         {
-            get
-            {
-                return _map;
-            }
+            get { return _map; }
             set
             {
                 if (_map == value)
@@ -100,6 +96,7 @@ namespace NPS.AKRO.ArcGIS.Grids
                 ((IGraphicsContainer)_map).AddElement(_group as IElement, 0);
             }
         }
+
         private IMap _map;
 
 
@@ -108,19 +105,18 @@ namespace NPS.AKRO.ArcGIS.Grids
         //    throw new NotImplementedException();
         //}
 
-        public void SaveAs(ESRI.ArcGIS.Geodatabase.IFeatureClass fc)
+        internal void SaveAs(ESRI.ArcGIS.Geodatabase.IFeatureClass fc)
         {
             throw new NotImplementedException();
         }
 
-        public void Save()
+        internal void Save()
         {
             throw new NotImplementedException();
         }
 
 
-
-        public bool IsValid
+        internal bool IsValid
         {
             get
             {
@@ -130,33 +126,33 @@ namespace NPS.AKRO.ArcGIS.Grids
                     return false;
                 if (Extents.IsEmpty)
                     return false;
-                return Math.Abs(ColumnCount * ColumnWidth - Extents.Width) < EPSILON &&
-                       Math.Abs(RowCount * RowHeight - Extents.Height) < EPSILON;
+                return Math.Abs(ColumnCount*ColumnWidth - Extents.Width) < EPSILON &&
+                       Math.Abs(RowCount*RowHeight - Extents.Height) < EPSILON;
             }
         }
 
-        public void AdjustSize()
+        internal void AdjustSize()
         {
-            ColumnWidth = Extents.Width / ColumnCount;
-            RowHeight = Extents.Height / RowCount;
+            ColumnWidth = Extents.Width/ColumnCount;
+            RowHeight = Extents.Height/RowCount;
         }
 
-        public void AdjustExtents()
+        internal void AdjustExtents()
         {
             if (Extents == null)
                 return;
-            double widthDiff = ((ColumnWidth * ColumnCount) - Extents.Width) / 2.0;
-            double heightDiff = ((RowHeight * RowCount) - Extents.Height) / 2.0;
+            double widthDiff = ((ColumnWidth*ColumnCount) - Extents.Width)/2.0;
+            double heightDiff = ((RowHeight*RowCount) - Extents.Height)/2.0;
             Extents.Expand(widthDiff, heightDiff, false);
         }
 
-        public void AdjustCountThenSize()
+        internal void AdjustCountThenSize()
         {
             AdjustCount();
             AdjustSize();
         }
 
-        public void AdjustCountThenExtents()
+        internal void AdjustCountThenExtents()
         {
             AdjustCount();
             AdjustExtents();
@@ -164,8 +160,8 @@ namespace NPS.AKRO.ArcGIS.Grids
 
         private void AdjustCount()
         {
-            ColumnCount = (int)(Extents.Width / ColumnWidth);
-            RowCount = (int)(Extents.Height / RowHeight);
+            ColumnCount = (int)(Extents.Width/ColumnWidth);
+            RowCount = (int)(Extents.Height/RowHeight);
         }
 
         private string GetRowLabel(int row)
@@ -206,12 +202,13 @@ namespace NPS.AKRO.ArcGIS.Grids
                     //Assume less than 26^3 (17576) cells
                     if (index < 26)
                         return string.Format("{0}", Convert.ToChar(97 + index));
-                    if (index < 26 * 26)
-                        return string.Format("{0}{1}", Convert.ToChar(97 + (index / 26)), Convert.ToChar(97 + (index % 26)));
-                    if (index < 26 * 26 * 26)
+                    if (index < 26*26)
+                        return string.Format("{0}{1}", Convert.ToChar(97 + (index/26)), Convert.ToChar(97 + (index%26)));
+                    if (index < 26*26*26)
                     {
-                        const int basis = 26 * 26;
-                        return string.Format("{0}{1}{2}", Convert.ToChar(97 + (index / basis)), Convert.ToChar(97 + ((index % basis) / 26)), Convert.ToChar(97 + (index % 26)));
+                        const int basis = 26*26;
+                        return string.Format("{0}{1}{2}", Convert.ToChar(97 + (index/basis)),
+                                             Convert.ToChar(97 + ((index%basis)/26)), Convert.ToChar(97 + (index%26)));
                     }
                     return "OutOfBounds";
                 case GridLabelStyle.UpperCaseAlphabetic:
@@ -219,12 +216,13 @@ namespace NPS.AKRO.ArcGIS.Grids
                     //Assume less than 26^3 (17576) cells
                     if (index < 26)
                         return string.Format("{0}", Convert.ToChar(65 + index));
-                    if (index < 26 * 26)
-                        return string.Format("{0}{1}", Convert.ToChar(65 + (index / 26)), Convert.ToChar(65 + (index % 26)));
-                    if (index < 26 * 26 * 26)
+                    if (index < 26*26)
+                        return string.Format("{0}{1}", Convert.ToChar(65 + (index/26)), Convert.ToChar(65 + (index%26)));
+                    if (index < 26*26*26)
                     {
-                        const int basis = 26 * 26;
-                        return string.Format("{0}{1}{2}", Convert.ToChar(65 + (index / basis)), Convert.ToChar(65 + ((index % basis) / 26)), Convert.ToChar(65 + (index % 26)));
+                        const int basis = 26*26;
+                        return string.Format("{0}{1}{2}", Convert.ToChar(65 + (index/basis)),
+                                             Convert.ToChar(65 + ((index%basis)/26)), Convert.ToChar(65 + (index%26)));
                     }
                     return "OutOfBounds";
                 case GridLabelStyle.NumericWithZeroPadding:
@@ -245,7 +243,7 @@ namespace NPS.AKRO.ArcGIS.Grids
             }
         }
 
-        public void Erase()
+        internal void Erase()
         {
             if (_group == null)
                 return;
@@ -270,7 +268,7 @@ namespace NPS.AKRO.ArcGIS.Grids
             return;
         }
 
-        public void Draw()
+        internal void Draw()
         {
             if (Map == null)
                 return;
@@ -292,7 +290,7 @@ namespace NPS.AKRO.ArcGIS.Grids
             point2.Y = Extents.YMax;
             for (int i = 0; i <= ColumnCount; i++)
             {
-                point1.X = Extents.XMin + ColumnWidth * i;
+                point1.X = Extents.XMin + ColumnWidth*i;
                 point2.X = point1.X;
                 line.SetEmpty();
                 ((IPointCollection)line).AddPoint(point1);
@@ -305,7 +303,7 @@ namespace NPS.AKRO.ArcGIS.Grids
             point2.X = Extents.XMax;
             for (int j = 0; j <= RowCount; j++)
             {
-                point1.Y = Extents.YMin + RowHeight * j;
+                point1.Y = Extents.YMin + RowHeight*j;
                 point2.Y = point1.Y;
                 line.SetEmpty();
                 ((IPointCollection)line).AddPoint(point1);
@@ -318,8 +316,8 @@ namespace NPS.AKRO.ArcGIS.Grids
             {
                 for (int column = 0; column < ColumnCount; column++)
                 {
-                    point1.X = Extents.XMin + ColumnWidth * (column + 0.5f);
-                    point1.Y = Extents.YMin + RowHeight * (row + 0.5f);
+                    point1.X = Extents.XMin + ColumnWidth*(column + 0.5f);
+                    point1.Y = Extents.YMin + RowHeight*(row + 0.5f);
                     string label = GetLabel(row, column);
                     DrawLabel(_group, label, point1);
                 }
@@ -329,6 +327,7 @@ namespace NPS.AKRO.ArcGIS.Grids
             view.ScreenDisplay.FinishDrawing();
             view.Refresh();
         }
+
         private readonly IGroupElement3 _group = new GroupElementClass();
         private const double EPSILON = 1e-14;
 
@@ -350,9 +349,9 @@ namespace NPS.AKRO.ArcGIS.Grids
             group.AddElement(element);
         }
 
-        public IEnumerable<Cell> Cells
+        internal IEnumerable<Cell> Cells
         {
-            get 
+            get
             {
                 for (int row = 0; row < RowCount; row++)
                     for (int column = 0; column < ColumnCount; column++)
@@ -360,18 +359,18 @@ namespace NPS.AKRO.ArcGIS.Grids
             }
         }
 
-        public Cell GetCell(int row, int column)
+        internal Cell GetCell(int row, int column)
         {
             return new Cell
-            {
-                Row = row,
-                Column = column,
-                Page = GetCellNumber(row, column),
-                ColumnLabel = GetColumnLabel(column),
-                RowLabel = GetRowLabel(row),
-                Label = GetLabel(row, column),
-                Shape = GetGeometry(row, column),
-            };
+                       {
+                           Row = row,
+                           Column = column,
+                           Page = GetCellNumber(row, column),
+                           ColumnLabel = GetColumnLabel(column),
+                           RowLabel = GetRowLabel(row),
+                           Label = GetLabel(row, column),
+                           Shape = GetGeometry(row, column),
+                       };
         }
 
         private int GetCellNumber(int row, int column)
@@ -379,13 +378,13 @@ namespace NPS.AKRO.ArcGIS.Grids
             switch (PageNumbering)
             {
                 case GridPageNumbering.LeftToRightThenTopToBottom:
-                    return (RowCount - row - 1) * RowCount + column + 1;
+                    return (RowCount - row - 1)*RowCount + column + 1;
                 case GridPageNumbering.LeftToRightThenBottomToTop:
-                    return row * RowCount + column + 1;
+                    return row*RowCount + column + 1;
                 case GridPageNumbering.TopToBottomThenLeftToRight:
-                    return column * ColumnCount + (RowCount - row - 1) + 1;
+                    return column*ColumnCount + (RowCount - row - 1) + 1;
                 case GridPageNumbering.BottomToTopThenLeftToRight:
-                    return column * ColumnCount + row + 1;
+                    return column*ColumnCount + row + 1;
                 default:
                     throw new ArgumentException("GridPageNumbering");
             }
@@ -393,7 +392,7 @@ namespace NPS.AKRO.ArcGIS.Grids
 
         private IGeometry GetGeometry(int row, int column)
         {
-            IPointCollection polygon  = new Polygon();
+            IPointCollection polygon = new Polygon();
 
             //Clockwise for filled, Counter-clockwise for holes
             polygon.AddPoint(LowerLeftPoint(row, column));
@@ -411,8 +410,8 @@ namespace NPS.AKRO.ArcGIS.Grids
         private IPoint LowerLeftPoint(int row, int column)
         {
             IPoint point = new Point();
-            double x = Extents.XMin + column * ColumnWidth;
-            double y = Extents.YMin + row * RowHeight;
+            double x = Extents.XMin + column*ColumnWidth;
+            double y = Extents.YMin + row*RowHeight;
             point.PutCoords(x, y);
             return point;
         }
@@ -439,14 +438,14 @@ namespace NPS.AKRO.ArcGIS.Grids
         }
     }
 
-    public class Cell
+    internal class Cell
     {
-        public int Row { get; set; }
-        public int Column { get; set; }
-        public int Page { get; set; }
-        public string ColumnLabel { get; set; }
-        public string RowLabel { get; set; }
-        public string Label { get; set; }
-        public IGeometry Shape { get; set; }
+        internal int Row { get; set; }
+        internal int Column { get; set; }
+        internal int Page { get; set; }
+        internal string ColumnLabel { get; set; }
+        internal string RowLabel { get; set; }
+        internal string Label { get; set; }
+        internal IGeometry Shape { get; set; }
     }
 }

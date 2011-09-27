@@ -3,9 +3,9 @@ using System.IO;
 
 namespace NPS.AKRO.ArcGIS.Common
 {
-    class Settings
+    internal class Settings
     {
-        public static string Get(string setting)
+        internal static string Get(string setting)
         {
             string datafile = Path.Combine(AssemblyDirectory, setting + ".txt");
             try
@@ -31,6 +31,5 @@ namespace NPS.AKRO.ArcGIS.Common
                 return Path.GetDirectoryName(path);
             }
         }
-
     }
 }

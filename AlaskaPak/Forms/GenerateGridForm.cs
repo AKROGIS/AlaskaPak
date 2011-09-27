@@ -6,14 +6,14 @@ using NPS.AKRO.ArcGIS.Grids;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
-    public partial class GenerateGridForm : Form
+    internal partial class GenerateGridForm : Form
     {
-        public Grid Grid { get; set; }
-        public ESRI.ArcGIS.Geodatabase.IFeatureWorkspace Workspace { get; set; }
-        public ESRI.ArcGIS.Geodatabase.IFeatureDataset Dataset { get; set; }
-        public string FeatureClassName { get; set; }
+        internal Grid Grid { get; set; }
+        internal ESRI.ArcGIS.Geodatabase.IFeatureWorkspace Workspace { get; set; }
+        internal ESRI.ArcGIS.Geodatabase.IFeatureDataset Dataset { get; set; }
+        internal string FeatureClassName { get; set; }
 
-        public GenerateGridForm()
+        internal GenerateGridForm()
         {
             InitializeComponent();
             unitsComboBox.Items.AddRange(LinearUnitsConverter.KnownUnits.ToArray());
@@ -30,12 +30,13 @@ namespace NPS.AKRO.ArcGIS.Forms
             browser.ObjectFilter = new ESRI.ArcGIS.Catalog.GxFilterFeatureClassesClass();
             browser.Title = "Name of Feature Class to Create";
 
-            if (!browser.DoModalSave((int) Handle))
+            if (!browser.DoModalSave((int)Handle))
                 return;
 
             if (browser.ReplacingObject)
             {
-                MessageBox.Show(@"Cannot overwrite an existing feature class.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Cannot overwrite an existing feature class.", @"Error", MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
             }
             else
             {
@@ -43,22 +44,30 @@ namespace NPS.AKRO.ArcGIS.Forms
                 if (browser.FinalLocation is ESRI.ArcGIS.Catalog.IGxFolder)
                 {
                     Dataset = null;
-                    ESRI.ArcGIS.Geodatabase.IWorkspaceFactory wsf = new ESRI.ArcGIS.DataSourcesFile.ShapefileWorkspaceFactory();
-                    Workspace = wsf.OpenFromFile(browser.FinalLocation.FullName, 0) as ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
+                    ESRI.ArcGIS.Geodatabase.IWorkspaceFactory wsf =
+                        new ESRI.ArcGIS.DataSourcesFile.ShapefileWorkspaceFactory();
+                    Workspace =
+                        wsf.OpenFromFile(browser.FinalLocation.FullName, 0) as ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
                 }
 
                 // geodatabase (root level)
                 if (browser.FinalLocation is ESRI.ArcGIS.Catalog.IGxDatabase)
                 {
                     Dataset = null;
-                    Workspace = ((ESRI.ArcGIS.Catalog.IGxDatabase)browser.FinalLocation).Workspace as ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
+                    Workspace =
+                        ((ESRI.ArcGIS.Catalog.IGxDatabase)browser.FinalLocation).Workspace as
+                        ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
                 }
 
                 // feature dataset in a geodatabase
                 if (browser.FinalLocation is ESRI.ArcGIS.Catalog.IGxDataset)
                 {
-                    Dataset = ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset as ESRI.ArcGIS.Geodatabase.IFeatureDataset;
-                    Workspace = ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset.Workspace as ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
+                    Dataset =
+                        ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset as
+                        ESRI.ArcGIS.Geodatabase.IFeatureDataset;
+                    Workspace =
+                        ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset.Workspace as
+                        ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
                     var geoDataset = (ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset;
                     if (geoDataset != null)
                         spatialReferenceTextBox.Text = geoDataset.SpatialReference.Name;
@@ -66,7 +75,8 @@ namespace NPS.AKRO.ArcGIS.Forms
 
                 if (Workspace == null)
                 {
-                    MessageBox.Show(@"Location is not a valid feature workspace.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(@"Location is not a valid feature workspace.", @"Error", MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
                     outputPathTextBox.Text = "";
                     saveButton.Enabled = false;
                 }
@@ -76,10 +86,10 @@ namespace NPS.AKRO.ArcGIS.Forms
                     outputPathTextBox.Text = browser.FinalLocation.FullName + @"\" + FeatureClassName;
                     saveButton.Enabled = true;
                 }
-                spatialReferenceTextBox.Text = (Dataset == null) 
-                                                   ? @"Unknown" 
-                                                   : ((ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset).SpatialReference.Name;
-
+                spatialReferenceTextBox.Text = (Dataset == null)
+                                                   ? @"Unknown"
+                                                   : ((ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset).SpatialReference.
+                                                         Name;
             }
         }
 
@@ -87,8 +97,10 @@ namespace NPS.AKRO.ArcGIS.Forms
         {
             if (_updating)
                 return;
-            Grid.RowHeight = LinearUnitsConverter.ToMeters(Convert.ToDouble(heightTextBox.Text), unitsComboBox.Text) / Grid.MetersPerUnit;
-            Grid.ColumnWidth = LinearUnitsConverter.ToMeters(Convert.ToDouble(widthTextBox.Text), unitsComboBox.Text) / Grid.MetersPerUnit;
+            Grid.RowHeight = LinearUnitsConverter.ToMeters(Convert.ToDouble(heightTextBox.Text), unitsComboBox.Text)/
+                             Grid.MetersPerUnit;
+            Grid.ColumnWidth = LinearUnitsConverter.ToMeters(Convert.ToDouble(widthTextBox.Text), unitsComboBox.Text)/
+                               Grid.MetersPerUnit;
             Grid.RowCount = Convert.ToInt32(yCountTextBox.Text);
             Grid.ColumnCount = Convert.ToInt32(xCountTextBox.Text);
 
@@ -107,7 +119,7 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void OptionalPreviewButton_Click(object sender, EventArgs e)
         {
-            if (Grid.ColumnCount * Grid.RowCount <= 250)
+            if (Grid.ColumnCount*Grid.RowCount <= 250)
                 PreviewButton_Click(sender, e);
         }
 
@@ -122,8 +134,8 @@ namespace NPS.AKRO.ArcGIS.Forms
 
             double metersPerUserUnit = LinearUnitsConverter.ToMeters(1, unitsComboBox.Text);
             //RowHeight and ColumnWidth are in Grid units, convert to meters to convert to user units
-            heightTextBox.Text = (Grid.RowHeight * Grid.MetersPerUnit / metersPerUserUnit).ToString();
-            widthTextBox.Text = (Grid.ColumnWidth * Grid.MetersPerUnit / metersPerUserUnit).ToString();
+            heightTextBox.Text = (Grid.RowHeight*Grid.MetersPerUnit/metersPerUserUnit).ToString();
+            widthTextBox.Text = (Grid.ColumnWidth*Grid.MetersPerUnit/metersPerUserUnit).ToString();
 
             _updating = false;
         }
@@ -182,8 +194,8 @@ namespace NPS.AKRO.ArcGIS.Forms
             double h = Convert.ToDouble(heightTextBox.Text);
             if (Math.Abs(Grid.ColumnWidth - w) > EPSILON || Math.Abs(Grid.RowHeight - h) > EPSILON)
             {
-                Grid.RowHeight = LinearUnitsConverter.ToMeters(h, unitsComboBox.Text) / Grid.MetersPerUnit;
-                Grid.ColumnWidth = LinearUnitsConverter.ToMeters(w, unitsComboBox.Text) / Grid.MetersPerUnit;
+                Grid.RowHeight = LinearUnitsConverter.ToMeters(h, unitsComboBox.Text)/Grid.MetersPerUnit;
+                Grid.ColumnWidth = LinearUnitsConverter.ToMeters(w, unitsComboBox.Text)/Grid.MetersPerUnit;
                 if (!Grid.IsValid)
                 {
                     //make it valid
@@ -214,7 +226,7 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
         }
 
-        public void UpdateFormFromGrid()
+        internal void UpdateFormFromGrid()
         {
             _updating = true;
             //Set the default units to the map units, if that fails use meters.
@@ -223,8 +235,8 @@ namespace NPS.AKRO.ArcGIS.Forms
 
             //RowHeight and ColumnWidth are in Grid units, convert to meters to convert to user units
             double metersPerUserUnit = LinearUnitsConverter.ToMeters(1, unitsComboBox.Text);
-            heightTextBox.Text = (Grid.RowHeight * Grid.MetersPerUnit / metersPerUserUnit).ToString();
-            widthTextBox.Text = (Grid.ColumnWidth * Grid.MetersPerUnit / metersPerUserUnit).ToString();
+            heightTextBox.Text = (Grid.RowHeight*Grid.MetersPerUnit/metersPerUserUnit).ToString();
+            widthTextBox.Text = (Grid.ColumnWidth*Grid.MetersPerUnit/metersPerUserUnit).ToString();
 
             yCountTextBox.Text = Grid.RowCount.ToString();
             xCountTextBox.Text = Grid.ColumnCount.ToString();
@@ -240,10 +252,11 @@ namespace NPS.AKRO.ArcGIS.Forms
             pageNumberComboBox.SelectedIndex = (int)Grid.PageNumbering;
             _updating = false;
         }
+
         private bool _updating;
         private const double EPSILON = 1e-14;
 
-        public bool AllInputIsValid
+        internal bool AllInputIsValid
         {
             get
             {

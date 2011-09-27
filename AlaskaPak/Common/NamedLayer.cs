@@ -1,9 +1,8 @@
-﻿
-namespace NPS.AKRO.ArcGIS.Common
+﻿namespace NPS.AKRO.ArcGIS.Common
 {
-    public struct NamedLayer
+    internal struct NamedLayer
     {
-        public ESRI.ArcGIS.Carto.ILayer Layer;
-        public string Name;
+        internal ESRI.ArcGIS.Carto.ILayer Layer;
+        internal string Name;
     }
 }

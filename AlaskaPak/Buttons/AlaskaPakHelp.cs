@@ -33,7 +33,7 @@ namespace NPS.AKRO.ArcGIS
             else
             {
                 MessageBox.Show(@"Unable to find the help files.",
-                    @"Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                @"Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

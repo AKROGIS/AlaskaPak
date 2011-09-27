@@ -4,46 +4,46 @@ using ESRI.ArcGIS.esriSystem;
 
 namespace NPS.AKRO.ArcGIS.Grids
 {
-    class LinearUnitsConverter
+    internal class LinearUnitsConverter
     {
         static LinearUnitsConverter()
         {
-            Factors["Millimeters"] = 1.0 / 1000.0;
-            Factors["Centimeters"] = 1.0 / 100.0;
-            Factors["Decimeters"] = 1.0 / 10.0;
+            Factors["Millimeters"] = 1.0/1000.0;
+            Factors["Centimeters"] = 1.0/100.0;
+            Factors["Decimeters"] = 1.0/10.0;
             Factors["Meters"] = 1.0;
             Factors["Kilometers"] = 1000.0;
 
-            Factors["Inches (International)"] = 2.54 * Factors["Centimeters"];
-            Factors["Feet (International)"] = 12 * Factors["Inches (International)"] ;
-            Factors["Yards (International)"] = 3.0 * Factors["Feet (International)"];
-            Factors["Chains (International)"] = 66.0 * Factors["Feet (International)"];
-            Factors["Miles (International)"] = 5280.0 * Factors["Feet (International)"];
+            Factors["Inches (International)"] = 2.54*Factors["Centimeters"];
+            Factors["Feet (International)"] = 12*Factors["Inches (International)"];
+            Factors["Yards (International)"] = 3.0*Factors["Feet (International)"];
+            Factors["Chains (International)"] = 66.0*Factors["Feet (International)"];
+            Factors["Miles (International)"] = 5280.0*Factors["Feet (International)"];
 
-            Factors["Inches (US Survey)"] = 100.0 / 3937.0;
-            Factors["Feet (US Survey)"] = 12 * Factors["Inches (US Survey)"];
-            Factors["Yards (US Survey)"] = 3.0 * Factors["Feet (US Survey)"];
-            Factors["Chains (US Survey)"] = 66.0 * Factors["Feet (US Survey)"];
-            Factors["Miles (US Survey)"] = 5280 * Factors["Feet (US Survey)"];
+            Factors["Inches (US Survey)"] = 100.0/3937.0;
+            Factors["Feet (US Survey)"] = 12*Factors["Inches (US Survey)"];
+            Factors["Yards (US Survey)"] = 3.0*Factors["Feet (US Survey)"];
+            Factors["Chains (US Survey)"] = 66.0*Factors["Feet (US Survey)"];
+            Factors["Miles (US Survey)"] = 5280*Factors["Feet (US Survey)"];
 
-            Factors["Nautical Miles (US)"] = 6080.2 * Factors["Feet (US Survey)"];
-            Factors["Nautical Miles (UK)"] = 6080 * Factors["Feet (International)"];
+            Factors["Nautical Miles (US)"] = 6080.2*Factors["Feet (US Survey)"];
+            Factors["Nautical Miles (UK)"] = 6080*Factors["Feet (International)"];
             Factors["Nautical Miles (International)"] = 1852.0;
         }
 
-        static private readonly Dictionary<string, double> Factors = new Dictionary<string, double>();
+        private static readonly Dictionary<string, double> Factors = new Dictionary<string, double>();
 
-        static public IEnumerable<string> KnownUnits
+        internal static IEnumerable<string> KnownUnits
         {
             get { return Factors.Keys; }
         }
 
-        static public double ToMeters(double number, string units)
+        internal static double ToMeters(double number, string units)
         {
-            return number * Factors[units];
+            return number*Factors[units];
         }
 
-        static public string Key(esriUnits units)
+        internal static string Key(esriUnits units)
         {
             switch (units)
             {
@@ -81,5 +81,3 @@ namespace NPS.AKRO.ArcGIS.Grids
         }
     }
 }
-
-

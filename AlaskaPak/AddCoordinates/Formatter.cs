@@ -3,13 +3,15 @@ using System.Collections.Generic;
 
 namespace NPS.AKRO.ArcGIS.AddCoordinates
 {
-    class Formatter
+    internal class Formatter
     {
-        public Formatter() :
+        internal Formatter() :
             this(FormatterOutputFormat.DegreesMinutesSeconds, 2, true, true, true)
-        { }
+        {
+        }
 
-        public Formatter(FormatterOutputFormat outputFormat, int decimals, bool showDirection, bool showZeroParts, bool showSpaces)
+        internal Formatter(FormatterOutputFormat outputFormat, int decimals, bool showDirection, bool showZeroParts,
+                           bool showSpaces)
         {
             OutputFormat = outputFormat;
             Decimals = decimals;
@@ -20,34 +22,35 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
 
 
         // be sure to sync changes here with the AddXYOutputFormat enum.
-        public IEnumerable<string> Names
+        internal IEnumerable<string> Names
         {
             get
             {
-                return new[] {
-                    "Data Source Coordinates",
-                    "Data Frame Coordinates",
-                    "Decimal Degrees (formated)",
-                    "Degrees Decimal Minutes (formated)",
-                    "Degrees Minutes Seconds (formated)"
-                             };
+                return new[]
+                           {
+                               "Data Source Coordinates",
+                               "Data Frame Coordinates",
+                               "Decimal Degrees (formated)",
+                               "Degrees Decimal Minutes (formated)",
+                               "Degrees Minutes Seconds (formated)"
+                           };
             }
         }
 
         // If true, then alphabetic direction (N-S-E-W) is appended, if false, sign (-) is used for direction
-        public bool ShowDirection { get; set; }
+        internal bool ShowDirection { get; set; }
 
         // If true, then zero minutes and zero seconds are shown, if false, they are hidden
-        public bool ShowZeroParts { get; set; }
+        internal bool ShowZeroParts { get; set; }
 
         // If true, then spaces are added between parts, if false all spaces are removed
-        public bool ShowSpaces { get; set; }
+        internal bool ShowSpaces { get; set; }
 
         // The format of the result
-        public FormatterOutputFormat OutputFormat { get; set; }
+        internal FormatterOutputFormat OutputFormat { get; set; }
 
         // The number of decimals to use in the last number
-        public int Decimals
+        internal int Decimals
         {
             get { return _decimals; }
             set
@@ -59,9 +62,10 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                 _decimals = value;
             }
         }
+
         private int _decimals;
 
-        public int DefaultDecimals
+        internal int DefaultDecimals
         {
             get
             {
@@ -79,13 +83,13 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             }
         }
 
-        public bool Formattable
+        internal bool Formattable
         {
             get
             {
                 return OutputFormat == FormatterOutputFormat.DecimalDegress ||
-                    OutputFormat == FormatterOutputFormat.DegreesDecimalMinutes ||
-                    OutputFormat == FormatterOutputFormat.DegreesMinutesSeconds;
+                       OutputFormat == FormatterOutputFormat.DegreesDecimalMinutes ||
+                       OutputFormat == FormatterOutputFormat.DegreesMinutesSeconds;
             }
         }
 
@@ -104,7 +108,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         /// <param name="decimalDegrees">The real number value for the degrees to format</param>
         /// <param name="isLatitude">true if this is latitude, false if this is longitude</param>
         /// <returns>The formatted string</returns>
-        public string Format(double decimalDegrees, bool isLatitude)
+        internal string Format(double decimalDegrees, bool isLatitude)
         {
             if (isLatitude && (decimalDegrees < -90 || decimalDegrees > 90))
                 throw new ArgumentOutOfRangeException("decimalDegrees", @"Latitude must be within (-90..90)");
@@ -131,9 +135,9 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             //get components
             decimalDegrees = Math.Abs(decimalDegrees);
             var degrees = (int)decimalDegrees;
-            double decimalMinutes = (decimalDegrees - degrees) * 60.0;
+            double decimalMinutes = (decimalDegrees - degrees)*60.0;
             var minutes = (int)(decimalMinutes);
-            double seconds = (decimalDegrees - (degrees + minutes / 60.0)) * 3600.0;
+            double seconds = (decimalDegrees - (degrees + minutes/60.0))*3600.0;
 
             // create format string
             string decimalFormat = "F" + Decimals;
@@ -143,14 +147,14 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             {
                 case FormatterOutputFormat.DecimalDegress:
                     format = "{0}{1:" + decimalFormat + "}° {2}";
-                    args = new object[] { sign, decimalDegrees, direction };
+                    args = new object[] {sign, decimalDegrees, direction};
                     break;
                 case FormatterOutputFormat.DegreesDecimalMinutes:
                     format = "{0}{1}° ";
                     if (ShowZeroParts || !Zero(decimalMinutes, Decimals))
                         format = format + "{2:" + decimalFormat + "}' ";
                     format = format + "{3}";
-                    args = new object[] { sign, degrees, decimalMinutes, direction };
+                    args = new object[] {sign, degrees, decimalMinutes, direction};
                     break;
                 case FormatterOutputFormat.DegreesMinutesSeconds:
                     format = "{0}{1}° ";
@@ -159,7 +163,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     if (ShowZeroParts || !Zero(seconds, Decimals))
                         format = format + "{3:" + decimalFormat + "}\" ";
                     format = format + "{4}";
-                    args = new object[] { sign, degrees, minutes, seconds, direction };
+                    args = new object[] {sign, degrees, minutes, seconds, direction};
                     break;
                 default:
                     throw new Exception(@"Invalid output format requested");

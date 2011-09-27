@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
-    public partial class CopyRasterSymbologyForm : Form
+    internal partial class CopyRasterSymbologyForm : Form
     {
-        #region public methods
+        #region internal methods
 
-        public CopyRasterSymbologyForm()
+        internal CopyRasterSymbologyForm()
         {
             InitializeComponent();
         }
@@ -26,7 +26,7 @@ namespace NPS.AKRO.ArcGIS.Forms
         /// caller knows which items to act on.
         /// </remarks>
         /// <param name="layernames">List of layer names (not necessarily unique)</param>
-        public void LoadLists(IEnumerable<string> layernames)
+        internal void LoadLists(IEnumerable<string> layernames)
         {
             sourceComboBox.Items.Clear();
             targetsListBox.Items.Clear();
@@ -43,7 +43,7 @@ namespace NPS.AKRO.ArcGIS.Forms
         /// <summary>
         /// Fired when the user wants to initiate a copy
         /// </summary>
-        public event CopyRasterEventHandler CopyRasterEvent;
+        internal event CopyRasterEventHandler CopyRasterEvent;
 
         #endregion
 
@@ -52,7 +52,7 @@ namespace NPS.AKRO.ArcGIS.Forms
         private void selectAllButton_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < targetsListBox.Items.Count; i++)
-                targetsListBox.SetItemChecked(i,true);
+                targetsListBox.SetItemChecked(i, true);
             if (sourceComboBox.SelectedIndex != -1)
                 targetsListBox.SetItemChecked(sourceComboBox.SelectedIndex, false);
         }
@@ -89,10 +89,7 @@ namespace NPS.AKRO.ArcGIS.Forms
             // see http://stackoverflow.com/questions/4454058/no-itemchecked-event-in-a-checkedlistbox/4454304#4454304
             if (IsHandleCreated)
             {
-                BeginInvoke((MethodInvoker)delegate
-                {
-                    copyButton.Enabled = targetsListBox.CheckedItems.Count > 0;
-                });
+                BeginInvoke((MethodInvoker)delegate { copyButton.Enabled = targetsListBox.CheckedItems.Count > 0; });
             }
         }
 
@@ -108,21 +105,20 @@ namespace NPS.AKRO.ArcGIS.Forms
         {
             CopyRasterEventHandler handle = CopyRasterEvent;
             if (handle != null)
-                handle(this, new CopyRasterEventArgs {
-                    Source = sourceComboBox.SelectedIndex, 
-                    Targets = targetsListBox.CheckedIndices.Cast<int>()
-                });
+                handle(this, new CopyRasterEventArgs
+                                 {
+                                     Source = sourceComboBox.SelectedIndex,
+                                     Targets = targetsListBox.CheckedIndices.Cast<int>()
+                                 });
         }
-
     }
 
 
-    public delegate void CopyRasterEventHandler(object sender, CopyRasterEventArgs e);
+    internal delegate void CopyRasterEventHandler(object sender, CopyRasterEventArgs e);
 
-    public class CopyRasterEventArgs : EventArgs
+    internal class CopyRasterEventArgs : EventArgs
     {
-        public int Source { get; set; }
-        public IEnumerable<int> Targets { get; set; }
+        internal int Source { get; set; }
+        internal IEnumerable<int> Targets { get; set; }
     }
-
 }

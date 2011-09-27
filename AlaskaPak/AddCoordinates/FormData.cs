@@ -7,9 +7,9 @@ using NPS.AKRO.ArcGIS.Common;
 
 namespace NPS.AKRO.ArcGIS.AddCoordinates
 {
-    class FormData
+    internal class FormData
     {
-        public FormData(List<NamedLayer> pointLayers)
+        internal FormData(List<NamedLayer> pointLayers)
         {
             Format = new Formatter();
             PointLayers = pointLayers;
@@ -19,7 +19,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
 
         // LayerIndex and FeatureClass are mutually exclusive,
         // although both can be empty (-1 and null/empty respectively)
-        public int LayerIndex
+        internal int LayerIndex
         {
             get { return _layerIndex; }
             set
@@ -33,9 +33,10 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     _featureClassPath = string.Empty;
             }
         }
+
         private int _layerIndex;
 
-        public string FeatureClassPath
+        internal string FeatureClassPath
         {
             get { return _featureClassPath; }
             set
@@ -47,12 +48,14 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     _layerIndex = -1;
             }
         }
+
         private string _featureClassPath;
 
-        public string XFieldName { get; set; }
-        public string YFieldName { get; set; }
-        public Formatter Format { get; set; }
-        public List<NamedLayer> PointLayers
+        internal string XFieldName { get; set; }
+        internal string YFieldName { get; set; }
+        internal Formatter Format { get; set; }
+
+        internal List<NamedLayer> PointLayers
         {
             get { return _pointLayers; }
             set
@@ -80,11 +83,15 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     LayerIndex = 0;
             }
         }
+
         private List<NamedLayer> _pointLayers;
 
-        public List<string> PointLayerNames { get { return PointLayers.Select(nl => nl.Name).ToList(); } }
+        internal List<string> PointLayerNames
+        {
+            get { return PointLayers.Select(nl => nl.Name).ToList(); }
+        }
 
-        public bool IsReady
+        internal bool IsReady
         {
             get
             {
@@ -95,7 +102,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             }
         }
 
-        public bool IsFeatureClassValid
+        internal bool IsFeatureClassValid
         {
             get
             {
@@ -104,7 +111,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             }
         }
 
-        public string DefaultXFieldName
+        internal string DefaultXFieldName
         {
             get
             {
@@ -124,7 +131,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             }
         }
 
-        public string DefaultYFieldName
+        internal string DefaultYFieldName
         {
             get
             {
@@ -144,17 +151,17 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             }
         }
 
-        public IEnumerable<string> GetAllFieldNames()
+        internal IEnumerable<string> GetAllFieldNames()
         {
             return GetFields("*");
         }
 
-        public IEnumerable<string> GetAppropriateFieldNames()
+        internal IEnumerable<string> GetAppropriateFieldNames()
         {
             return GetFields(Format.Formattable ? "string" : "double");
         }
 
-        public IFeatureClass GetFeatureClass()
+        internal IFeatureClass GetFeatureClass()
         {
             if (LayerIndex != -1)
                 return ((IFeatureLayer)PointLayers[LayerIndex].Layer).FeatureClass;
@@ -163,12 +170,12 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                 throw new NotImplementedException();
             return null;
         }
-        
+
         private IEnumerable<string> GetFields(string type)
         {
             IFeatureClass featureClass = GetFeatureClass();
             if (featureClass == null)
-                yield break; 
+                yield break;
             int fieldCount = featureClass.Fields.FieldCount;
             for (int counter = 0; counter < fieldCount; counter++)
             {

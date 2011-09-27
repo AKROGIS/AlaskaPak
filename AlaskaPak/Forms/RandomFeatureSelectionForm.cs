@@ -7,12 +7,12 @@ using NPS.AKRO.ArcGIS.Common;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
-    public partial class RandomFeatureSelectionForm : Form
+    internal partial class RandomFeatureSelectionForm : Form
     {
         private int _quantity;
         private int _total;
 
-        public RandomFeatureSelectionForm()
+        internal RandomFeatureSelectionForm()
         {
             InitializeComponent();
         }
@@ -20,9 +20,9 @@ namespace NPS.AKRO.ArcGIS.Forms
         /// <summary>
         /// Fired when the user is ready to process the layer
         /// </summary>
-        public event RandomSelectEventHandler SelectedLayer;
+        internal event RandomSelectEventHandler SelectedLayer;
 
-        public void LoadList(IEnumerable<Tuple<string, int>> layerinfo)
+        internal void LoadList(IEnumerable<Tuple<string, int>> layerinfo)
         {
             layerComboBox.DataSource = layerinfo.ToList();
             layerComboBox.DisplayMember = "Item1";
@@ -86,7 +86,7 @@ namespace NPS.AKRO.ArcGIS.Forms
                     }
                     else
                     {
-                        q = Convert.ToInt32(n / 100 * t);
+                        q = Convert.ToInt32(n/100*t);
                     }
                 }
                 else
@@ -145,20 +145,18 @@ namespace NPS.AKRO.ArcGIS.Forms
             RandomSelectEventHandler handle = SelectedLayer;
             if (handle != null)
                 handle(this, new RandomSelectEventArgs
-                {
-                    LayerIndex = layerComboBox.SelectedIndex,
-                    Count = _quantity
-                });
+                                 {
+                                     LayerIndex = layerComboBox.SelectedIndex,
+                                     Count = _quantity
+                                 });
         }
-
     }
 
-    public delegate void RandomSelectEventHandler(object sender, RandomSelectEventArgs e);
+    internal delegate void RandomSelectEventHandler(object sender, RandomSelectEventArgs e);
 
-    public class RandomSelectEventArgs : EventArgs
+    internal class RandomSelectEventArgs : EventArgs
     {
-        public int LayerIndex { get; set; }
-        public int Count { get; set; }
+        internal int LayerIndex { get; set; }
+        internal int Count { get; set; }
     }
-
 }

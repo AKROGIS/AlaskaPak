@@ -1,7 +1,7 @@
 ﻿namespace NPS.AKRO.ArcGIS.AddCoordinates
 {
     // be sure to sync changes with Formatter.Names
-    enum FormatterOutputFormat
+    internal enum FormatterOutputFormat
     {
         DataSource,
         DataFrame,
@@ -10,4 +10,3 @@
         DegreesMinutesSeconds,
     }
 }
-

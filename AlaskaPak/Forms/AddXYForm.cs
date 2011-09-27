@@ -2,12 +2,12 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using ESRI.ArcGIS.Geodatabase;  // for esriFieldNameErrorType
+using ESRI.ArcGIS.Geodatabase; // for esriFieldNameErrorType
 using NPS.AKRO.ArcGIS.AddCoordinates;
 
 namespace NPS.AKRO.ArcGIS.Forms
 {
-    public partial class AddXyForm : Form
+    internal partial class AddXyForm : Form
     {
         internal AddXyForm(FormData data)
         {
@@ -16,11 +16,8 @@ namespace NPS.AKRO.ArcGIS.Forms
         }
 
         internal FormData Data
-        { 
-            get
-            {
-                return _data;
-            } 
+        {
+            get { return _data; }
             set
             {
                 if (value == _data)
@@ -33,9 +30,10 @@ namespace NPS.AKRO.ArcGIS.Forms
                 yFieldComboBox.Text = _data.DefaultYFieldName;
             }
         }
+
         private FormData _data;
 
-        public void PointLayersChanged()
+        internal void PointLayersChanged()
         {
             featureClassComboBox.Items.Clear();
             featureClassComboBox.Items.AddRange(Data.PointLayerNames.ToArray());
@@ -89,6 +87,7 @@ namespace NPS.AKRO.ArcGIS.Forms
                 formattingOptionsButton.Enabled = false;
             }
         }
+
         private bool _showAdvanced;
 
 
@@ -136,7 +135,7 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
             else
             {
-                foreach (ComboBox cb in new[] { xFieldComboBox, yFieldComboBox })
+                foreach (ComboBox cb in new[] {xFieldComboBox, yFieldComboBox})
                 {
                     esriFieldNameErrorType err = Data.ValidateFieldName(cb.Text);
                     switch (err)
@@ -151,12 +150,14 @@ namespace NPS.AKRO.ArcGIS.Forms
                             else
                             {
                                 overwriteWarning.SetError(cb, "");
-                                invalidEntry.SetError(cb, "An incompatible field already exists with this name.\nSelect a different field\nor enter a new field name.");
+                                invalidEntry.SetError(cb,
+                                                      "An incompatible field already exists with this name.\nSelect a different field\nor enter a new field name.");
                             }
                             break;
                         case esriFieldNameErrorType.esriInvalidCharacter:
                             overwriteWarning.SetError(cb, "");
-                            invalidEntry.SetError(cb, "New field name has unacceptable characters.\nChange the field name.");
+                            invalidEntry.SetError(cb,
+                                                  "New field name has unacceptable characters.\nChange the field name.");
                             break;
                         case esriFieldNameErrorType.esriInvalidFieldNameLength:
                             overwriteWarning.SetError(cb, "");
@@ -174,11 +175,11 @@ namespace NPS.AKRO.ArcGIS.Forms
                 }
             }
             Data.XFieldName = string.IsNullOrEmpty(invalidEntry.GetError(xFieldComboBox))
-                            ? xFieldComboBox.Text
-                            : string.Empty;
+                                  ? xFieldComboBox.Text
+                                  : string.Empty;
             Data.YFieldName = string.IsNullOrEmpty(invalidEntry.GetError(yFieldComboBox))
-                            ? yFieldComboBox.Text
-                            : string.Empty;
+                                  ? yFieldComboBox.Text
+                                  : string.Empty;
         }
 
         private void UpdateOkButton()
@@ -198,7 +199,6 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void okButton_Click(object sender, EventArgs e)
         {
-
         }
 
         #region  Lat/Lon formatting/preview
@@ -320,11 +320,8 @@ namespace NPS.AKRO.ArcGIS.Forms
                 sampleInput.ForeColor = Color.Red;
                 sampleOutput.Text = @"N/A";
             }
-
         }
 
         #endregion
-
     }
-
 }

@@ -38,14 +38,14 @@ namespace NPS.AKRO.ArcGIS
             //_controller = AlaskaPak.Controller;
             //_controller.LayersChanged += Controller_LayersChanged;
             //_selectableLayers = _controller.GetSelectableLayers();
-            Enabled = CheckForCoordinateSystem(); 
+            Enabled = CheckForCoordinateSystem();
         }
 
         protected override void OnMouseDown(MouseEventArgs arg)
         {
             try
             {
-                 if (Enabled)
+                if (Enabled)
                 {
                     IEnvelope env = GetExtents();
                     //MessageBox.Show(string.Format("({0},{1}) to ({0},{1})", env.XMin, env.YMin, env.XMax, env.YMax), "Envelope");
@@ -68,7 +68,7 @@ namespace NPS.AKRO.ArcGIS
                 else
                 {
                     MessageBox.Show(@"The active data frame must be in a projected coordinate system.",
-                        @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
@@ -85,9 +85,11 @@ namespace NPS.AKRO.ArcGIS
         internal void Form_CreateGrid(object sender, EventArgs e)
         {
             Grid grid = _form.Grid;
-            IFeatureClass gridFeatureClass = CreateGridFeatureClass(grid, _form.Workspace, _form.Dataset, _form.FeatureClassName);
+            IFeatureClass gridFeatureClass = CreateGridFeatureClass(grid, _form.Workspace, _form.Dataset,
+                                                                    _form.FeatureClassName);
             if (gridFeatureClass == null)
-                MessageBox.Show(@"Unable to create " + _form.FeatureClassName, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Unable to create " + _form.FeatureClassName, @"Error", MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
             else
             {
                 AddFeatureClassToMap(gridFeatureClass);
@@ -101,6 +103,7 @@ namespace NPS.AKRO.ArcGIS
             _form.Grid.Erase();
             _form = null;
         }
+
         #endregion
 
         private void UpdateForm(IEnvelope env)
@@ -136,33 +139,38 @@ namespace NPS.AKRO.ArcGIS
             return sr is IProjectedCoordinateSystem;
         }
 
-        private IFeatureClass CreateGridFeatureClass(Grid grid, IFeatureWorkspace workspace, IFeatureDataset dataset, string featureClassName)
+        private IFeatureClass CreateGridFeatureClass(Grid grid, IFeatureWorkspace workspace, IFeatureDataset dataset,
+                                                     string featureClassName)
         {
             try
             {
                 IFields fields;
                 if (workspace is IGxFolder)
                 {
-                    MessageBox.Show(@"Creating Shapefile " + featureClassName + @" in " + ((IWorkspace)workspace).PathName);
+                    MessageBox.Show(@"Creating Shapefile " + featureClassName + @" in " +
+                                    ((IWorkspace)workspace).PathName);
                     if (!ValidateShapefileName())
                     {
                         MessageBox.Show(@"Shapefile may exist, name may be too long," +
-                            @"folder may not exist, folder may be readonly,", @"Error"); 
+                                        @"folder may not exist, folder may be readonly,", @"Error");
                         return null;
                     }
                     fields = CreateShapefileFields();
-                } 
+                }
                 else
                 {
-                    string msg = dataset == null ?
-                                 string.Format("Creating {0} in {1}", featureClassName, ((IWorkspace) workspace).PathName) :
-                                 string.Format("Creating {0} in {1}\\{2}", featureClassName, ((IWorkspace)workspace).PathName, dataset.Name);
+                    string msg = dataset == null
+                                     ? string.Format("Creating {0} in {1}", featureClassName,
+                                                     ((IWorkspace)workspace).PathName)
+                                     : string.Format("Creating {0} in {1}\\{2}", featureClassName,
+                                                     ((IWorkspace)workspace).PathName, dataset.Name);
                     MessageBox.Show(msg);
                     if (!ValidateGdbfileName())
                         return null;
                     fields = CreateGdbFields();
                 }
-                IFeatureClass generatedFeatureClass = CreateFeatureClass((IWorkspace2)workspace, dataset, featureClassName, fields, null, null, "");
+                IFeatureClass generatedFeatureClass = CreateFeatureClass((IWorkspace2)workspace, dataset,
+                                                                         featureClassName, fields, null, null, "");
                 if (generatedFeatureClass == null)
                     return null;
                 PutGridInFeatureClass(generatedFeatureClass, grid);
@@ -210,7 +218,6 @@ namespace NPS.AKRO.ArcGIS
                 // Flush the buffer to the geodatabase.
                 insertCursor.Flush();
             }
-
         }
 
         private static IFields CreateGdbFields()
@@ -326,7 +333,6 @@ namespace NPS.AKRO.ArcGIS
             geoLayer.AnnotationProperties.QueryItem(0, out annotationProperties, out unused, out unused);
             ((ILabelEngineLayerProperties)annotationProperties).Expression = "[Cell_Label]";
             geoLayer.DisplayAnnotation = true;
-
         }
 
 
@@ -362,8 +368,10 @@ namespace NPS.AKRO.ArcGIS
         ///      keywords, refer to the ArcSDE documentation. When not using an ArcSDE table use an empty 
         ///      string (ex: "").
         ///</remarks>
-        public IFeatureClass CreateFeatureClass(IWorkspace2 workspace, IFeatureDataset featureDataset, string featureClassName, 
-                                                IFields fields, ESRI.ArcGIS.esriSystem.UID clsid, ESRI.ArcGIS.esriSystem.UID clsext, string strConfigKeyword)
+        internal IFeatureClass CreateFeatureClass(IWorkspace2 workspace, IFeatureDataset featureDataset,
+                                                  string featureClassName,
+                                                  IFields fields, ESRI.ArcGIS.esriSystem.UID clsid,
+                                                  ESRI.ArcGIS.esriSystem.UID clsext, string strConfigKeyword)
         {
             if (string.IsNullOrEmpty(featureClassName))
                 return null;
@@ -371,7 +379,8 @@ namespace NPS.AKRO.ArcGIS
             IFeatureClass featureClass;
             var featureWorkspace = (IFeatureWorkspace)workspace; // Cast may throw exception
 
-            if (workspace.NameExists[esriDatasetType.esriDTFeatureClass, featureClassName]) //feature class with that name already exists 
+            if (workspace.NameExists[esriDatasetType.esriDTFeatureClass, featureClassName])
+                //feature class with that name already exists 
             {
                 featureClass = featureWorkspace.OpenFeatureClass(featureClassName);
                 return featureClass;
@@ -435,10 +444,12 @@ namespace NPS.AKRO.ArcGIS
 
             // finally create and return the feature class
             featureClass = featureDataset == null
-                         ? featureWorkspace.CreateFeatureClass(featureClassName, validatedFields, clsid, clsext, 
-                                                               esriFeatureType.esriFTSimple, strShapeField, strConfigKeyword)
-                         : featureDataset.CreateFeatureClass(featureClassName, validatedFields, clsid, clsext, 
-                                                             esriFeatureType.esriFTSimple, strShapeField, strConfigKeyword);
+                               ? featureWorkspace.CreateFeatureClass(featureClassName, validatedFields, clsid, clsext,
+                                                                     esriFeatureType.esriFTSimple, strShapeField,
+                                                                     strConfigKeyword)
+                               : featureDataset.CreateFeatureClass(featureClassName, validatedFields, clsid, clsext,
+                                                                   esriFeatureType.esriFTSimple, strShapeField,
+                                                                   strConfigKeyword);
             return featureClass;
         }
     }

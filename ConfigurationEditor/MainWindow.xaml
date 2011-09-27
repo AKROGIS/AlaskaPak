@@ -1,32 +1,35 @@
-﻿<Window x:Class="ConfigurationEditor.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="AlaskaPak Configuration" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" MinWidth="365" MinHeight="185">
-    <DockPanel LastChildFill="False" >
-        <Grid DockPanel.Dock="Top">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition MinWidth="200"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Margin="0,5" HorizontalAlignment="Right">Addin:</Label>
-            <Label Grid.Row="1" Grid.Column="0" Margin="0,5" HorizontalAlignment="Right">Theme Manager:</Label>
-            <Label Grid.Row="2" Grid.Column="0" Margin="0,5" HorizontalAlignment="Right">Tool Box:</Label>
-            <TextBox Grid.Row="0" Grid.Column="1" Margin="0,5" Name="addinPath" ToolTip="Path to the AlaskaPak Addin" TextChanged="TextChanged" LostFocus="AddInChanged" />
-            <TextBox Grid.Row="1" Grid.Column="1" Margin="0,5" Name="themeManagerPath" ToolTip="Path to the Theme Manager executable" TextChanged="TextChanged" />
-            <TextBox Grid.Row="2" Grid.Column="1" Margin="0,5" Name="toolboxPath" ToolTip="Path to the AlaskaPak Toolbox" TextChanged="TextChanged" />
-            <Button Grid.Row="0" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse" Click="BrowseForAddinPath" >. . .</Button>
-            <Button Grid.Row="1" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse" Click="BrowseForThemeManagerPathPath" >. . .</Button>
-            <Button Grid.Row="2" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse" Click="BrowseForToolboxPath" >. . .</Button>
-        </Grid>
-        <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
-            <Button Margin="5" DockPanel.Dock="Left" Click="Cancel">Cancel</Button>
-            <Button Margin="5" DockPanel.Dock="Right" Click="FixArchive" Name="saveButton" >Save Settings</Button>
-        </DockPanel>
+﻿<Window x:Class="ConfigurationEditor.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="AlaskaPak Configuration" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen" MinWidth="365" MinHeight="185">
+  <DockPanel LastChildFill="False">
+    <Grid DockPanel.Dock="Top">
+      <Grid.RowDefinitions>
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition MinWidth="200" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <Label Grid.Row="0" Grid.Column="0" Margin="0,5" HorizontalAlignment="Right">Addin:</Label>
+      <Label Grid.Row="1" Grid.Column="0" Margin="0,5" HorizontalAlignment="Right">Theme Manager:</Label>
+      <Label Grid.Row="2" Grid.Column="0" Margin="0,5" HorizontalAlignment="Right">Tool Box:</Label>
+      <TextBox Grid.Row="0" Grid.Column="1" Margin="0,5" Name="addinPath" ToolTip="Path to the AlaskaPak Addin"
+               TextChanged="TextChanged" LostFocus="AddInChanged" />
+      <TextBox Grid.Row="1" Grid.Column="1" Margin="0,5" Name="themeManagerPath"
+               ToolTip="Path to the Theme Manager executable" TextChanged="TextChanged" />
+      <TextBox Grid.Row="2" Grid.Column="1" Margin="0,5" Name="toolboxPath"
+               ToolTip="Path to the AlaskaPak Toolbox" TextChanged="TextChanged" />
+      <Button Grid.Row="0" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse" Click="BrowseForAddinPath">. . .</Button>
+      <Button Grid.Row="1" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse"
+              Click="BrowseForThemeManagerPathPath">. . .</Button>
+      <Button Grid.Row="2" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse" Click="BrowseForToolboxPath">. . .</Button>
+    </Grid>
+    <DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
+      <Button Margin="5" DockPanel.Dock="Left" Click="Cancel">Cancel</Button>
+      <Button Margin="5" DockPanel.Dock="Right" Click="FixArchive" Name="saveButton">Save Settings</Button>
     </DockPanel>
+  </DockPanel>
 </Window>

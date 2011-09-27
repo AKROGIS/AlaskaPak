@@ -1,12 +1,12 @@
 ﻿namespace NPS.AKRO.ArcGIS.Grids
 {
-    public enum GridLabelOrder
+    internal enum GridLabelOrder
     {
         RowFirst,
         ColumnFirst,
     }
 
-    public enum GridLabelStyle
+    internal enum GridLabelStyle
     {
         UpperCaseAlphabetic,
         LowerCaseAlphabetic,
@@ -14,7 +14,7 @@
         NumericWithZeroPadding,
     }
 
-    public enum GridPageNumbering
+    internal enum GridPageNumbering
     {
         LeftToRightThenTopToBottom,
         LeftToRightThenBottomToTop,

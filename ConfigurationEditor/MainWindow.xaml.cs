@@ -49,8 +49,10 @@ namespace ConfigurationEditor
             bool saveIt = true;
             if (!File.Exists(themeManagerPath.Text) || !File.Exists(toolboxPath.Text))
             {
-                MessageBoxResult result = MessageBox.Show("Are you sure you want to use an invalid path?", "File Not Found",
-                                               MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to use an invalid path?",
+                                                          "File Not Found",
+                                                          MessageBoxButton.YesNo, MessageBoxImage.Question,
+                                                          MessageBoxResult.No);
                 saveIt = result == MessageBoxResult.Yes;
             }
             if (!saveIt)
@@ -63,8 +65,8 @@ namespace ConfigurationEditor
         {
             Close();
         }
-        
-        
+
+
         private static void UpdateArchive(string archive, string path1, string path2)
         {
             using (var zf = ZipFile.Read(archive))
@@ -83,7 +85,7 @@ namespace ConfigurationEditor
         {
             var dlg = new Microsoft.Win32.OpenFileDialog
                           {
-                              Filter = filter, 
+                              Filter = filter,
                               CheckFileExists = true
                           };
 
@@ -103,7 +105,6 @@ namespace ConfigurationEditor
 
         private void ReadAddin()
         {
-
             try
             {
                 themeManagerPath.Text = ReadArchive(addinPath.Text, "Install/PathToThemeManager.txt");
@@ -120,7 +121,7 @@ namespace ConfigurationEditor
             }
             catch (Exception)
             {
-                MessageBox.Show(addinPath.Text +"\nis not a valid AlaskaPak AddIn.", "Bad AddIn",
+                MessageBox.Show(addinPath.Text + "\nis not a valid AlaskaPak AddIn.", "Bad AddIn",
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                 saveButton.IsEnabled = false;
             }
@@ -131,8 +132,9 @@ namespace ConfigurationEditor
             if (textBox == null)
                 return;
 
-            textBox.Foreground = File.Exists(textBox.Text) ? SystemColors.ControlTextBrush : 
-                                                             Brushes.DarkRed;
+            textBox.Foreground = File.Exists(textBox.Text)
+                                     ? SystemColors.ControlTextBrush
+                                     : Brushes.DarkRed;
         }
 
         private string ReadArchive(string archive, string path)

@@ -5,6 +5,8 @@ AddLength: Make work with geographic, and remove warning
 AddArea: Make work with geographic, and remove warning
 AddCoords: FormData class is incomplete, see FIXMEs.
 Random Select: crashes in some cases (Oregon FG)
+Random Select: Crashes if there is a missing datasource
+Random Select: Counts features in all classes when loading the form.  This can take a long time (do something smarter)
 Random Select: use selection if provided
 Random Select: toggle for with or without replacement
 Obscure Points: NIM bug, provide workarount

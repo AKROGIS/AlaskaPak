@@ -18,7 +18,7 @@ namespace NPS.AKRO.ArcGIS
             if (exe == null)
             {
                 MessageBox.Show(@"Can't find the data file with the path to Theme Manager.",
-                    @"Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                @"Internal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (File.Exists(exe))
@@ -33,19 +33,21 @@ namespace NPS.AKRO.ArcGIS
                 }
                 catch (System.ComponentModel.Win32Exception ex)
                 {
-                    if (ex.NativeErrorCode == 1223)  //User canceled
+                    if (ex.NativeErrorCode == 1223) //User canceled
                         return;
                     throw;
                 }
-                catch (Exception ex)  //everything else
+                catch (Exception ex) //everything else
                 {
-                    MessageBox.Show(@"Unable to start Theme Manager." + Environment.NewLine + exe + Environment.NewLine + @"Cause: " + ex.Message,
+                    MessageBox.Show(
+                        @"Unable to start Theme Manager." + Environment.NewLine + exe + Environment.NewLine + @"Cause: " +
+                        ex.Message,
                         @"Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
-                MessageBox.Show(@"Path to Theme Manager is not valid." + Environment.NewLine + exe, 
-                    @"Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Path to Theme Manager is not valid." + Environment.NewLine + exe,
+                                @"Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

@@ -10,7 +10,6 @@ namespace NPS.AKRO.ArcGIS
 {
     public class CopyRasterSymbology : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-
         private AlaskaPak _controller;
         private CopyRasterSymbologyForm _form;
         private List<NamedLayer> _rasterLayers;
@@ -62,7 +61,7 @@ namespace NPS.AKRO.ArcGIS
             else
             {
                 MessageBox.Show(@"You must have two or more raster layers in your map to use this command.",
-                    @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -79,7 +78,7 @@ namespace NPS.AKRO.ArcGIS
         #region Event Handlers
 
         //What we will do when the controller says the layers have changed
-        void Controller_LayersChanged()
+        private void Controller_LayersChanged()
         {
             _rasterLayers = _controller.GetRasterLayers();
             Enabled = MapHasTwoOrMoreRasterLayers;
@@ -110,7 +109,7 @@ namespace NPS.AKRO.ArcGIS
             //Debug.Assert(sourceLayer != null, "Source layer not found");
             if (sourceLayer != null)
             {
-                IObjectCopy objectCopier = new ObjectCopyClass(); 
+                IObjectCopy objectCopier = new ObjectCopyClass();
                 IRasterRenderer sourceRender = sourceLayer.Renderer;
                 //Debug.Assert(sourceRender != null, "Source layer has no renderer");
                 if (sourceRender != null)
@@ -130,8 +129,5 @@ namespace NPS.AKRO.ArcGIS
         }
 
         #endregion
-
-
     }
-
 }

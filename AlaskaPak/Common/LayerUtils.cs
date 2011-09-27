@@ -6,16 +6,15 @@ using ESRI.ArcGIS.esriSystem;
 
 namespace NPS.AKRO.ArcGIS.Common
 {
-    class LayerUtils
+    internal class LayerUtils
     {
-        
         /// <summary>
         /// Gets all layers in a map document of a particular type 
         /// </summary>
         /// <param name="doc">The map document to search</param>
         /// <param name="type">A GUID type string for the layer type. see http://help.arcgis.com/en/sdk/10.0/arcobjects_net/componenthelp/index.html#/Loop_Through_Layers_of_Specific_UID_Snippet/00490000005w000000/ </param>
         /// <returns>a list (possibly empty) of layer that were found to match the type requested</returns>
-        public static IEnumerable<ILayer> GetAllLayers(IMxDocument doc, string type)
+        internal static IEnumerable<ILayer> GetAllLayers(IMxDocument doc, string type)
         {
             if (doc == null)
                 throw new ArgumentNullException("doc");
@@ -39,6 +38,7 @@ namespace NPS.AKRO.ArcGIS.Common
         }
 
         #region layer naming methods
+
         /// <summary>
         /// Gets the full path name of the layer (including ancestor group layers and data frame)
         /// </summary>
@@ -47,7 +47,8 @@ namespace NPS.AKRO.ArcGIS.Common
         /// <param name="mapSeparator">A character string used to data frame name from the group/layer names</param>
         /// <param name="layerSeparator">A character string used to the group names from the layer name</param>
         /// <returns>null if the layer does not exist in the map document, full name otherwise</returns>
-        public static string GetFullName(IMxDocument doc, ILayer layer, string mapSeparator = ":", string layerSeparator = "/")
+        internal static string GetFullName(IMxDocument doc, ILayer layer, string mapSeparator = ":",
+                                           string layerSeparator = "/")
         {
             IMaps maps = doc.Maps;
             for (int i = 0; i < maps.Count; i++)
@@ -69,7 +70,7 @@ namespace NPS.AKRO.ArcGIS.Common
         /// <param name="layer">The ILayer whose full path name we want</param>
         /// <param name="separator">A character string used to separate names in path</param>
         /// <returns>null if the layer does not exist in IMap, full name otherwise</returns>
-        public static string GetFullName(IMap parent, ILayer layer, string separator = "/")
+        internal static string GetFullName(IMap parent, ILayer layer, string separator = "/")
         {
             for (int i = 0; i < parent.LayerCount; i++)
             {
@@ -104,6 +105,7 @@ namespace NPS.AKRO.ArcGIS.Common
             }
             return null;
         }
+
         #endregion
     }
 }

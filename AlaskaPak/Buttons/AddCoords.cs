@@ -23,11 +23,10 @@ namespace NPS.AKRO.ArcGIS
 {
     public class AddCoords : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-
         private AlaskaPak _controller;
         private AddXyForm _form;
         private FormData _data;
-        
+
         public AddCoords()
         {
             AlaskaPak.RunProtected(GetType(), MyConstructor);
@@ -60,14 +59,18 @@ namespace NPS.AKRO.ArcGIS
                     //What we will do when the form says it is closing
                     _form.FormClosed += delegate { _form = null; };
                     //What we will do when the form says it is ready to process
-                    _form.okButton.Click += delegate { EditLayer(_form.Data); _form.Close(); };
+                    _form.okButton.Click += delegate
+                                                {
+                                                    EditLayer(_form.Data);
+                                                    _form.Close();
+                                                };
                     _form.Show();
                 }
             }
             else
             {
                 MessageBox.Show(@"You must have one or more point feature layers in your map to use this command.",
-                    @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -79,7 +82,7 @@ namespace NPS.AKRO.ArcGIS
         #region Event Handlers
 
         //What we will do when the controller says the layers have changed
-        void Controller_LayersChanged()
+        private void Controller_LayersChanged()
         {
             _data.PointLayers = _controller.GetPointLayers();
             Enabled = MapHasPointFeatureLayer;
@@ -108,11 +111,12 @@ namespace NPS.AKRO.ArcGIS
 
 
             //If fields don't exist, add them
-            foreach (string fieldName in new[] { data.XFieldName, data.YFieldName })
+            foreach (string fieldName in new[] {data.XFieldName, data.YFieldName})
             {
                 if (data.FieldNameExists(fieldName))
                     continue;
-                esriFieldType fieldType = data.Format.Formattable ? esriFieldType.esriFieldTypeString
+                esriFieldType fieldType = data.Format.Formattable
+                                              ? esriFieldType.esriFieldTypeString
                                               : esriFieldType.esriFieldTypeDouble;
                 try
                 {
@@ -185,7 +189,7 @@ System Message: "
             IField newField = new FieldClass();
             ((IFieldEdit)newField).Name_2 = fieldName;
             ((IFieldEdit)newField).Type_2 = fieldType;
-                    
+
             var schemaLock = (ISchemaLock)featureClass;
             try
             {
