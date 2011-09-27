@@ -20,8 +20,8 @@
                TextChanged="TextChanged" LostFocus="AddInChanged" />
       <TextBox Grid.Row="1" Grid.Column="1" Margin="0,5" Name="themeManagerPath"
                ToolTip="Path to the Theme Manager executable" TextChanged="TextChanged" />
-      <TextBox Grid.Row="2" Grid.Column="1" Margin="0,5" Name="toolboxPath"
-               ToolTip="Path to the AlaskaPak Toolbox" TextChanged="TextChanged" />
+      <TextBox Grid.Row="2" Grid.Column="1" Margin="0,5" Name="toolboxPath" ToolTip="Path to the AlaskaPak Toolbox"
+               TextChanged="TextChanged" />
       <Button Grid.Row="0" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse" Click="BrowseForAddinPath">. . .</Button>
       <Button Grid.Row="1" Grid.Column="2" Margin="5" Padding="5,0" ToolTip="Browse"
               Click="BrowseForThemeManagerPathPath">. . .</Button>
