@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Geodatabase;
 using ESRI.ArcGIS.Catalog;
 using NPS.AKRO.ArcGIS.Forms;
-using NPS.AKRO.ArcGIS.Common;
 using System.Windows.Forms;
-using System.Drawing;
 using NPS.AKRO.ArcGIS.Grids;
-using System.Diagnostics;
 using ESRI.ArcGIS.ADF;
 
 // OUTSTANDING ISSUES
@@ -31,7 +25,7 @@ namespace NPS.AKRO.ArcGIS
 {
     public class GenerateGrid : ESRI.ArcGIS.Desktop.AddIns.Tool
     {
-        private AlaskaPak _controller;
+        //private AlaskaPak _controller;
         private GenerateGridForm _form;
 
         public GenerateGrid()
@@ -41,7 +35,7 @@ namespace NPS.AKRO.ArcGIS
 
         private void MyConstructor()
         {
-            _controller = AlaskaPak.Controller;
+            //_controller = AlaskaPak.Controller;
             //_controller.LayersChanged += Controller_LayersChanged;
             //_selectableLayers = _controller.GetSelectableLayers();
             Enabled = CheckForCoordinateSystem(); 
@@ -74,14 +68,14 @@ namespace NPS.AKRO.ArcGIS
                 else
                 {
                     MessageBox.Show(@"The active data frame must be in a projected coordinate system.",
-                        "For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        @"For this command...", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(GetType() + " encountered a problem." +
+                MessageBox.Show(GetType() + @" encountered a problem." +
                                 Environment.NewLine + Environment.NewLine + ex.Message,
-                                "Unhandled Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                @"Unhandled Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -91,12 +85,12 @@ namespace NPS.AKRO.ArcGIS
         internal void Form_CreateGrid(object sender, EventArgs e)
         {
             Grid grid = _form.Grid;
-            IFeatureClass gridFC = CreateGridFC(grid, _form.Workspace, _form.Dataset, _form.FeatureClassName);
-            if (gridFC == null)
-                MessageBox.Show("Unable to create " + _form.FeatureClassName, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            IFeatureClass gridFeatureClass = CreateGridFeatureClass(grid, _form.Workspace, _form.Dataset, _form.FeatureClassName);
+            if (gridFeatureClass == null)
+                MessageBox.Show(@"Unable to create " + _form.FeatureClassName, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
             {
-                AddFeatureClassToMap(gridFC);
+                AddFeatureClassToMap(gridFeatureClass);
                 _form.Close();
             }
         }
@@ -119,78 +113,71 @@ namespace NPS.AKRO.ArcGIS
             _form.UpdateFormFromGrid();
         }
 
-        private IEnvelope GetExtents()
+        private static IEnvelope GetExtents()
         {
             IScreenDisplay screenDisplay = ((IActiveView)ArcMap.Document.ActiveView.FocusMap).ScreenDisplay;
             IRubberBand rubberEnv = new RubberEnvelope();
-            IEnvelope envelope = rubberEnv.TrackNew(screenDisplay, null) as IEnvelope;
+            var envelope = rubberEnv.TrackNew(screenDisplay, null) as IEnvelope;
             return envelope;
             //if (envelope.IsEmpty)
             //    return;
         }
 
-        void MapEvents_ContentsChanged()
-        {
-            Enabled = CheckForCoordinateSystem();
-        }
+        //void MapEvents_ContentsChanged()
+        //{
+        //    Enabled = CheckForCoordinateSystem();
+        //}
 
-        private bool CheckForCoordinateSystem()
+        private static bool CheckForCoordinateSystem()
         {
             ISpatialReference sr = ArcMap.Document.FocusMap.SpatialReference;
             if (sr == null)
                 return false;
-            if (sr is IProjectedCoordinateSystem)
-                    return true;
-            return false;
+            return sr is IProjectedCoordinateSystem;
         }
 
-        private IFeatureClass CreateGridFC(Grid grid, IFeatureWorkspace workspace, IFeatureDataset dataset, string featureClassName)
+        private IFeatureClass CreateGridFeatureClass(Grid grid, IFeatureWorkspace workspace, IFeatureDataset dataset, string featureClassName)
         {
             try
             {
                 IFields fields;
-                IFeatureClass generatedFC;
                 if (workspace is IGxFolder)
                 {
-                    MessageBox.Show("Creating Shapefile " + featureClassName + " in " + ((IWorkspace)workspace).PathName);
+                    MessageBox.Show(@"Creating Shapefile " + featureClassName + @" in " + ((IWorkspace)workspace).PathName);
                     if (!ValidateShapefileName())
                     {
-                        MessageBox.Show("Shapefile may exist, name may be too long," +
-                            "folder may not exist, folder may be readonly,", "Error"); 
+                        MessageBox.Show(@"Shapefile may exist, name may be too long," +
+                            @"folder may not exist, folder may be readonly,", @"Error"); 
                         return null;
                     }
                     fields = CreateShapefileFields();
                 } 
-                else 
+                else
                 {
-                    if (dataset == null)
-                    {
-                        MessageBox.Show("Creating " + featureClassName + " in " + ((IWorkspace)workspace).PathName);
-                    } 
-                    else
-                    {
-                       MessageBox.Show("Creating " + featureClassName + " in " + ((IWorkspace)workspace).PathName + "\\" + dataset.Name);
-                    }
+                    string msg = dataset == null ?
+                                 string.Format("Creating {0} in {1}", featureClassName, ((IWorkspace) workspace).PathName) :
+                                 string.Format("Creating {0} in {1}\\{2}", featureClassName, ((IWorkspace)workspace).PathName, dataset.Name);
+                    MessageBox.Show(msg);
                     if (!ValidateGdbfileName())
                         return null;
                     fields = CreateGdbFields();
                 }
-                generatedFC = CreateFeatureClass((IWorkspace2)workspace, dataset, featureClassName, fields, null, null, "");
-                if (generatedFC == null)
+                IFeatureClass generatedFeatureClass = CreateFeatureClass((IWorkspace2)workspace, dataset, featureClassName, fields, null, null, "");
+                if (generatedFeatureClass == null)
                     return null;
-                PutGridInFeatureClass(generatedFC, grid);
-                return generatedFC;
+                PutGridInFeatureClass(generatedFeatureClass, grid);
+                return generatedFeatureClass;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Debug.Print("Exception Creating Feature Class: {0}",ex);
+                //Debug.Print("Exception Creating Feature Class: {0}",ex);
                 return null;
             }
         }
 
-        private void PutGridInFeatureClass(IFeatureClass featureClass, Grid grid)
+        private static void PutGridInFeatureClass(IFeatureClass featureClass, Grid grid)
         {
-            using (ComReleaser comReleaser = new ComReleaser())
+            using (var comReleaser = new ComReleaser())
             {
                 // Create a feature buffer.
                 IFeatureBuffer featureBuffer = featureClass.CreateFeatureBuffer();
@@ -211,12 +198,12 @@ namespace NPS.AKRO.ArcGIS
                 foreach (Cell cell in grid.Cells)
                 {
                     featureBuffer.Shape = cell.Shape;
-                    featureBuffer.set_Value(colFieldIndex, cell.Column);
-                    featureBuffer.set_Value(rowFieldIndex, cell.Row);
-                    featureBuffer.set_Value(colLabelFieldIndex, cell.Column_Label);
-                    featureBuffer.set_Value(rowLabelFieldIndex, cell.Row_Label);
-                    featureBuffer.set_Value(cellLabelFieldIndex, cell.Label);
-                    featureBuffer.set_Value(pageFieldIndex, cell.Page);
+                    featureBuffer.Value[colFieldIndex] = cell.Column;
+                    featureBuffer.Value[rowFieldIndex] = cell.Row;
+                    featureBuffer.Value[colLabelFieldIndex] = cell.ColumnLabel;
+                    featureBuffer.Value[rowLabelFieldIndex] = cell.RowLabel;
+                    featureBuffer.Value[cellLabelFieldIndex] = cell.Label;
+                    featureBuffer.Value[pageFieldIndex] = cell.Page;
                     insertCursor.InsertFeature(featureBuffer);
                 }
 
@@ -226,47 +213,46 @@ namespace NPS.AKRO.ArcGIS
 
         }
 
-        private IFields CreateGdbFields()
+        private static IFields CreateGdbFields()
         {
             IObjectClassDescription objectClassDescription = new FeatureClassDescriptionClass();
             // create the required fields
             IFields fields = objectClassDescription.RequiredFields;
-            IFieldsEdit fieldsEdit = (IFieldsEdit)fields;
-            IFieldEdit fieldEdit;
+            var fieldsEdit = (IFieldsEdit)fields;
 
-            fieldEdit = new FieldClass() as IFieldEdit;
+            IFieldEdit fieldEdit = new FieldClass();
             fieldEdit.Name_2 = "Col";
             fieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger;
             fieldEdit.AliasName_2 = "Column";
             fieldsEdit.AddField(fieldEdit);
 
-            fieldEdit = new FieldClass() as IFieldEdit;
+            fieldEdit = new FieldClass();
             fieldEdit.Name_2 = "Row";
             fieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger;
             fieldsEdit.AddField(fieldEdit);
 
-            fieldEdit = new FieldClass() as IFieldEdit;
+            fieldEdit = new FieldClass();
             fieldEdit.Name_2 = "Col_Label";
             fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
             fieldEdit.AliasName_2 = "Column Label";
             fieldEdit.Length_2 = 20;
             fieldsEdit.AddField(fieldEdit);
 
-            fieldEdit = new FieldClass() as IFieldEdit;
+            fieldEdit = new FieldClass();
             fieldEdit.Name_2 = "Row_Label";
             fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
             fieldEdit.AliasName_2 = "Row Label";
             fieldEdit.Length_2 = 20;
             fieldsEdit.AddField(fieldEdit);
 
-            fieldEdit = new FieldClass() as IFieldEdit;
+            fieldEdit = new FieldClass();
             fieldEdit.Name_2 = "Cell_Label";
             fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
             fieldEdit.AliasName_2 = "Cell Label";
             fieldEdit.Length_2 = 20;
             fieldsEdit.AddField(fieldEdit);
 
-            fieldEdit = new FieldClass() as IFieldEdit;
+            fieldEdit = new FieldClass();
             fieldEdit.Name_2 = "Page";
             fieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger;
             fieldEdit.AliasName_2 = "Page Number";
@@ -275,29 +261,29 @@ namespace NPS.AKRO.ArcGIS
             return fields;
         }
 
-        private bool ValidateGdbfileName()
+        private static bool ValidateGdbfileName()
         {
             //FIXME - do something real
             return true;
         }
 
-        private IFields CreateShapefileFields()
+        private static IFields CreateShapefileFields()
         {
             //FIXME - validate and consolidate
             return CreateGdbFields();
         }
 
-        private bool ValidateShapefileName()
+        private static bool ValidateShapefileName()
         {
             //FIXME - do something real
             return true;
         }
 
-        private void AddFeatureClassToMap(IFeatureClass gridFC)
+        private static void AddFeatureClassToMap(IFeatureClass gridFeatureClass)
         {
-            ESRI.ArcGIS.Carto.IFeatureLayer featureLayer = new ESRI.ArcGIS.Carto.FeatureLayerClass();
-            featureLayer.FeatureClass = gridFC;
-            featureLayer.Name = gridFC.AliasName;
+            IFeatureLayer featureLayer = new FeatureLayerClass();
+            featureLayer.FeatureClass = gridFeatureClass;
+            featureLayer.Name = gridFeatureClass.AliasName;
             featureLayer.Visible = true;
             ArcMap.Document.ActiveView.FocusMap.AddLayer(featureLayer);
             FixSymbology(featureLayer);
@@ -306,16 +292,16 @@ namespace NPS.AKRO.ArcGIS
             ArcMap.Document.ActiveView.PartialRefresh(esriViewDrawPhase.esriViewGeography, null, null);
         }
 
-        private void FixSymbology(IFeatureLayer featureLayer)
+        private static void FixSymbology(IFeatureLayer featureLayer)
         {
             //Color
-            IGeoFeatureLayer geoLayer = featureLayer as IGeoFeatureLayer;
+            var geoLayer = featureLayer as IGeoFeatureLayer;
             if (geoLayer == null)
                 return;
-            ISimpleRenderer renderer = geoLayer.Renderer as ISimpleRenderer;
+            var renderer = geoLayer.Renderer as ISimpleRenderer;
             if (renderer == null)
                 return;
-            IFillSymbol symbol = renderer.Symbol as IFillSymbol;
+            var symbol = renderer.Symbol as IFillSymbol;
             if (symbol == null)
                 return;
 
@@ -350,8 +336,8 @@ namespace NPS.AKRO.ArcGIS
         ///<param name="featureDataset">An IFeatureDataset interface or Nothing</param>
         ///<param name="featureClassName">A System.String that contains the name of the feature class to open or create. Example: "states"</param>
         ///<param name="fields">An IFields interface</param>
-        ///<param name="CLSID">A UID value or Nothing. Example "esriGeoDatabase.Feature" or Nothing</param>
-        ///<param name="CLSEXT">A UID value or Nothing (this is the class extension if you want to reference a class extension when creating the feature class).</param>
+        ///<param name="clsid">A UID value or Nothing. Example "esriGeoDatabase.Feature" or Nothing</param>
+        ///<param name="clsext">A UID value or Nothing (this is the class extension if you want to reference a class extension when creating the feature class).</param>
         ///<param name="strConfigKeyword">An empty System.String or RDBMS table string for ArcSDE. Example: "myTable" or ""</param>
         ///  
         ///<returns>An IFeatureClass interface or a Nothing</returns>
@@ -376,42 +362,44 @@ namespace NPS.AKRO.ArcGIS
         ///      keywords, refer to the ArcSDE documentation. When not using an ArcSDE table use an empty 
         ///      string (ex: "").
         ///</remarks>
-        public ESRI.ArcGIS.Geodatabase.IFeatureClass CreateFeatureClass(ESRI.ArcGIS.Geodatabase.IWorkspace2 workspace, ESRI.ArcGIS.Geodatabase.IFeatureDataset featureDataset, System.String featureClassName, ESRI.ArcGIS.Geodatabase.IFields fields, ESRI.ArcGIS.esriSystem.UID CLSID, ESRI.ArcGIS.esriSystem.UID CLSEXT, System.String strConfigKeyword)
+        public IFeatureClass CreateFeatureClass(IWorkspace2 workspace, IFeatureDataset featureDataset, string featureClassName, 
+                                                IFields fields, ESRI.ArcGIS.esriSystem.UID clsid, ESRI.ArcGIS.esriSystem.UID clsext, string strConfigKeyword)
         {
-            if (featureClassName == "") return null; // name was not passed in 
+            if (string.IsNullOrEmpty(featureClassName))
+                return null;
 
-            ESRI.ArcGIS.Geodatabase.IFeatureClass featureClass;
-            ESRI.ArcGIS.Geodatabase.IFeatureWorkspace featureWorkspace = (ESRI.ArcGIS.Geodatabase.IFeatureWorkspace)workspace; // Explicit Cast
+            IFeatureClass featureClass;
+            var featureWorkspace = (IFeatureWorkspace)workspace; // Cast may throw exception
 
-            if (workspace.get_NameExists(ESRI.ArcGIS.Geodatabase.esriDatasetType.esriDTFeatureClass, featureClassName)) //feature class with that name already exists 
+            if (workspace.NameExists[esriDatasetType.esriDTFeatureClass, featureClassName]) //feature class with that name already exists 
             {
                 featureClass = featureWorkspace.OpenFeatureClass(featureClassName);
                 return featureClass;
             }
 
             // assign the class id value if not assigned
-            if (CLSID == null)
+            if (clsid == null)
             {
-                CLSID = new ESRI.ArcGIS.esriSystem.UIDClass();
-                CLSID.Value = "esriGeoDatabase.Feature";  //Works for shapefiles as well
+                clsid = new ESRI.ArcGIS.esriSystem.UIDClass {Value = "esriGeoDatabase.Feature"};
+                //Works for shapefiles as well
             }
 
-            ESRI.ArcGIS.Geodatabase.IObjectClassDescription objectClassDescription = new ESRI.ArcGIS.Geodatabase.FeatureClassDescriptionClass();
+            IObjectClassDescription objectClassDescription = new FeatureClassDescriptionClass();
 
             // if a fields collection is not passed in then supply our own
             if (fields == null)
             {
                 // create the fields using the required fields method
                 fields = objectClassDescription.RequiredFields;
-                ESRI.ArcGIS.Geodatabase.IFieldsEdit fieldsEdit = (ESRI.ArcGIS.Geodatabase.IFieldsEdit)fields; // Explicit Cast
-                ESRI.ArcGIS.Geodatabase.IField field = new ESRI.ArcGIS.Geodatabase.FieldClass();
+                var fieldsEdit = (IFieldsEdit)fields; // Explicit Cast
+                IField field = new FieldClass();
 
                 // create a user defined text field
-                ESRI.ArcGIS.Geodatabase.IFieldEdit fieldEdit = (ESRI.ArcGIS.Geodatabase.IFieldEdit)field; // Explicit Cast
+                var fieldEdit = (IFieldEdit)field; // Explicit Cast
 
                 // setup field properties
                 fieldEdit.Name_2 = "SampleField";
-                fieldEdit.Type_2 = ESRI.ArcGIS.Geodatabase.esriFieldType.esriFieldTypeString;
+                fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
                 fieldEdit.IsNullable_2 = true;
                 fieldEdit.AliasName_2 = "Sample Field Column";
                 fieldEdit.DefaultValue_2 = "test";
@@ -420,26 +408,25 @@ namespace NPS.AKRO.ArcGIS
 
                 // add field to field collection
                 fieldsEdit.AddField(field);
-                fields = (ESRI.ArcGIS.Geodatabase.IFields)fieldsEdit; // Explicit Cast
+                fields = fieldsEdit;
             }
 
-            System.String strShapeField = "";
+            string strShapeField = "";
 
             // locate the shape field
             for (int j = 0; j < fields.FieldCount; j++)
             {
-                if (fields.get_Field(j).Type == ESRI.ArcGIS.Geodatabase.esriFieldType.esriFieldTypeGeometry)
-                {
-                    strShapeField = fields.get_Field(j).Name;
-                    break;
-                }
+                if (fields.Field[j].Type != esriFieldType.esriFieldTypeGeometry)
+                    continue;
+                strShapeField = fields.Field[j].Name;
+                break;
             }
 
             // Use IFieldChecker to create a validated fields collection.
-            ESRI.ArcGIS.Geodatabase.IFieldChecker fieldChecker = new ESRI.ArcGIS.Geodatabase.FieldCheckerClass();
-            ESRI.ArcGIS.Geodatabase.IEnumFieldError enumFieldError = null;
-            ESRI.ArcGIS.Geodatabase.IFields validatedFields = null;
-            fieldChecker.ValidateWorkspace = (ESRI.ArcGIS.Geodatabase.IWorkspace)workspace;
+            IFieldChecker fieldChecker = new FieldCheckerClass();
+            IEnumFieldError enumFieldError;
+            IFields validatedFields;
+            fieldChecker.ValidateWorkspace = (IWorkspace)workspace;
             fieldChecker.Validate(fields, out enumFieldError, out validatedFields);
 
             // The enumFieldError enumerator can be inspected at this point to determine 
@@ -447,14 +434,11 @@ namespace NPS.AKRO.ArcGIS
 
 
             // finally create and return the feature class
-            if (featureDataset == null)// if no feature dataset passed in, create at the workspace level
-            {
-                featureClass = featureWorkspace.CreateFeatureClass(featureClassName, validatedFields, CLSID, CLSEXT, ESRI.ArcGIS.Geodatabase.esriFeatureType.esriFTSimple, strShapeField, strConfigKeyword);
-            }
-            else
-            {
-                featureClass = featureDataset.CreateFeatureClass(featureClassName, validatedFields, CLSID, CLSEXT, ESRI.ArcGIS.Geodatabase.esriFeatureType.esriFTSimple, strShapeField, strConfigKeyword);
-            }
+            featureClass = featureDataset == null
+                         ? featureWorkspace.CreateFeatureClass(featureClassName, validatedFields, clsid, clsext, 
+                                                               esriFeatureType.esriFTSimple, strShapeField, strConfigKeyword)
+                         : featureDataset.CreateFeatureClass(featureClassName, validatedFields, clsid, clsext, 
+                                                             esriFeatureType.esriFTSimple, strShapeField, strConfigKeyword);
             return featureClass;
         }
     }

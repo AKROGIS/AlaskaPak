@@ -77,13 +77,12 @@ namespace NPS.AKRO.ArcGIS.Common
                 {
                     return layer.Name;
                 }
-                if (parent.Layer[i] is ICompositeLayer)
+                if (!(parent.Layer[i] is ICompositeLayer))
+                    continue;
+                string name = GetFullName((ICompositeLayer)parent.Layer[i], layer, separator);
+                if (name != null)
                 {
-                    string name = GetFullName((ICompositeLayer)parent.Layer[i], layer, separator);
-                    if (name != null)
-                    {
-                        return parent.Layer[i].Name + separator + name;
-                    }
+                    return parent.Layer[i].Name + separator + name;
                 }
             }
             return null;

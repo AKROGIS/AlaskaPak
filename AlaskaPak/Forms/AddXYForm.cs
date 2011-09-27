@@ -23,15 +23,14 @@ namespace NPS.AKRO.ArcGIS.Forms
             } 
             set
             {
-                if (value != _data)
-                {
-                    _data = value;
-                    formatStyleComboBox.Items.AddRange(_data.Format.Names.ToArray());
-                    formatStyleComboBox.SelectedIndex = (int)_data.Format.OutputFormat;
-                    PointLayersChanged();
-                    xFieldComboBox.Text = _data.DefaultXFieldName;
-                    yFieldComboBox.Text = _data.DefaultYFieldName;
-                }
+                if (value == _data)
+                    return;
+                _data = value;
+                formatStyleComboBox.Items.AddRange(_data.Format.Names.ToArray());
+                formatStyleComboBox.SelectedIndex = (int)_data.Format.OutputFormat;
+                PointLayersChanged();
+                xFieldComboBox.Text = _data.DefaultXFieldName;
+                yFieldComboBox.Text = _data.DefaultYFieldName;
             }
         }
         private FormData _data;
@@ -137,14 +136,14 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
             else
             {
-                var validFieldNames = Data.GetAppropriateFieldNames();
                 foreach (ComboBox cb in new[] { xFieldComboBox, yFieldComboBox })
                 {
                     esriFieldNameErrorType err = Data.ValidateFieldName(cb.Text);
                     switch (err)
                     {
                         case esriFieldNameErrorType.esriDuplicatedFieldName:
-                            if (validFieldNames.Select(n => n.ToLower()).Contains(cb.Text.ToLower()))
+                            string cbText = cb.Text.ToLower();
+                            if (Data.GetAppropriateFieldNames().Where(n => n.ToLower().Contains(cbText)).Any())
                             {
                                 overwriteWarning.SetError(cb, "Existing values in this field will be overwritten");
                                 invalidEntry.SetError(cb, "");

@@ -1,15 +1,11 @@
-﻿Check license levels for all tools
-Add Grid Points: Check license level, make simple version if necessary
-Generate Grid: if active annotation target has display turned off, preview does not show.
+﻿GenerateGridPoints:  Requires Info license, make an ArcView version
+GenerateGrid: if active annotation target has display turned off, preview does not show.
+GenerateGrid: There are unused methods in the form, Several classes have FIXMEs and the functionality feels incomplete.
 AddLength: Make work with geographic, and remove warning
 AddArea: Make work with geographic, and remove warning
+AddCoords: FormData class is incomplete, see FIXMEs.
 Random Select: crashes in some cases (Oregon FG)
 Random Select: use selection if provided
 Random Select: toggle for with or without replacement
 Obscure Points: NIM bug, provide workarount
 Line To Rectangle: See FIXMEs in code
-Generate Grid: There are unused methods in the form, and the functionality feels incomplete
-AddCoords: FormData class still needs some cleanup.
-AddCoords: Formatter class still needs some cleanup.
-Generate Grids: Grid class still needs some cleanup.
-Generate Grids: GenerateGrid class still needs major cleanup.

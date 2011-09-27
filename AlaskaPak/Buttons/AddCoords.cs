@@ -110,24 +110,23 @@ namespace NPS.AKRO.ArcGIS
             //If fields don't exist, add them
             foreach (string fieldName in new[] { data.XFieldName, data.YFieldName })
             {
-                if (!data.FieldNameExists(fieldName))
+                if (data.FieldNameExists(fieldName))
+                    continue;
+                esriFieldType fieldType = data.Format.Formattable ? esriFieldType.esriFieldTypeString
+                                              : esriFieldType.esriFieldTypeDouble;
+                try
                 {
-                    esriFieldType fieldType = data.Format.Formattable ? esriFieldType.esriFieldTypeString
-                                                                      : esriFieldType.esriFieldTypeDouble;
-                    try
-                    {
-                        AddField(featureClass, fieldName, fieldType);
-                    }
-                    catch (Exception e)
-                    {
-                        MessageBox.Show(
-@"Unable to add new fields.
+                    AddField(featureClass, fieldName, fieldType);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(
+                        @"Unable to add new fields.
 Check that the selected data is not open in Catalog.
 Check that the selected layer is not being edited.
 System Message: "
-                                        + e.Message);
-                        return;
-                    }
+                        + e.Message);
+                    return;
                 }
             }
             //try to get an update cursor on the feature class

@@ -24,14 +24,13 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             get { return _layerIndex; }
             set
             {
-                if (value != _layerIndex)
-                {
-                    if (value < -1 || value > PointLayers.Count)
-                        throw new ArgumentOutOfRangeException("value");
-                    _layerIndex = value;
-                    if (_layerIndex != -1)
-                        _featureClassPath = string.Empty;
-                }
+                if (value == _layerIndex)
+                    return;
+                if (value < -1 || value > PointLayers.Count)
+                    throw new ArgumentOutOfRangeException("value");
+                _layerIndex = value;
+                if (_layerIndex != -1)
+                    _featureClassPath = string.Empty;
             }
         }
         private int _layerIndex;
@@ -41,12 +40,11 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             get { return _featureClassPath; }
             set
             {
-                if (value != _featureClassPath)
-                {
-                    _featureClassPath = value;
-                    if (!string.IsNullOrEmpty(_featureClassPath))
-                        _layerIndex = -1;
-                }
+                if (value == _featureClassPath)
+                    return;
+                _featureClassPath = value;
+                if (!string.IsNullOrEmpty(_featureClassPath))
+                    _layerIndex = -1;
             }
         }
         private string _featureClassPath;
@@ -59,28 +57,27 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             get { return _pointLayers; }
             set
             {
-                if (_pointLayers != value)
+                if (_pointLayers == value)
+                    return;
+                if (value == null || value.Count == 0)
                 {
-                    if (value == null || value.Count == 0)
-                    {
-                        _pointLayers = value;
-                        LayerIndex = -1;
-                        return;
-                    }
-                    if (_pointLayers != null && LayerIndex != -1)
-                    {
-                        //try to find the old name in the new list
-                        if (value.Select(n => n.Name).Contains(_pointLayers[LayerIndex].Name))
-                            LayerIndex = value.IndexOf(value.First(n => n.Name == _pointLayers[LayerIndex].Name));
-                    }
                     _pointLayers = value;
-                    // Make sure the index is not out of bounds
-                    if (LayerIndex != -1 && _pointLayers.Count <= LayerIndex)
-                        LayerIndex = _pointLayers.Count - 1;
-                    //if no featureclass is set, give layerIndex a deault value
-                    if (string.IsNullOrEmpty(FeatureClassPath) && LayerIndex == -1 && PointLayers.Count > 0)
-                        LayerIndex = 0;
+                    LayerIndex = -1;
+                    return;
                 }
+                if (_pointLayers != null && LayerIndex != -1)
+                {
+                    //try to find the old name in the new list
+                    if (value.Select(n => n.Name).Contains(_pointLayers[LayerIndex].Name))
+                        LayerIndex = value.IndexOf(value.First(n => n.Name == _pointLayers[LayerIndex].Name));
+                }
+                _pointLayers = value;
+                // Make sure the index is not out of bounds
+                if (LayerIndex != -1 && _pointLayers.Count <= LayerIndex)
+                    LayerIndex = _pointLayers.Count - 1;
+                //if no featureclass is set, give layerIndex a deault value
+                if (string.IsNullOrEmpty(FeatureClassPath) && LayerIndex == -1 && PointLayers.Count > 0)
+                    LayerIndex = 0;
             }
         }
         private List<NamedLayer> _pointLayers;
@@ -154,9 +151,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
 
         public IEnumerable<string> GetAppropriateFieldNames()
         {
-            if (Format.Formattable)
-                return GetFields("string");
-            return GetFields("double");
+            return GetFields(Format.Formattable ? "string" : "double");
         }
 
         public IFeatureClass GetFeatureClass()
@@ -190,7 +185,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         {
             IFeatureClass featureClass = GetFeatureClass();
             if (featureClass == null)
-                throw new ArgumentException(@"Feature class is null", "FeatureClass");
+                throw new Exception(@"Feature class is null");
             IFields fields = ((IFeatureLayer)PointLayers[LayerIndex].Layer).FeatureClass.Fields;
             return fields.FindField(name) != -1;
         }
@@ -199,7 +194,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         {
             IFeatureClass featureClass = GetFeatureClass();
             if (featureClass == null)
-                throw new ArgumentException(@"Feature class is null", "FeatureClass");
+                throw new Exception(@"Feature class is null");
             IFields fields = ((IFeatureLayer)PointLayers[LayerIndex].Layer).FeatureClass.Fields;
             return fields.FindField(name);
         }

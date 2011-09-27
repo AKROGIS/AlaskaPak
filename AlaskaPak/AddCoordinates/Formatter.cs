@@ -52,15 +52,15 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             get { return _decimals; }
             set
             {
-                if (value != _decimals)
-                {
-                    if (value < 0 || value > 9)
-                        throw new ArgumentOutOfRangeException("value", @"decimal precision must be within (0..9)");
-                    _decimals = value;
-                }
+                if (value == _decimals)
+                    return;
+                if (value < 0 || value > 9)
+                    throw new ArgumentOutOfRangeException("value", @"decimal precision must be within (0..9)");
+                _decimals = value;
             }
         }
         private int _decimals;
+        private const double EPSILON = 1e-14;
 
         public int DefaultDecimals
         {
@@ -137,7 +137,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             double seconds = (decimalDegrees - (degrees + minutes / 60.0)) * 3600.0;
 
             // create format string
-            string decimalFormat = "F" + Decimals.ToString();
+            string decimalFormat = "F" + Decimals;
             string format;
             object[] args;
             switch (OutputFormat)
@@ -148,7 +148,8 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     break;
                 case FormatterOutputFormat.DegreesDecimalMinutes:
                     format = "{0}{1}° ";
-                    if (ShowZeroParts || decimalMinutes != 0.0)
+                    //FIXME: replace EPSILON with user requested decimal places
+                    if (ShowZeroParts || Math.Abs(decimalMinutes - 0.0) > EPSILON)
                         format = format + "{2:" + decimalFormat + "}' ";
                     format = format + "{3}";
                     args = new object[] { sign, degrees, decimalMinutes, direction };
@@ -157,13 +158,14 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     format = "{0}{1}° ";
                     if (ShowZeroParts || minutes != 0)
                         format = format + "{2}' ";
-                    if (ShowZeroParts || seconds != 0.0)
+                    //FIXME: replace EPSILON with user requested decimal places
+                    if (ShowZeroParts || Math.Abs(seconds - 0.0) > EPSILON)
                         format = format + "{3:" + decimalFormat + "}\" ";
                     format = format + "{4}";
                     args = new object[] { sign, degrees, minutes, seconds, direction };
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("outputFormat", @"Invalid output format requested");
+                    throw new Exception(@"Invalid output format requested");
             }
 
             //remove spaces

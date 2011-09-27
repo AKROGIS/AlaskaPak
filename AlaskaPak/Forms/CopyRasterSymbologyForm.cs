@@ -29,15 +29,15 @@ namespace NPS.AKRO.ArcGIS.Forms
         public void LoadLists(IEnumerable<string> layernames)
         {
             sourceComboBox.Items.Clear();
-            sourceComboBox.Items.AddRange(layernames.ToArray());
             targetsListBox.Items.Clear();
-            targetsListBox.Items.AddRange(layernames.ToArray());
-            if (sourceComboBox.Items.Count > 0)
-            {
-                sourceComboBox.SelectedIndex = 0;
-                selectAllButton_Click(null, null);
-                copyButton.Focus();
-            }
+            string[] items = layernames.ToArray();
+            if (items.Length <= 0)
+                return;
+            sourceComboBox.Items.AddRange(items);
+            targetsListBox.Items.AddRange(items);
+            sourceComboBox.SelectedIndex = 0;
+            selectAllButton_Click(null, null);
+            copyButton.Focus();
         }
 
         /// <summary>

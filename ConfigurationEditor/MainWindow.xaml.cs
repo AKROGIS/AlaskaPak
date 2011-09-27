@@ -53,11 +53,10 @@ namespace ConfigurationEditor
                                                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                 saveIt = result == MessageBoxResult.Yes;
             }
-            if (saveIt)
-            {
-                UpdateArchive(addinPath.Text, themeManagerPath.Text, toolboxPath.Text);
-                Close();
-            }
+            if (!saveIt)
+                return;
+            UpdateArchive(addinPath.Text, themeManagerPath.Text, toolboxPath.Text);
+            Close();
         }
 
         private void Cancel(object sender, RoutedEventArgs e)
@@ -127,7 +126,7 @@ namespace ConfigurationEditor
             }
         }
 
-        private void ValidateFileName(TextBox textBox)
+        private static void ValidateFileName(TextBox textBox)
         {
             if (textBox == null)
                 return;

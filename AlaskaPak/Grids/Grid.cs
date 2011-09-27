@@ -92,22 +92,21 @@ namespace NPS.AKRO.ArcGIS.Grids
             }
             set
             {
-                if (_map != value)
-                {
-                    if (_map != null)
-                        ((IGraphicsContainer)_map).DeleteElement(_group as IElement);
-                    _map = value;
-                    ((IGraphicsContainer)_map).AddElement(_group as IElement, 0);
-                }
+                if (_map == value)
+                    return;
+                if (_map != null)
+                    ((IGraphicsContainer)_map).DeleteElement(_group as IElement);
+                _map = value;
+                ((IGraphicsContainer)_map).AddElement(_group as IElement, 0);
             }
         }
         private IMap _map;
 
 
-        static Grid From(IFeatureLayer fl)
-        {
-            throw new NotImplementedException();
-        }
+        //static Grid From(IFeatureLayer fl)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public void SaveAs(ESRI.ArcGIS.Geodatabase.IFeatureClass fc)
         {
@@ -121,7 +120,7 @@ namespace NPS.AKRO.ArcGIS.Grids
 
 
 
-        public bool isValid
+        public bool IsValid
         {
             get
             {
@@ -131,11 +130,8 @@ namespace NPS.AKRO.ArcGIS.Grids
                     return false;
                 if (Extents.IsEmpty)
                     return false;
-                if (ColumnCount * ColumnWidth == Extents.Width &&
-                    RowCount * RowHeight == Extents.Height)
-                    return true;
-                else
-                    return false;
+                return Math.Abs(ColumnCount * ColumnWidth - Extents.Width) < EPSILON &&
+                       Math.Abs(RowCount * RowHeight - Extents.Height) < EPSILON;
             }
         }
 
@@ -201,7 +197,7 @@ namespace NPS.AKRO.ArcGIS.Grids
             throw new ArgumentException("LabelOrder");
         }
 
-        private string GetLabel(int index, GridLabelStyle labelStyle, int max)
+        private static string GetLabel(int index, GridLabelStyle labelStyle, int max)
         {
             switch (labelStyle)
             {
@@ -214,7 +210,7 @@ namespace NPS.AKRO.ArcGIS.Grids
                         return string.Format("{0}{1}", Convert.ToChar(97 + (index / 26)), Convert.ToChar(97 + (index % 26)));
                     if (index < 26 * 26 * 26)
                     {
-                        int basis = 26 * 26;
+                        const int basis = 26 * 26;
                         return string.Format("{0}{1}{2}", Convert.ToChar(97 + (index / basis)), Convert.ToChar(97 + ((index % basis) / 26)), Convert.ToChar(97 + (index % 26)));
                     }
                     return "OutOfBounds";
@@ -227,7 +223,7 @@ namespace NPS.AKRO.ArcGIS.Grids
                         return string.Format("{0}{1}", Convert.ToChar(65 + (index / 26)), Convert.ToChar(65 + (index % 26)));
                     if (index < 26 * 26 * 26)
                     {
-                        int basis = 26 * 26;
+                        const int basis = 26 * 26;
                         return string.Format("{0}{1}{2}", Convert.ToChar(65 + (index / basis)), Convert.ToChar(65 + ((index % basis) / 26)), Convert.ToChar(65 + (index % 26)));
                     }
                     return "OutOfBounds";
@@ -333,22 +329,24 @@ namespace NPS.AKRO.ArcGIS.Grids
             view.ScreenDisplay.FinishDrawing();
             view.Refresh();
         }
-        private IGroupElement3 _group = new GroupElementClass();
+        private readonly IGroupElement3 _group = new GroupElementClass();
+        private const double EPSILON = 1e-14;
 
-        private void DrawLabel(IGroupElement3 group, string label, IPoint point)
+        private static void DrawLabel(IGroupElement3 group, string label, IPoint point)
         {
-            var text = new TextElementClass();
-            text.AnchorPoint = esriAnchorPointEnum.esriCenterPoint;
-            text.Text = label;
-            text.Geometry = point as IGeometry;
+            var text = new TextElementClass
+                           {
+                               AnchorPoint = esriAnchorPointEnum.esriCenterPoint,
+                               Text = label,
+                               Geometry = point
+                           };
             group.AddElement(text);
         }
 
-        private void DrawLine(IGroupElement3 group, IPolyline line)
+        private static void DrawLine(IGroupElement3 group, IPolyline line)
         {
             //LineGraphics (LineElementClass) will only accept IPolyline (not ILine)
-            var element = new LineElementClass();
-            element.Geometry = line;
+            var element = new LineElementClass {Geometry = line};
             group.AddElement(element);
         }
 
@@ -369,8 +367,8 @@ namespace NPS.AKRO.ArcGIS.Grids
                 Row = row,
                 Column = column,
                 Page = GetCellNumber(row, column),
-                Column_Label = GetColumnLabel(column),
-                Row_Label = GetRowLabel(row),
+                ColumnLabel = GetColumnLabel(column),
+                RowLabel = GetRowLabel(row),
                 Label = GetLabel(row, column),
                 Shape = GetGeometry(row, column),
             };
@@ -446,8 +444,8 @@ namespace NPS.AKRO.ArcGIS.Grids
         public int Row { get; set; }
         public int Column { get; set; }
         public int Page { get; set; }
-        public string Column_Label { get; set; }
-        public string Row_Label { get; set; }
+        public string ColumnLabel { get; set; }
+        public string RowLabel { get; set; }
         public string Label { get; set; }
         public IGeometry Shape { get; set; }
     }

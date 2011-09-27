@@ -45,17 +45,16 @@ namespace NPS.AKRO.ArcGIS
             for (int i = 0; i < mapCount; ++i)
             {
                 IMap currentMap = ArcMap.Document.Maps.Item[i];
-                if (currentMap != focusMap)
-                {
-                    if (currentMap.SpatialReference != null && extents.SpatialReference != null &&
-                        !(currentMap.SpatialReference is IUnknownCoordinateSystem) &&
-                        !(extents.SpatialReference is IUnknownCoordinateSystem))
-                        //results of project are undefined if either SR is null or unknown, so don't do it.
-                        extents.Project(currentMap.SpatialReference);
-                    ((IActiveView)currentMap).Extent = extents;
-                    ((IActiveView)currentMap).Refresh();
-                    msg = msg + System.Environment.NewLine + "\t" + currentMap.Name;
-                }
+                if (currentMap == focusMap)
+                    continue;
+                if (currentMap.SpatialReference != null && extents.SpatialReference != null &&
+                    !(currentMap.SpatialReference is IUnknownCoordinateSystem) &&
+                    !(extents.SpatialReference is IUnknownCoordinateSystem))
+                    //results of project are undefined if either SR is null or unknown, so don't do it.
+                    extents.Project(currentMap.SpatialReference);
+                ((IActiveView)currentMap).Extent = extents;
+                ((IActiveView)currentMap).Refresh();
+                msg = msg + System.Environment.NewLine + "\t" + currentMap.Name;
             }
             msg = msg + System.Environment.NewLine +  "were adjusted to match the extents of" +
                         System.Environment.NewLine + "\t" + focusMap.Name;
