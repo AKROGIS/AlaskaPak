@@ -60,7 +60,6 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             }
         }
         private int _decimals;
-        private const double EPSILON = 1e-14;
 
         public int DefaultDecimals
         {
@@ -148,8 +147,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     break;
                 case FormatterOutputFormat.DegreesDecimalMinutes:
                     format = "{0}{1}° ";
-                    //FIXME: replace EPSILON with user requested decimal places
-                    if (ShowZeroParts || Math.Abs(decimalMinutes - 0.0) > EPSILON)
+                    if (ShowZeroParts || !Zero(decimalMinutes, Decimals))
                         format = format + "{2:" + decimalFormat + "}' ";
                     format = format + "{3}";
                     args = new object[] { sign, degrees, decimalMinutes, direction };
@@ -158,8 +156,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     format = "{0}{1}° ";
                     if (ShowZeroParts || minutes != 0)
                         format = format + "{2}' ";
-                    //FIXME: replace EPSILON with user requested decimal places
-                    if (ShowZeroParts || Math.Abs(seconds - 0.0) > EPSILON)
+                    if (ShowZeroParts || !Zero(seconds, Decimals))
                         format = format + "{3:" + decimalFormat + "}\" ";
                     format = format + "{4}";
                     args = new object[] { sign, degrees, minutes, seconds, direction };
@@ -173,6 +170,20 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                 format = format.Replace(" ", "");
 
             return string.Format(format, args);
+        }
+
+        /// <summary>
+        /// Returns True is number is zero within the specified number of decimal places
+        /// Considers rounding.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <param name="decimalPlaces"></param>
+        /// <returns></returns>
+        private static bool Zero(double number, int decimalPlaces)
+        {
+            //Conversion to int uses ToEven (aka nearest or bankers) rounding
+            var i = (int)(number*Math.Pow(10, decimalPlaces));
+            return i == 0;
         }
     }
 }
