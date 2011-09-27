@@ -1,13 +1,13 @@
-﻿using System;
-using ESRI.ArcGIS.Carto;
-using ESRI.ArcGIS.Display;
-using ESRI.ArcGIS.Geometry;
-using ESRI.ArcGIS.Geodatabase;
-using ESRI.ArcGIS.Catalog;
-using NPS.AKRO.ArcGIS.Forms;
+using System;
 using System.Windows.Forms;
-using NPS.AKRO.ArcGIS.Grids;
 using ESRI.ArcGIS.ADF;
+using ESRI.ArcGIS.Carto;
+using ESRI.ArcGIS.Catalog;
+using ESRI.ArcGIS.Display;
+using ESRI.ArcGIS.Geodatabase;
+using ESRI.ArcGIS.Geometry;
+using NPS.AKRO.ArcGIS.Forms;
+using NPS.AKRO.ArcGIS.Grids;
 
 // OUTSTANDING ISSUES
 // grid object is always defined in map's spatial reference.  - capture change SR events to update the grid.
@@ -21,7 +21,7 @@ using ESRI.ArcGIS.ADF;
 //   (if schemas match), otherwise program crashes.
 // Rotated Grids???
 
-namespace NPS.AKRO.ArcGIS
+namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class GenerateGrid : ESRI.ArcGIS.Desktop.AddIns.Tool
     {

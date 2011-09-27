@@ -119,6 +119,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buttons\GenerateGrid.cs" />
     <Compile Include="Forms\AddXyForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -192,7 +193,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Tools\GenerateGrid.cs" />
     <Compile Include="Buttons\LinkInternal.cs" />
     <Compile Include="Buttons\AlaskaPakHelp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

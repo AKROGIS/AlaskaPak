@@ -7,8 +7,7 @@ using ESRI.ArcGIS.Geodatabase;
 using NPS.AKRO.ArcGIS.Forms;
 using NPS.AKRO.ArcGIS.Common;
 
-
-namespace NPS.AKRO.ArcGIS
+namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class RandomSelect : ESRI.ArcGIS.Desktop.AddIns.Button
     {

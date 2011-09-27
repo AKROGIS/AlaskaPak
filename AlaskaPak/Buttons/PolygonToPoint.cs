@@ -1,4 +1,4 @@
-﻿namespace NPS.AKRO.ArcGIS
+﻿namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class PolygonToPoint : ESRI.ArcGIS.Desktop.AddIns.Button
     {

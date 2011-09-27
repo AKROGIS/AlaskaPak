@@ -2,7 +2,7 @@
 using ESRI.ArcGIS.Geometry;
 using System.Windows.Forms;
 
-namespace NPS.AKRO.ArcGIS
+namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class SetExtents : ESRI.ArcGIS.Desktop.AddIns.Button
     {

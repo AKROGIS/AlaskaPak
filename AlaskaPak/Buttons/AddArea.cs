@@ -1,4 +1,4 @@
-﻿namespace NPS.AKRO.ArcGIS
+﻿namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class AddArea : ESRI.ArcGIS.Desktop.AddIns.Button
     {

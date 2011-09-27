@@ -19,7 +19,7 @@ using NPS.AKRO.ArcGIS.Forms;
  *   - remove ESRI requirements from FormData
  */
 
-namespace NPS.AKRO.ArcGIS
+namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class AddCoords : ESRI.ArcGIS.Desktop.AddIns.Button
     {

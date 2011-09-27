@@ -1,4 +1,4 @@
-﻿namespace NPS.AKRO.ArcGIS
+﻿namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class PointToPolyline : ESRI.ArcGIS.Desktop.AddIns.Button
     {

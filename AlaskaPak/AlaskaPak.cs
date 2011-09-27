@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Desktop.AddIns;
-using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geometry;
+using ESRI.ArcGIS.esriSystem;
 using NPS.AKRO.ArcGIS.Common;
 
 namespace NPS.AKRO.ArcGIS

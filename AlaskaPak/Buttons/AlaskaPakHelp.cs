@@ -3,7 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace NPS.AKRO.ArcGIS
+namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class AlaskaPakHelp : ESRI.ArcGIS.Desktop.AddIns.Button
     {

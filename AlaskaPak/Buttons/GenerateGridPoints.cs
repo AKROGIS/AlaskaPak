@@ -1,4 +1,4 @@
-﻿namespace NPS.AKRO.ArcGIS
+﻿namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class GenerateGridPoints : ESRI.ArcGIS.Desktop.AddIns.Button
     {

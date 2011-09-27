@@ -6,7 +6,7 @@ using ESRI.ArcGIS.esriSystem;
 using NPS.AKRO.ArcGIS.Forms;
 using NPS.AKRO.ArcGIS.Common;
 
-namespace NPS.AKRO.ArcGIS
+namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class CopyRasterSymbology : ESRI.ArcGIS.Desktop.AddIns.Button
     {
