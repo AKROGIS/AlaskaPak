@@ -119,6 +119,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlaskaPak.cs" />
     <Compile Include="Buttons\GenerateGrid.cs" />
     <Compile Include="Forms\AddXyForm.cs">
       <SubType>Form</SubType>
@@ -151,7 +152,6 @@
     <Compile Include="Buttons\SetExtents.cs" />
     <Compile Include="Buttons\SquareBuildings.cs" />
     <Compile Include="Buttons\TableToShape.cs" />
-    <Compile Include="Common\AlaskaPak.cs" />
     <Compile Include="Common\ArcToolBox.cs" />
     <Compile Include="Common\LayerUtils.cs" />
     <Compile Include="Common\NamedLayer.cs" />

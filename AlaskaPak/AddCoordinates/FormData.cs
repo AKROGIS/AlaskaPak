@@ -53,7 +53,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
 
         internal string XFieldName { get; set; }
         internal string YFieldName { get; set; }
-        internal Formatter Format { get; set; }
+        internal Formatter Format { get; private set; }
 
         internal List<NamedLayer> PointLayers
         {
@@ -192,7 +192,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         {
             IFeatureClass featureClass = GetFeatureClass();
             if (featureClass == null)
-                throw new Exception(@"Feature class is null");
+                throw new Exception("Feature class is null");
             IFields fields = ((IFeatureLayer)PointLayers[LayerIndex].Layer).FeatureClass.Fields;
             return fields.FindField(name) != -1;
         }
@@ -201,7 +201,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         {
             IFeatureClass featureClass = GetFeatureClass();
             if (featureClass == null)
-                throw new Exception(@"Feature class is null");
+                throw new Exception("Feature class is null");
             IFields fields = ((IFeatureLayer)PointLayers[LayerIndex].Layer).FeatureClass.Fields;
             return fields.FindField(name);
         }
