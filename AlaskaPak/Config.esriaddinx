@@ -2,7 +2,7 @@
   <Name>Alaska Pak</Name>
   <AddInID>{f27bc194-1406-4cd9-ab22-067660801251}</AddInID>
   <Description>A tool kit for increasing GIS productivity</Description>
-  <Version>3.0</Version>
+  <Version>3.0.1</Version>
   <Image>Images\NPS_Logo.png</Image>
   <Author>Regan Sarwas, GIS Team</Author>
   <Company>National Park Service, Alaska Regional Office</Company>
