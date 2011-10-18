@@ -3,11 +3,13 @@ GenerateGrid: if active annotation target has display turned off, preview does n
 GenerateGrid: There are unused methods in the form, Several classes have FIXMEs and the functionality feels incomplete.
 AddLength: Make work with geographic, and remove warning
 AddArea: Make work with geographic, and remove warning
+AddArea: Alert user if over-writing data in an existing Acres field (applies to multiple tools)
+AddCoords: Allow add XY for lines and polygons as well.
+AddCoords: If there are a lot of points, provide a progress bar
+AddCoords: If data is in a compressed FGDB, it is read-only, therefore, it will not show up in the list of available features (this can be confusing).
 AddCoords: FormData class is incomplete, see FIXMEs.
-Random Select: crashes in some cases (Oregon FG)
-Random Select: Crashes if there is a missing datasource
 Random Select: Counts features in all classes when loading the form.  This can take a long time (do something smarter)
 Random Select: use selection if provided
 Random Select: toggle for with or without replacement
-Obscure Points: NIM bug, provide workarount
+Obscure Points: NIM bug, provide workaround
 Line To Rectangle: See FIXMEs in code

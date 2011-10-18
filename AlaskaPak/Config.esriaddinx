@@ -10,6 +10,7 @@
   <Targets>
     <Target name="Desktop" version="10.0" />
   </Targets>
+  <!-- All custom classes (Tools, Buttons, Extensions, etc.) referenced in this file must be in the AddIn namespace, no exceptions!! -->
   <AddIn language="CLR" library="AlaskaPak3.dll" namespace="NPS.AKRO.ArcGIS.Buttons">
     <ArcMap>
       <Commands>
@@ -24,9 +25,6 @@
 					cursor   is a relative path to a cursor (*.cur) that is used by the tool when it is active (not used by buttons)
 					help     is ???
 				-->
-        <Tool id="NPS_Alaska_Pak_Coordinates" class="Coordinates" message="Interactive Coordinate Display" caption="&amp;Interactive Coordinates" tip="Show/Goto Coordinates" category="NPS Alaska" image="Images\bitmapCoordinates.bmp" cursor="Images\cursorCoordCursor.cur">
-          <Help heading="Alaska Pak">b</Help>
-        </Tool>
         <Tool id="NPS_Alaska_Pak_Generate_Grid" class="GenerateGrid" message="Generate a Regular Grid from a user defined rectangle." caption="&amp;Generate Grid" tip="Generate a Grid" category="NPS Alaska" image="Images\iconGridIcon.ico" cursor="Images\GenerateGrid.cur">
           <Help heading="Alaska Pak">b</Help>
         </Tool>

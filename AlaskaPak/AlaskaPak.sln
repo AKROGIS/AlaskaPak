@@ -5,6 +5,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlaskaPak", "AlaskaPak.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationEditor", "..\ConfigurationEditor\ConfigurationEditor.csproj", "{4F68E96F-E054-4DEE-B1CA-91B6D01397AB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1AAB52D0-FFB1-4CE4-ACFD-19CE97F9B638}"
+	ProjectSection(SolutionItems) = preProject
+		..\Docs\ToDo.txt = ..\Docs\ToDo.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

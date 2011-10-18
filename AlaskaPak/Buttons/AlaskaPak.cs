@@ -9,7 +9,7 @@ using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.esriSystem;
 using NPS.AKRO.ArcGIS.Common;
 
-namespace NPS.AKRO.ArcGIS
+namespace NPS.AKRO.ArcGIS.Buttons
 {
     public class AlaskaPak : Extension
     {
@@ -143,7 +143,8 @@ namespace NPS.AKRO.ArcGIS
 
         internal List<NamedLayer> GetSelectableLayers()
         {
-            return GetFeatureLayers().Where(x => ((IFeatureLayer)x.Layer).Selectable).ToList();
+            return GetFeatureLayers().Where(x => ((IFeatureLayer)x.Layer).FeatureClass != null &&
+                                                 ((IFeatureLayer)x.Layer).Selectable).ToList();
         }
 
         internal List<NamedLayer> GetPointLayers()

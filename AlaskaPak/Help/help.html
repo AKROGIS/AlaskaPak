@@ -25,5 +25,26 @@
             However, in some cases the Alaska Pak provided additional features, or simplied a complex tool
             in which case the Alaska Pak tool be be made available to replace the proxy.
         </p>
+        <h2>Known Issues</h2>
+        <ol>
+        <li>
+            Some tools (i.e. Add XY Coordinates, Random Selection, Copy Raster Symbology) display a picklist of layers that the user can use in the tool. 
+            This list updates automatically whenever the user makes changes to the map's table of contents even if the tool is open.
+            However if there are multiple data frames in the map, only one data frame is active at a time, and while you can make changes to any data frame,
+            the tools will only recognize changes to the active data frame.  If you make changes to a non-active dataframe, simply make it active, and the
+            tool will recognize the changes and update the layers accordingly
+        </li>
+        <li>
+            Most tools only require an ArcView license level, and no extensions.  The following exceptions are:
+            <ul>
+                <li>Add Attributes:Add Globally Unique Id (ArcEditor)</li>
+                <li>Grids:Generate Grid Points (ArcInfo)</li>
+                <li>Conversions:Polyline/Polygon To Point (ArcInfo)</li>
+                <li>Conversions:Point To Polygon (ArcInfo)</li>
+                <li>Randomize:Random Points (ArcInfo or ArcView with Spatial Analyst or ArcView with 3D Analyst)</li>
+                <li>Randomize:Obscure Points (ArcInfo, only if using optional <b>No Go</b> or <b>Must Go</b> areas)</li>
+            </ul>
+        </li>
+        </ol>
     </body>
 </html>
