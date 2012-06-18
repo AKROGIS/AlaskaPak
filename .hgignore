@@ -11,3 +11,5 @@ glob:ConfigurationEditor/bin
 glob:ConfigurationEditor/StyleCop.Cache
 glob:ConfigurationEditor/obj
 glob:ConfigurationEditor/ConfigurationEditor.csproj.*
+syntax: glob
+AlaskaPak.sln.DotSettings.user

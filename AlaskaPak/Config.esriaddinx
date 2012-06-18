@@ -2,11 +2,11 @@
   <Name>Alaska Pak</Name>
   <AddInID>{f27bc194-1406-4cd9-ab22-067660801251}</AddInID>
   <Description>A tool kit for increasing GIS productivity</Description>
-  <Version>3.0.1</Version>
+  <Version>3.0.2</Version>
   <Image>Images\NPS_Logo.png</Image>
   <Author>Regan Sarwas, GIS Team</Author>
   <Company>National Park Service, Alaska Regional Office</Company>
-  <Date>1/24/2011</Date>
+  <Date>6/18/2012</Date>
   <Targets>
     <Target name="Desktop" version="10.0" />
   </Targets>
@@ -73,6 +73,9 @@
         <Button id="NPS_Alaska_Pak_Polygon_to_Point" class="PolygonToPoint" message="Create a point feature class from the vertices in lines or polygons" caption="P&amp;olyline/Polygon to Point" tip="Convert a line or polygon to points" category="NPS Alaska" image="Images\Hammer.png">
           <Help heading="Alaska Pak Polygon to Point">Create a point feature class from the vertices in lines or polygons.</Help>
         </Button>
+        <Button id="NPS_Alaska_Pak_Point_Distance_Azimuth_to_Polygon" class="PointToPolygon2" message="Create a polygon feature class from the a control point and a table of azimuths and distances to perimeter points" caption="Point/&amp;Azimuth/Distance to Polygon" tip="Convert Point/Azimuth/Distance data to a polygon" category="NPS Alaska" image="Images\Hammer.png">
+          <Help heading="Alaska Pak Polygon to Point">Create a point feature class from the vertices in lines or polygons.</Help>
+        </Button>
         <Button id="NPS_Alaska_Pak_Generate_Grid_Points" class="GenerateGridPoints" message="Generate centroid points from an Alaska Pak generated grid" caption="Generate Grid &amp;Points" tip="Create center points for a grid" category="NPS Alaska" image="Images\Grid.bmp">
           <Help heading="Alaska Pak Generate Grid Points">Generate centroid points from an Alaska Pak generated grid.</Help>
         </Button>
@@ -122,6 +125,7 @@
             <Button refID="NPS_Alaska_Pak_Line_to_Rectangle" />
             <Button refID="NPS_Alaska_Pak_Square_Building" />
             <Button refID="NPS_Alaska_Pak_Polygon_to_Point" />
+            <Button refID="NPS_Alaska_Pak_Point_Distance_Azimuth_to_Polygon" />
             <Button refID="esriArcMapUI.GraphicsToFeaturesCommand" />
           </Items>
         </Menu>

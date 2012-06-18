@@ -121,6 +121,7 @@
   <ItemGroup>
     <Compile Include="Buttons\AlaskaPak.cs" />
     <Compile Include="Buttons\GenerateGrid.cs" />
+    <Compile Include="Buttons\PointToPolygon2.cs" />
     <Compile Include="Forms\AddXyForm.cs">
       <SubType>Form</SubType>
     </Compile>
