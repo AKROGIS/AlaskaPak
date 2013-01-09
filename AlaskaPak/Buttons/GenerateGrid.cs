@@ -233,6 +233,8 @@ namespace NPS.AKRO.ArcGIS.Buttons
             fieldEdit.AliasName_2 = "Column";
             fieldsEdit.AddField(fieldEdit);
 
+            // ReSharper disable UseObjectOrCollectionInitializer
+            // The field class COM object does not support object initializers
             fieldEdit = new FieldClass();
             fieldEdit.Name_2 = "Row";
             fieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger;
@@ -264,6 +266,7 @@ namespace NPS.AKRO.ArcGIS.Buttons
             fieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger;
             fieldEdit.AliasName_2 = "Page Number";
             fieldsEdit.AddField(fieldEdit);
+            // ReSharper restore UseObjectOrCollectionInitializer
 
             return fields;
         }

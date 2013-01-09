@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using System.Collections.Generic;
@@ -237,7 +238,7 @@ namespace NPS.AKRO.ArcGIS.Grids
                         return (index + 1).ToString("D4");
                     return "OutOfBounds";
                 case GridLabelStyle.NumericWithoutZeroPadding:
-                    return (index + 1).ToString();
+                    return (index + 1).ToString(CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentException("labelStyle");
             }
@@ -265,7 +266,6 @@ namespace NPS.AKRO.ArcGIS.Grids
             container.DeleteElement(_group as IElement);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(_group);
             //_group = null;
-            return;
         }
 
         internal void Draw()

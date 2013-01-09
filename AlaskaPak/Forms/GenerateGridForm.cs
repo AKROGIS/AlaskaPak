@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using ESRI.ArcGIS.Catalog;
 using NPS.AKRO.ArcGIS.Grids;
 
 namespace NPS.AKRO.ArcGIS.Forms
@@ -16,7 +18,7 @@ namespace NPS.AKRO.ArcGIS.Forms
         internal GenerateGridForm()
         {
             InitializeComponent();
-            unitsComboBox.Items.AddRange(LinearUnitsConverter.KnownUnits.ToArray());
+            unitsComboBox.Items.AddRange(LinearUnitsConverter.KnownUnits.Cast<object>().ToArray());
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
@@ -27,7 +29,7 @@ namespace NPS.AKRO.ArcGIS.Forms
         private void browseButton_Click(object sender, EventArgs e)
         {
             ESRI.ArcGIS.CatalogUI.IGxDialog browser = new ESRI.ArcGIS.CatalogUI.GxDialog();
-            browser.ObjectFilter = new ESRI.ArcGIS.Catalog.GxFilterFeatureClassesClass();
+            browser.ObjectFilter = new GxFilterFeatureClassesClass();
             browser.Title = "Name of Feature Class to Create";
 
             if (!browser.DoModalSave((int)Handle))
@@ -41,7 +43,7 @@ namespace NPS.AKRO.ArcGIS.Forms
             else
             {
                 // shapefile folder
-                if (browser.FinalLocation is ESRI.ArcGIS.Catalog.IGxFolder)
+                if (browser.FinalLocation is IGxFolder)
                 {
                     Dataset = null;
                     ESRI.ArcGIS.Geodatabase.IWorkspaceFactory wsf =
@@ -51,22 +53,24 @@ namespace NPS.AKRO.ArcGIS.Forms
                 }
 
                 // geodatabase (root level)
-                if (browser.FinalLocation is ESRI.ArcGIS.Catalog.IGxDatabase)
+                var database = browser.FinalLocation as IGxDatabase;
+                if (database != null)
                 {
                     Dataset = null;
                     Workspace =
-                        ((ESRI.ArcGIS.Catalog.IGxDatabase)browser.FinalLocation).Workspace as
+                        database.Workspace as
                         ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
                 }
 
                 // feature dataset in a geodatabase
-                if (browser.FinalLocation is ESRI.ArcGIS.Catalog.IGxDataset)
+                var dataset = browser.FinalLocation as IGxDataset;
+                if (dataset != null)
                 {
                     Dataset =
-                        ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset as
+                        dataset.Dataset as
                         ESRI.ArcGIS.Geodatabase.IFeatureDataset;
                     Workspace =
-                        ((ESRI.ArcGIS.Catalog.IGxDataset)browser.FinalLocation).Dataset.Workspace as
+                        dataset.Dataset.Workspace as
                         ESRI.ArcGIS.Geodatabase.IFeatureWorkspace;
                     var geoDataset = (ESRI.ArcGIS.Geodatabase.IGeoDataset)Dataset;
                     if (geoDataset != null)
@@ -134,8 +138,8 @@ namespace NPS.AKRO.ArcGIS.Forms
 
             double metersPerUserUnit = LinearUnitsConverter.ToMeters(1, unitsComboBox.Text);
             //RowHeight and ColumnWidth are in Grid units, convert to meters to convert to user units
-            heightTextBox.Text = (Grid.RowHeight*Grid.MetersPerUnit/metersPerUserUnit).ToString();
-            widthTextBox.Text = (Grid.ColumnWidth*Grid.MetersPerUnit/metersPerUserUnit).ToString();
+            heightTextBox.Text = (Grid.RowHeight*Grid.MetersPerUnit/metersPerUserUnit).ToString(CultureInfo.InvariantCulture);
+            widthTextBox.Text = (Grid.ColumnWidth * Grid.MetersPerUnit / metersPerUserUnit).ToString(CultureInfo.InvariantCulture);
 
             _updating = false;
         }
@@ -235,11 +239,11 @@ namespace NPS.AKRO.ArcGIS.Forms
 
             //RowHeight and ColumnWidth are in Grid units, convert to meters to convert to user units
             double metersPerUserUnit = LinearUnitsConverter.ToMeters(1, unitsComboBox.Text);
-            heightTextBox.Text = (Grid.RowHeight*Grid.MetersPerUnit/metersPerUserUnit).ToString();
-            widthTextBox.Text = (Grid.ColumnWidth*Grid.MetersPerUnit/metersPerUserUnit).ToString();
+            heightTextBox.Text = (Grid.RowHeight * Grid.MetersPerUnit / metersPerUserUnit).ToString(CultureInfo.InvariantCulture);
+            widthTextBox.Text = (Grid.ColumnWidth * Grid.MetersPerUnit / metersPerUserUnit).ToString(CultureInfo.InvariantCulture);
 
-            yCountTextBox.Text = Grid.RowCount.ToString();
-            xCountTextBox.Text = Grid.ColumnCount.ToString();
+            yCountTextBox.Text = Grid.RowCount.ToString(CultureInfo.InvariantCulture);
+            xCountTextBox.Text = Grid.ColumnCount.ToString(CultureInfo.InvariantCulture);
 
             delimiterTextBox.Text = Grid.Delimiter;
             prefixTextBox.Text = Grid.Prefix;

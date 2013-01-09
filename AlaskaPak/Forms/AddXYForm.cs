@@ -23,7 +23,7 @@ namespace NPS.AKRO.ArcGIS.Forms
                 if (value == _data)
                     return;
                 _data = value;
-                formatStyleComboBox.Items.AddRange(_data.Format.Names.ToArray());
+                formatStyleComboBox.Items.AddRange(_data.Format.Names.Cast<object>().ToArray());
                 formatStyleComboBox.SelectedIndex = (int)_data.Format.OutputFormat;
                 PointLayersChanged();
                 xFieldComboBox.Text = _data.DefaultXFieldName;
@@ -36,7 +36,7 @@ namespace NPS.AKRO.ArcGIS.Forms
         internal void PointLayersChanged()
         {
             featureClassComboBox.Items.Clear();
-            featureClassComboBox.Items.AddRange(Data.PointLayerNames.ToArray());
+            featureClassComboBox.Items.AddRange(Data.PointLayerNames.Cast<object>().ToArray());
             if (Data.LayerIndex == -1)
             {
                 featureClassComboBox.SelectedText = Data.FeatureClassPath;
@@ -96,14 +96,14 @@ namespace NPS.AKRO.ArcGIS.Forms
             if (xFieldComboBox.Items.IndexOf(xFieldComboBox.Text) == xFieldComboBox.Items.Count - 1)
                 xFieldComboBox.Text = Data.DefaultXFieldName;
             xFieldComboBox.Items.Clear();
-            xFieldComboBox.Items.AddRange(Data.GetAppropriateFieldNames().ToArray());
+            xFieldComboBox.Items.AddRange(Data.GetAppropriateFieldNames().Cast<object>().ToArray());
             if (!xFieldComboBox.Items.Contains(Data.DefaultXFieldName))
                 xFieldComboBox.Items.Add(Data.DefaultXFieldName);
 
             if (yFieldComboBox.Items.IndexOf(yFieldComboBox.Text) == yFieldComboBox.Items.Count - 1)
                 yFieldComboBox.Text = Data.DefaultYFieldName;
             yFieldComboBox.Items.Clear();
-            yFieldComboBox.Items.AddRange(Data.GetAppropriateFieldNames().ToArray());
+            yFieldComboBox.Items.AddRange(Data.GetAppropriateFieldNames().Cast<object>().ToArray());
             if (!yFieldComboBox.Items.Contains(Data.DefaultYFieldName))
                 yFieldComboBox.Items.Add(Data.DefaultYFieldName);
 
@@ -142,7 +142,7 @@ namespace NPS.AKRO.ArcGIS.Forms
                     {
                         case esriFieldNameErrorType.esriDuplicatedFieldName:
                             string cbText = cb.Text.ToLower();
-                            if (Data.GetAppropriateFieldNames().Where(n => n.ToLower().Contains(cbText)).Any())
+                            if (Data.GetAppropriateFieldNames().Any(n => n.ToLower().Contains(cbText)))
                             {
                                 overwriteWarning.SetError(cb, "Existing values in this field will be overwritten");
                                 invalidEntry.SetError(cb, "");

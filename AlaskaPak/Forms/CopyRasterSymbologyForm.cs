@@ -30,7 +30,7 @@ namespace NPS.AKRO.ArcGIS.Forms
         {
             sourceComboBox.Items.Clear();
             targetsListBox.Items.Clear();
-            string[] items = layernames.ToArray();
+            object[] items = layernames.Cast<object>().ToArray();
             if (items.Length <= 0)
                 return;
             sourceComboBox.Items.AddRange(items);

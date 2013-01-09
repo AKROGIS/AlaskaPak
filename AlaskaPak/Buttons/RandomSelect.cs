@@ -103,9 +103,10 @@ namespace NPS.AKRO.ArcGIS.Buttons
         {
             //casting the layer to ITable gets only the features in the
             //layer's query definition (i.e. those being shown
-            if (layer is ITable)
+            var table = layer as ITable;
+            if (table != null)
             {
-                ISelectionSet oids = ((ITable)layer).Select(null,
+                ISelectionSet oids = table.Select(null,
                                                             esriSelectionType.esriSelectionTypeHybrid,
                                                             esriSelectionOption.esriSelectionOptionNormal, null);
                 return oids.Count;
