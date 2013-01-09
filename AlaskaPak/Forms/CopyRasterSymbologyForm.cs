@@ -106,10 +106,10 @@ namespace NPS.AKRO.ArcGIS.Forms
             CopyRasterEventHandler handle = CopyRasterEvent;
             if (handle != null)
                 handle(this, new CopyRasterEventArgs
-                                 {
-                                     Source = sourceComboBox.SelectedIndex,
-                                     Targets = targetsListBox.CheckedIndices.Cast<int>()
-                                 });
+                {
+                    Source = sourceComboBox.SelectedIndex,
+                    Targets = targetsListBox.CheckedIndices.Cast<int>()
+                });
         }
     }
 

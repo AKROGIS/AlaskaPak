@@ -383,7 +383,7 @@ namespace NPS.AKRO.ArcGIS.Buttons
             var featureWorkspace = (IFeatureWorkspace)workspace; // Cast may throw exception
 
             if (workspace.NameExists[esriDatasetType.esriDTFeatureClass, featureClassName])
-                //feature class with that name already exists 
+            //feature class with that name already exists 
             {
                 featureClass = featureWorkspace.OpenFeatureClass(featureClassName);
                 return featureClass;
@@ -392,7 +392,7 @@ namespace NPS.AKRO.ArcGIS.Buttons
             // assign the class id value if not assigned
             if (clsid == null)
             {
-                clsid = new ESRI.ArcGIS.esriSystem.UIDClass {Value = "esriGeoDatabase.Feature"};
+                clsid = new ESRI.ArcGIS.esriSystem.UIDClass { Value = "esriGeoDatabase.Feature" };
                 //Works for shapefiles as well
             }
 

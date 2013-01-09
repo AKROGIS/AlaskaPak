@@ -60,10 +60,10 @@ namespace NPS.AKRO.ArcGIS.Buttons
                     _form.FormClosed += delegate { _form = null; };
                     //What we will do when the form says it is ready to process
                     _form.okButton.Click += delegate
-                                                {
-                                                    EditLayer(_form.Data);
-                                                    _form.Close();
-                                                };
+                    {
+                        EditLayer(_form.Data);
+                        _form.Close();
+                    };
                     _form.Show();
                 }
             }
@@ -111,7 +111,7 @@ namespace NPS.AKRO.ArcGIS.Buttons
 
 
             //If fields don't exist, add them
-            foreach (string fieldName in new[] {data.XFieldName, data.YFieldName})
+            foreach (string fieldName in new[] { data.XFieldName, data.YFieldName })
             {
                 if (data.FieldNameExists(fieldName))
                     continue;

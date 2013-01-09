@@ -135,7 +135,7 @@ namespace NPS.AKRO.ArcGIS.Forms
             }
             else
             {
-                foreach (ComboBox cb in new[] {xFieldComboBox, yFieldComboBox})
+                foreach (ComboBox cb in new[] { xFieldComboBox, yFieldComboBox })
                 {
                     esriFieldNameErrorType err = Data.ValidateFieldName(cb.Text);
                     switch (err)

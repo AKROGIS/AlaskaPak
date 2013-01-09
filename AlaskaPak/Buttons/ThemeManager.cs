@@ -28,7 +28,7 @@ namespace NPS.AKRO.ArcGIS.Buttons
                     string directory = Path.GetDirectoryName(exe);
                     if (directory == null)
                         return;
-                    var startInfo = new ProcessStartInfo(exe) {WorkingDirectory = directory};
+                    var startInfo = new ProcessStartInfo(exe) { WorkingDirectory = directory };
                     Process.Start(startInfo);
                 }
                 catch (System.ComponentModel.Win32Exception ex)

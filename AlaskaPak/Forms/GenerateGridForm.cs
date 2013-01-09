@@ -101,9 +101,9 @@ namespace NPS.AKRO.ArcGIS.Forms
         {
             if (_updating)
                 return;
-            Grid.RowHeight = LinearUnitsConverter.ToMeters(Convert.ToDouble(heightTextBox.Text), unitsComboBox.Text)/
+            Grid.RowHeight = LinearUnitsConverter.ToMeters(Convert.ToDouble(heightTextBox.Text), unitsComboBox.Text) /
                              Grid.MetersPerUnit;
-            Grid.ColumnWidth = LinearUnitsConverter.ToMeters(Convert.ToDouble(widthTextBox.Text), unitsComboBox.Text)/
+            Grid.ColumnWidth = LinearUnitsConverter.ToMeters(Convert.ToDouble(widthTextBox.Text), unitsComboBox.Text) /
                                Grid.MetersPerUnit;
             Grid.RowCount = Convert.ToInt32(yCountTextBox.Text);
             Grid.ColumnCount = Convert.ToInt32(xCountTextBox.Text);
@@ -123,7 +123,7 @@ namespace NPS.AKRO.ArcGIS.Forms
 
         private void OptionalPreviewButton_Click(object sender, EventArgs e)
         {
-            if (Grid.ColumnCount*Grid.RowCount <= 250)
+            if (Grid.ColumnCount * Grid.RowCount <= 250)
                 PreviewButton_Click(sender, e);
         }
 
@@ -138,7 +138,7 @@ namespace NPS.AKRO.ArcGIS.Forms
 
             double metersPerUserUnit = LinearUnitsConverter.ToMeters(1, unitsComboBox.Text);
             //RowHeight and ColumnWidth are in Grid units, convert to meters to convert to user units
-            heightTextBox.Text = (Grid.RowHeight*Grid.MetersPerUnit/metersPerUserUnit).ToString(CultureInfo.InvariantCulture);
+            heightTextBox.Text = (Grid.RowHeight * Grid.MetersPerUnit / metersPerUserUnit).ToString(CultureInfo.InvariantCulture);
             widthTextBox.Text = (Grid.ColumnWidth * Grid.MetersPerUnit / metersPerUserUnit).ToString(CultureInfo.InvariantCulture);
 
             _updating = false;
@@ -198,8 +198,8 @@ namespace NPS.AKRO.ArcGIS.Forms
             double h = Convert.ToDouble(heightTextBox.Text);
             if (Math.Abs(Grid.ColumnWidth - w) > EPSILON || Math.Abs(Grid.RowHeight - h) > EPSILON)
             {
-                Grid.RowHeight = LinearUnitsConverter.ToMeters(h, unitsComboBox.Text)/Grid.MetersPerUnit;
-                Grid.ColumnWidth = LinearUnitsConverter.ToMeters(w, unitsComboBox.Text)/Grid.MetersPerUnit;
+                Grid.RowHeight = LinearUnitsConverter.ToMeters(h, unitsComboBox.Text) / Grid.MetersPerUnit;
+                Grid.ColumnWidth = LinearUnitsConverter.ToMeters(w, unitsComboBox.Text) / Grid.MetersPerUnit;
                 if (!Grid.IsValid)
                 {
                     //make it valid

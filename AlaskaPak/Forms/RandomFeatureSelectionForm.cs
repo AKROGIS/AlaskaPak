@@ -86,7 +86,7 @@ namespace NPS.AKRO.ArcGIS.Forms
                     }
                     else
                     {
-                        q = Convert.ToInt32(n/100*t);
+                        q = Convert.ToInt32(n / 100 * t);
                     }
                 }
                 else
@@ -145,10 +145,10 @@ namespace NPS.AKRO.ArcGIS.Forms
             RandomSelectEventHandler handle = SelectedLayer;
             if (handle != null)
                 handle(this, new RandomSelectEventArgs
-                                 {
-                                     LayerIndex = layerComboBox.SelectedIndex,
-                                     Count = _quantity
-                                 });
+                {
+                    LayerIndex = layerComboBox.SelectedIndex,
+                    Count = _quantity
+                });
         }
     }
 

@@ -65,10 +65,10 @@ namespace NPS.AKRO.ArcGIS.Buttons
         private void LoadFormList()
         {
             _form.LoadList(_selectableLayers.Select(sl => new Tuple<string, int>
-                                                              {
-                                                                  Item1 = sl.Name,
-                                                                  Item2 = FeatureCount(sl.Layer)
-                                                              }));
+            {
+                Item1 = sl.Name,
+                Item2 = FeatureCount(sl.Layer)
+            }));
         }
 
         #region Event Handlers

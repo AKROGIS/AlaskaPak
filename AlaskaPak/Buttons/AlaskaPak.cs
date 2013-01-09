@@ -172,10 +172,10 @@ namespace NPS.AKRO.ArcGIS.Buttons
                                   ? LayerUtils.GetFullName(ArcMap.Document, layer)
                                   : LayerUtils.GetFullName(ArcMap.Document.Maps.Item[0], layer)
                    select new NamedLayer
-                              {
-                                  Name = name,
-                                  Layer = layer
-                              };
+                   {
+                       Name = name,
+                       Layer = layer
+                   };
         }
 
         #endregion

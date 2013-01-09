@@ -135,9 +135,9 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             //get components
             decimalDegrees = Math.Abs(decimalDegrees);
             var degrees = (int)decimalDegrees;
-            double decimalMinutes = (decimalDegrees - degrees)*60.0;
+            double decimalMinutes = (decimalDegrees - degrees) * 60.0;
             var minutes = (int)(decimalMinutes);
-            double seconds = (decimalDegrees - (degrees + minutes/60.0))*3600.0;
+            double seconds = (decimalDegrees - (degrees + minutes / 60.0)) * 3600.0;
 
             // create format string
             string decimalFormat = "F" + Decimals;
@@ -147,14 +147,14 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
             {
                 case FormatterOutputFormat.DecimalDegress:
                     format = "{0}{1:" + decimalFormat + "}° {2}";
-                    args = new object[] {sign, decimalDegrees, direction};
+                    args = new object[] { sign, decimalDegrees, direction };
                     break;
                 case FormatterOutputFormat.DegreesDecimalMinutes:
                     format = "{0}{1}° ";
                     if (ShowZeroParts || !Zero(decimalMinutes, Decimals))
                         format = format + "{2:" + decimalFormat + "}' ";
                     format = format + "{3}";
-                    args = new object[] {sign, degrees, decimalMinutes, direction};
+                    args = new object[] { sign, degrees, decimalMinutes, direction };
                     break;
                 case FormatterOutputFormat.DegreesMinutesSeconds:
                     format = "{0}{1}° ";
@@ -163,7 +163,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
                     if (ShowZeroParts || !Zero(seconds, Decimals))
                         format = format + "{3:" + decimalFormat + "}\" ";
                     format = format + "{4}";
-                    args = new object[] {sign, degrees, minutes, seconds, direction};
+                    args = new object[] { sign, degrees, minutes, seconds, direction };
                     break;
                 default:
                     throw new Exception(@"Invalid output format requested");
@@ -186,7 +186,7 @@ namespace NPS.AKRO.ArcGIS.AddCoordinates
         private static bool Zero(double number, int decimalPlaces)
         {
             //Conversion to int uses ToEven (aka nearest or bankers) rounding
-            var i = (int)(number*Math.Pow(10, decimalPlaces));
+            var i = (int)(number * Math.Pow(10, decimalPlaces));
             return i == 0;
         }
     }
