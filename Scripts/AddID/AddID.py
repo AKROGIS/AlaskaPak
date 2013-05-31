@@ -98,6 +98,9 @@ except ValueError:
 
 #process features  
 for feature in featureList.split(";"):
+    if feature[0] == "'" and feature[-1] == "'":
+        feature = feature[1:-1]
+    arcpy.AddMessage("Adding Id to "+feature)
     if idFieldName not in arcpy.ListFields(feature):
         arcpy.AddField_management(feature, idFieldName, "Long", "", "", "", "",
                                   "NULLABLE", "NON_REQUIRED", "")
