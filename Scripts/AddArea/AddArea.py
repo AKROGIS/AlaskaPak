@@ -69,7 +69,8 @@
 # requested
 # * Feature may be locked or uneditable
 
-validUnits = ["ACRES","ARES","HECTARES","SQUARECENTIMETERS","SQUAREDECIMETERS","SQUAREINCHES","SQUAREFEET","SQUAREKILOMETERS","SQUAREMETERS","SQUAREMILES","SQUAREMILLIMETERS","SQUAREYARDS"]
+validUnits = ["ACRES", "ARES", "HECTARES", "SQUARECENTIMETERS", "SQUAREDECIMETERS", "SQUAREINCHES", "SQUAREFEET",
+              "SQUAREKILOMETERS", "SQUAREMETERS", "SQUAREMILES", "SQUAREMILLIMETERS", "SQUAREYARDS"]
 
 import arcpy
 
@@ -81,6 +82,7 @@ units = arcpy.GetParameterAsText(2)
 proj = 'PROJCS["NAD_1983_Alaska_Albers",GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Albers"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-154.0],PARAMETER["Standard_Parallel_1",55.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",50.0],UNIT["Meter",1.0],AUTHORITY["EPSG",3338]]'
 sr = arcpy.SpatialReference()
 sr.loadFromString(proj)
+
 
 def getFactor(units):
     units = units.upper()
@@ -108,9 +110,10 @@ def getFactor(units):
         return 1000000
     if units == "SQUAREYARDS":
         return 1.19599
-    
+
+
 def AddArea(feature, shapename, fieldname, units, sr):
-    rows = arcpy.UpdateCursor(feature,"",sr,fieldname + ","+shapename,"")
+    rows = arcpy.UpdateCursor(feature, "", sr, fieldname + "," + shapename, "")
     metersToUnits = getFactor(units)
     for row in rows:
         geom = row.getValue(shapename)
@@ -121,16 +124,17 @@ def AddArea(feature, shapename, fieldname, units, sr):
     del row
     del rows
 
+
 for feature in featureList.split(";"):
     featureDescription = arcpy.Describe(feature)
     fsr = featureDescription.spatialReference
-    featureIsProjected = fsr.type == "Projected" and fsr.name != "Unknown" 
+    featureIsProjected = fsr.type == "Projected" and fsr.name != "Unknown"
     if fieldName not in arcpy.ListFields(feature):
         arcpy.AddField_management(feature, fieldName, "Double", "", "", "", "",
                                   "NULLABLE", "NON_REQUIRED", "")
         if featureIsProjected:
             arcpy.CalculateField_management(feature, fieldName, "!shape.area@" +
-                                            units + "!", "PYTHON_9.3", "")
+                                                                units + "!", "PYTHON_9.3", "")
         else:
             AddArea(feature, featureDescription.shapeFieldName, fieldName, units, sr)
 
