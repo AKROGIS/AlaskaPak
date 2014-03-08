@@ -88,7 +88,7 @@
 # Public Domain
 #
 # Requirements
-# arcpy module - requires ArcGIS v10.2 and a valid license
+# arcpy module - requires ArcGIS v10.1 and a valid license
 #
 # Disclaimer:
 # This software is provide "as is" and the National Park Service gives
@@ -102,98 +102,85 @@
 # software and aggregate use with other software.
 # ------------------------------------------------------------------------------
 
-import sys
 import os
 import math
 import arcpy
+import utils
 
 
-def parse_polygon_data(
-        polygon_data_table, polygon_id_field_name,
-        polygon_azimuth_field_name, polygon_distance_field_name):
-    """ Returns a dictionary where key is the point/polygon id, and
-    the value is an ordered list of (azimuth/distance) tuples"""
-    result = {}
-    current_id = None
-    rows = arcpy.SearchCursor(polygon_data_table)
-    current_list = []
-    for row in rows:
-        polygon_id = row.getValue(polygon_id_field_name)
-        # We are done if we find a null id
-        if polygon_id is None:
-            break
-            # If we have seen this id before, then skip this row
-        if polygon_id in result:
-            msg = u"Polygon {0:d} has already been closed, skipping.".format(polygon_id)
-            print("Warning: " + msg)
-            arcpy.AddWarning(msg)
-            continue
-            # we have a new id, and an old id
-        if polygon_id != current_id:
-            #save the old list
-            if current_id and current_list:
-                result[current_id] = current_list
-                # start a new list
-            current_list = []
-            current_id = polygon_id
-            #add the point to the current list
-        current_list.append(
-            (row.getValue(polygon_azimuth_field_name),
-             row.getValue(polygon_distance_field_name)))
-        # save any open lists
-    if current_id and current_list:
-        result[current_id] = current_list
-    return result
+def sort_polygon_data(polygon_data_table, point_id, polygon_id_field_name, polygon_group_field_name,
+                      polygon_sort_field_name, polygon_azimuth_field_name, polygon_distance_field_name):
+    """ Selects and sorts all the records in polygon_data_table where the value in polygon_id_field_name
+    equals point_id.  Records are sorted by polygon_group_field_name and then polygon_sort_field_name.
+    If there is no polygon_group_field_name then a list of (azimuth,distance) tuples is returned
+    otherwise it returns a dictionary with keys in type of group_id (values in polygon_group_field_name)
+    and values of list of (azimuth,distance) tuples.
+    """
+    # TODO: what if pointId is text, does it need quotes
+    predicate = """{0} = {1}""".format(arcpy.AddFieldDelimiters(polygon_data_table, polygon_id_field_name), point_id)
+    if polygon_group_field_name:
+        fields = [polygon_group_field_name, polygon_sort_field_name,
+                  polygon_azimuth_field_name, polygon_distance_field_name]
+        data = {}
+        previous_group_id = None
+        for row in sorted(arcpy.da.SearchCursor(polygon_data_table, fields, predicate)):
+            group_id = row[0]
+            azimuth = row[2]
+            distance = row[3]
+            if group_id != previous_group_id:
+                previous_group_id = group_id
+                data[group_id] = []
+            data[group_id].append((azimuth, distance))
+        return data
+    else:
+        fields = [polygon_sort_field_name, polygon_azimuth_field_name, polygon_distance_field_name]
+        data = []
+        for row in sorted(arcpy.da.SearchCursor(polygon_data_table, fields, predicate)):
+            azimuth = row[1]
+            distance = row[2]
+            data.append((azimuth, distance))
+        return data
 
 
 def make_polygon(point, point_id, group_id, polygon_data):
-    """point must be an arcpy.Point,
-    point_id, group_id are keys to the dictionaries in polygon_data
-    polygon_data is a dictionary with keys in type of point_id and values of dictionary with keys in type of group_id
-    and values of list of (azimuth,distance) tuples (both floats).
+    """point must be an (x,y) tuple,
+    point_id and group_id identify the point for error reporting
+    polygon_data is a list of (azimuth,distance) tuples.
     Returns an arcpy.Polygon or None if there was a problem"""
-    try:
-        data = polygon_data[point_id][group_id]
-    except KeyError:
-        return None
 
     if group_id:
         point_name = str(point_id) + "/" + str(group_id)
     else:
         point_name = str(point_id)
 
-    if len(data) < 3:
-        msg = "Polygon {0} has only {1:d} pairs of Azimuth/Distance, skipping.".format(point_name, len(data))
-        print("Warning: " + msg)
-        arcpy.AddWarning(msg)
+    if len(polygon_data) < 3:
+        msg = "Polygon {0} has only {1:d} pairs of Azimuth/Distance, skipping.".format(point_name, len(polygon_data))
+        utils.warn(msg)
         return None
 
     vertices = []
-    for azimuth, distance in data:
+    for azimuth, distance in polygon_data:
         if azimuth < 0 or azimuth > 360:
             if azimuth is None:
                 msg = u"An azimuth is null for polygon {0}.  Skipping".format(point_name)
             else:
                 msg = "Azimuth {0:3.2f} for polygon {1} is out of range 0-360.  Skipping".format(azimuth, point_name)
-            print("Warning: " + msg)
-            arcpy.AddWarning(msg)
+            utils.warn(msg)
             continue
         if distance <= 0:
             if distance is None:
                 msg = u"A distance is null for polygon {0:d}.  Skipping".format(point_name)
             else:
                 msg = "Distance {0:3.2f} for polygon {1} is out of range d <= 0.  Skipping".format(distance, point_name)
-            print("Warning: " + msg)
-            arcpy.AddWarning(msg)
+            utils.warn(msg)
             continue
 
-        x = point.getPart().X + distance * (math.sin(azimuth * math.pi / 180))
-        y = point.getPart().Y + distance * (math.cos(azimuth * math.pi / 180))
+        x = point[0] + distance * (math.sin(azimuth * math.pi / 180))
+        y = point[1] + distance * (math.cos(azimuth * math.pi / 180))
         vertices.append(arcpy.Point(x, y))
     if len(vertices) < 3:
         msg = "Polygon {0} has {1:d} pairs of valid Azimuth/Distance.  Skipping.".format(point_name, len(vertices))
-        print("Warning: " + msg)
-        arcpy.AddWarning(msg)
+        utils.warn(msg)
         return None
     vertices.append(vertices[0])
     return arcpy.Polygon(arcpy.Array(vertices))
@@ -209,11 +196,12 @@ def polygon_from_control_point(
         workspace, feature_class, "Polygon", point_layer, "SAME_AS_TEMPLATE",
         "SAME_AS_TEMPLATE", point_layer)
 
-    arcpy.AddMessage("Empty polygon feature class has been created")
+    utils.info("Empty polygon feature class has been created")
 
+    # TODO: check if this bug still exists in 10.1 or 10.2
     # workaround for bug wherein
-    # ValidateFieldName(field,workspace\feature_dataset)
-    # returns incorrect results.  Fix is to remove the feature_dataset"
+    # ValidateFieldName(field,workspace\feature_data_set)
+    # returns incorrect results.  Fix is to remove the feature_data_set"
     workspace = workspace.lower()
     if workspace.rfind(".mdb") > 0:
         workspace = workspace[:workspace.rfind(".mdb") + 4]
@@ -221,62 +209,60 @@ def polygon_from_control_point(
         if workspace.rfind(".gdb") > 0:
             workspace = workspace[:workspace.rfind(".gdb") + 4]
 
-    #create a simple field mapping from input to output
-    point_layer_description = arcpy.Describe(point_layer)
-    polygon_layer_description = arcpy.Describe(polygon_feature_class)
-    fields = {}
-    for field in point_layer_description.fields:
-        name = field.name
-        if (name != point_layer_description.shapeFieldName and name != point_layer_description.OIDFieldName
-                and field.editable):  # skip un-editable fields like Shape_Length
-            fields[name] = arcpy.ValidateFieldName(name, workspace)
-            #print workspace, name, "=>", fields[name]  
+    polygon_fields = arcpy.ListFields(polygon_data_table)
+    #Add the polygon_id_field_name to the polygon FC
+    polygon_id_new_field_name = arcpy.ValidateFieldName(polygon_id_field_name, workspace)
+    field_type = None
+    for field in polygon_fields:
+        if field.name == polygon_id_field_name:
+            field_type = field.type
+            break
+    if field_type is None:
+        msg = "Id field '{0}' could not be found in polygon data table {1}"\
+            .format(polygon_id_field_name, polygon_data_table)
+        utils.die(msg)
+    arcpy.AddField_management(polygon_feature_class, polygon_id_new_field_name, field_type)
 
     #Add the polygon_group_field_name to the polygon FC
     polygon_group_new_field_name = None
     if polygon_group_field_name:
         polygon_group_new_field_name = arcpy.ValidateFieldName(polygon_group_field_name, workspace)
         field_type = None
-        for field in polygon_layer_description.fields:
+        for field in polygon_fields:
             if field.name == polygon_group_field_name:
                 field_type = field.type
                 break
         if field_type is None:
-            sys.exit()
+            msg = "Group field '{0}' could not be found in polygon data table {1}"\
+                .format(polygon_group_field_name, polygon_data_table)
+            utils.die(msg)
         arcpy.AddField_management(polygon_feature_class, polygon_group_new_field_name, field_type)
 
-    #preprocess the polygonTable data
-    polygon_data = parse_polygon_data(
-        polygon_data_table, polygon_id_field_name, polygon_azimuth_field_name,
-        polygon_distance_field_name)
+    if polygon_group_new_field_name:
+        polygon_fields = [polygon_id_new_field_name, polygon_group_new_field_name, "SHAPE@"]
+    else:
+        polygon_fields = [polygon_id_new_field_name, "SHAPE@"]
+    point_fields = [point_id_field_name, "SHAPE@XY"]
+    with arcpy.da.InsertCursor(polygon_feature_class, polygon_fields) as polygons:
+        with  arcpy.da.SearchCursor(point_layer, point_fields) as points:
+            for point in points:
+                centroid = point[0]
+                point_id = point[1]
+                polygon_data = sort_polygon_data(polygon_data_table, point_id,
+                                                 polygon_id_field_name, polygon_group_field_name,
+                                                 polygon_sort_field_name, polygon_azimuth_field_name,
+                                                 polygon_distance_field_name)
+                if polygon_group_new_field_name:
+                    for group_id in polygon_data:
+                        polygon_shape = make_polygon(centroid, point_id, group_id, polygon_data[group_id])
+                        if polygon_shape:
+                            polygons.insertRow(point_id, group_id, polygon_shape)
+                else:
+                    polygon_shape = make_polygon(centroid, point_id, "", polygon_data)
+                    if polygon_shape:
+                        polygons.insertRow(point_id, polygon_shape)
 
-    #create the cursors
-    poly = None
-    polygons = arcpy.InsertCursor(polygon_feature_class)
-    points = arcpy.SearchCursor(point_layer)
-    for point in points:
-        point_shape = point.getValue(point_layer_description.shapeFieldName)
-        if point_shape:
-            group_id = None  # FIXME: set this in a loop
-            polygon_shape = make_polygon(
-                point_shape, point.getValue(point_id_field_name), group_id, polygon_data)
-            if polygon_shape:
-                poly = polygons.newRow()
-                for field in fields:
-                    poly.setValue(fields[field], point.getValue(field))
-                if polygon_group_field_name:
-                    poly.setValue(polygon_group_new_field_name, group_id)
-                poly.setValue(polygon_layer_description.shapeFieldName, polygon_shape)
-                polygons.insertRow(poly)
-
-    arcpy.AddMessage("Output feature class has been populated")
-
-    #When writing to a PGDB, you must delete the last row or it will not
-    #get written to the database.
-    if poly:
-        del poly
-        #delete the insert cursor to close it and remove the exclusive lock
-    del polygons
+    utils.info("Output feature class has been populated")
 
 
 if __name__ == "__main__":
@@ -312,32 +298,26 @@ if __name__ == "__main__":
     #  ArcToolbox provides validation before calling script.
     #
     if not polygonFeatureClass:
-        print("No output requested. Quitting.")
-        sys.exit()
+        utils.die("No output requested. Quitting.")
 
     if arcpy.Exists(polygonFeatureClass):
         if arcpy.env.overwriteOutput:
-            print("Over-writing existing output.")
+            utils.info("Over-writing existing output.")
             arcpy.Delete_management(polygonFeatureClass)
         else:
-            print("Output exists, overwrite is not authorized. Quitting.")
-            sys.exit()
+            utils.die("Output exists, overwrite is not authorized. Quitting.")
 
     if not pointLayer:
-        print("No control point layer was provided. Quitting.")
-        sys.exit()
+        utils.die("No control point layer was provided. Quitting.")
 
     if not arcpy.Exists(pointLayer):
-        print("Control point layer cannot be found. Quitting.")
-        sys.exit()
+        utils.die("Control point layer cannot be found. Quitting.")
 
     if not polygonDataTable:
-        print("No polygon data table was provided. Quitting.")
-        sys.exit()
+        utils.die("No polygon data table was provided. Quitting.")
 
     if not arcpy.Exists(polygonDataTable):
-        print("Polygon data table cannot be found. Quitting.")
-        sys.exit()
+        utils.die("Polygon data table cannot be found. Quitting.")
 
     # Consider validating field names (ArcToolbox does this for us, but useful for command line usage).
 
