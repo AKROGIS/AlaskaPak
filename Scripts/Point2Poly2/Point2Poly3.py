@@ -116,14 +116,13 @@ def sort_polygon_data(polygon_data_table, point_id, polygon_id_field_name, polyg
     otherwise it returns a dictionary with keys in type of group_id (values in polygon_group_field_name)
     and values of list of (azimuth,distance) tuples.
     """
-    # TODO: what if pointId is text, does it need quotes
-    predicate = """{0} = {1}""".format(arcpy.AddFieldDelimiters(polygon_data_table, polygon_id_field_name), point_id)
     if polygon_group_field_name:
-        fields = [polygon_group_field_name, polygon_sort_field_name,
+        fields = [polygon_id_field_name, polygon_group_field_name, polygon_sort_field_name,
                   polygon_azimuth_field_name, polygon_distance_field_name]
         data = {}
         previous_group_id = None
-        for row in sorted(arcpy.da.SearchCursor(polygon_data_table, fields, predicate)):
+        filtered_rows = [(g,s,a,d) for (t,g,s,a,d) in arcpy.da.SearchCursor(polygon_data_table, fields) if t == point_id]
+        for row in sorted(filtered_rows):
             group_id = row[0]
             azimuth = row[2]
             distance = row[3]
@@ -133,9 +132,10 @@ def sort_polygon_data(polygon_data_table, point_id, polygon_id_field_name, polyg
             data[group_id].append((azimuth, distance))
         return data
     else:
-        fields = [polygon_sort_field_name, polygon_azimuth_field_name, polygon_distance_field_name]
+        fields = [polygon_id_field_name, polygon_sort_field_name, polygon_azimuth_field_name, polygon_distance_field_name]
         data = []
-        for row in sorted(arcpy.da.SearchCursor(polygon_data_table, fields, predicate)):
+        filtered_rows = [(s,a,d) for (t,s,a,d) in arcpy.da.SearchCursor(polygon_data_table, fields) if t == point_id]
+        for row in sorted(filtered_rows):
             azimuth = row[1]
             distance = row[2]
             data.append((azimuth, distance))
@@ -169,7 +169,7 @@ def make_polygon(point, point_id, group_id, polygon_data):
             continue
         if distance <= 0:
             if distance is None:
-                msg = u"A distance is null for polygon {0:d}.  Skipping".format(point_name)
+                msg = u"A distance is null for polygon {0}.  Skipping".format(point_name)
             else:
                 msg = "Distance {0:3.2f} for polygon {1} is out of range d <= 0.  Skipping".format(distance, point_name)
             utils.warn(msg)
@@ -245,8 +245,9 @@ def polygon_from_control_point(
     with arcpy.da.InsertCursor(polygon_feature_class, polygon_fields) as polygons:
         with  arcpy.da.SearchCursor(point_layer, point_fields) as points:
             for point in points:
-                centroid = point[0]
-                point_id = point[1]
+                point_id = int(point[0])
+                centroid = point[1]
+                utils.info("Creating polygons for point {0:d}".format(point_id))
                 polygon_data = sort_polygon_data(polygon_data_table, point_id,
                                                  polygon_id_field_name, polygon_group_field_name,
                                                  polygon_sort_field_name, polygon_azimuth_field_name,
@@ -255,7 +256,7 @@ def polygon_from_control_point(
                     for group_id in polygon_data:
                         polygon_shape = make_polygon(centroid, point_id, group_id, polygon_data[group_id])
                         if polygon_shape:
-                            polygons.insertRow(point_id, group_id, polygon_shape)
+                            polygons.insertRow([point_id, group_id, polygon_shape])
                 else:
                     polygon_shape = make_polygon(centroid, point_id, "", polygon_data)
                     if polygon_shape:
@@ -276,7 +277,7 @@ if __name__ == "__main__":
     polygonDistanceFieldName = arcpy.GetParameterAsText(7)
     polygonFeatureClass = arcpy.GetParameterAsText(8)
 
-    test = True
+    test = False
     if test:
         #pointLayer = r"c:\tmp\test.gdb\w2011a0901"
         #pointIdFieldName = "ESRI_OID"
@@ -289,7 +290,7 @@ if __name__ == "__main__":
         polygonSortFieldName = "AutoSort"
         polygonAzimuthFieldName = "A_Calc_T"
         polygonDistanceFieldName = "D"
-        polygonFeatureClass = r"c:\tmp\test.gdb\campsites1"
+        polygonFeatureClass = r"c:\tmp\test.gdb\campsites11"
 
     #
     # Input validation
