@@ -193,8 +193,7 @@ def polygon_from_control_point(
 
     workspace, feature_class = os.path.split(polygon_feature_class)
     arcpy.CreateFeatureclass_management(
-        workspace, feature_class, "Polygon", point_layer, "SAME_AS_TEMPLATE",
-        "SAME_AS_TEMPLATE", point_layer)
+        workspace, feature_class, "Polygon", "#", "#", "#", point_layer)
 
     utils.info("Empty polygon feature class has been created")
 
@@ -282,15 +281,15 @@ if __name__ == "__main__":
         #pointLayer = r"c:\tmp\test.gdb\w2011a0901"
         #pointIdFieldName = "ESRI_OID"
         #polygonDataTable = r"c:\tmp\test.gdb\pdata"
-        pointLayer = r"T:\PROJECTS\KEFJ\CampsiteInventory\Data\GPSData\KEFJ_2010\GPSData\Export\Campsite.shp"
+        pointLayer = r"c:\tmp\test.gdb\campsite"
         pointIdFieldName = "Tag_Number"
-        polygonDataTable = r"C:\tmp\VariableTransectData.xls\year2010$"
+        polygonDataTable = r"C:\tmp\VariableTransectDataAllYears.xls\all$"
         polygonIdFieldName = "Tag"
         polygonGroupFieldName = "Year"
         polygonSortFieldName = "AutoSort"
         polygonAzimuthFieldName = "A_Calc_T"
         polygonDistanceFieldName = "D"
-        polygonFeatureClass = r"c:\tmp\test.gdb\poly4"
+        polygonFeatureClass = r"c:\tmp\test.gdb\campsites1"
 
     #
     # Input validation
