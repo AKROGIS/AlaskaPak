@@ -26,10 +26,19 @@
       <file leaf-file-name="Point2Poly3.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Point2Poly2/Point2Poly3.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="1" selection-start="1243" selection-end="1243" vertical-scroll-proportion="0.5686275" vertical-offset="0" max-vertical-offset="5950">
+            <state line="260" column="41" selection-start="11343" selection-end="11343" vertical-scroll-proportion="0.6862745" vertical-offset="3825" max-vertical-offset="6052">
               <folding>
-                <element signature="e#5156#5166#0" expanded="true" />
+                <element signature="e#4950#4960#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utils.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Point2Poly2/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="51" max-vertical-offset="1088">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -49,8 +58,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="127" />
-    <option name="y" value="57" />
+    <option name="x" value="274" />
+    <option name="y" value="54" />
     <option name="width" value="1400" />
     <option name="height" value="1000" />
   </component>
@@ -275,7 +284,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="127" y="57" width="1400" height="1000" extended-state="0" />
+    <frame x="274" y="54" width="1400" height="1000" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
@@ -314,11 +323,18 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Point2Poly2/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1088">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Point2Poly2/Point2Poly3.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="1" selection-start="1243" selection-end="1243" vertical-scroll-proportion="0.5686275" vertical-offset="0" max-vertical-offset="5950">
+        <state line="260" column="41" selection-start="11343" selection-end="11343" vertical-scroll-proportion="0.6862745" vertical-offset="3825" max-vertical-offset="6052">
           <folding>
-            <element signature="e#5156#5166#0" expanded="true" />
+            <element signature="e#4950#4960#0" expanded="true" />
           </folding>
         </state>
       </provider>
