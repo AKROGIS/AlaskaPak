@@ -1,6 +1,8 @@
 # ------------------------------------------------------------------------------
 # Point2Poly3.py
 # Created on: 2014-03-7
+# Created by: Regan Sarwas, GIS Team, Alaska Region, National Park Service
+#             regan_sarwas@nps.gov
 #
 # Title:
 # Polygons From Control Point
@@ -30,54 +32,49 @@
 #
 # Parameter 3:
 # Azimuth_Distance_Table
-# If there is Azimuth/Distance data for which the tag does not match to a point in the Control Point Features,
-# a warning will be given, and that data will be skipped.
-# It is assumed that the data will be sorted first by polygon id, then by azimuth/distance data. The azimuths should
-# generally proceed counter clockwise from zero to 360 degrees.
-# The vertices of the polygons will be generated in the order the azimuth/distance data is provided, An out of
-# sequence azimuth (i.e. an azimuth value is less than the value of the preceeding azimuth), is valid, but will
-# generate a warning.
-# There should only be one set of azimuth/distance measurements for each polygon id in the input table. 
-# When the polygon id changes, a new polygon will be started.
-# If a polygon id is re-encountered after that polygon has been finished (i.e. one or more polygons are in between,
-# then the new data will generate an error and be ignored. The ignored lines will not signal the end of the preceding
-# polygon.
-# It is an error for a polygon to have less than 3 azimuth/distance pairs. These polygons will generate a warning, and
-# will be skipped.
-# A blank polygon id, will signal the end of data processing.
+# This can be a data table or a feature class/layer.
+# The table contains a collection of azimuth and distance measurements (as described below) for the control points
+# If there is azimuth & distance data that does not relate to a control point, it is silently ignored.
+# If a control point has no azimuth & distance that point is skipped, and no polygons are created at that point.
+# If a control point has only 1 or 2 azimuth & distance records for a given grouping value, then a polygon can not
+# be created in that situation, and a warning will be issued.
 #
 # Parameter 4:
-# Fieldname_for_table_Identifier
-# The name of a new field in the output feature class that will hold information identifying the azimuth/distance data
-# table.
-# If this field is  empty or null, then no additional field is created, and the following parameter is ignored.
+# Polygon_Id_Field
+# The name of a field in the Azimuth_Distance_Table that relates the azimuth & distance records to a control point.
+# This must be the same data type as the Control_Point_Id_Field in the Control_Point_Features.
 #
 # Parameter 5:
-# Identifier_for_table_data
-# Text that tags each polygon created as coming from this specific data table.  For example, the year the polygon
-# perimeters were collected.
+# Group_Field
+# The name of a field in the Azimuth_Distance_Table that groups the azimuth & distance records into distinct
+# polygons for a given control point.
+# For example, if azimuth & distance measurements are collected on a yearly basis for each control point, then
+# The year attribute would be used as the Group_Field.
 #
 # Parameter 6:
-# Polygon_Id_Field
-# The name of a field in the Azimuth/Distance data table.  This field links the polygon perimeter points to the polygon
-# control point.  The values in this column must match the values in the Control Point Id field.
+# Sort_Field
+# The name of a field in the Azimuth_Distance_Table that sorts the azimuth & distance records in clockwise
+# order around the perimeter of the polygon.
 #
 # Parameter 7:
 # Azimuth_Field
-# Azimuth values are assumed to be in degress and referenced from the control point to true north. True north is zero
-# degrees and azimuth values increase clockwise up to 360 degrees.
-# A value less than zero, or greater than 360 is considered an error, and will be noted and skipped.
+# The name of a field in the Azimuth_Distance_Table that contains the azimuth measurements (floating point number)
+# Azimuth values are assumed to be in degrees and referenced from the control point to true north.
+# True north is zero degrees and azimuth values increase clockwise up to 360 degrees.
+# A value less than zero or greater than 360 is considered is ignored with a warning.
 #
 # Parameter 8:
 # Distance_Field
+# The name of a field in the Azimuth_Distance_Table that contains the distance measurements (floating point number)
 # Distances are assumed to be meters from the control point to the perimeter of the polygon.
-# A value less than or equal to zero is considered an error and will be noted, and skipped.
+# A value less than or equal to zero is ignored with a warning.
 #
 # Parameter 9:
 # Polygon_Features
-# The output polygons. A polygon will be created for each control point with 3 or more pairs of matching valid
-# azimuth/distance measurements.
-# The polygons will inherit the spatial reference and all attributes of the control points.
+# The output polygon feature class to be created.
+# The polygons will inherit the spatial reference and all attributes of the control points, as well as the data
+# in the in the Year_Id_Field of the Azimuth_Distance_Table.
+# There may be multiple polygons for each control point which are distinguished by the Year_Id_Field attribute.
 #
 # Scripting Syntax:
 # PolygonBuilder (Control_Point_Features, Control_Point_Id_Field, Azimuth_Distance_Table,
@@ -91,7 +88,7 @@
 # Public Domain
 #
 # Requirements
-# arcpy module - requires ArcGIS v10+ and a valid license
+# arcpy module - requires ArcGIS v10.2 and a valid license
 #
 # Disclaimer:
 # This software is provide "as is" and the National Park Service gives
@@ -149,42 +146,43 @@ def parse_polygon_data(
     return result
 
 
-def make_polygon(point, point_id, polygon_data):
+def make_polygon(point, point_id, group_id, polygon_data):
+    """point must be an arcpy.Point,
+    point_id, group_id are keys to the dictionaries in polygon_data
+    polygon_data is a dictionary with keys in type of point_id and values of dictionary with keys in type of group_id
+    and values of list of (azimuth,distance) tuples (both floats).
+    Returns an arcpy.Polygon or None if there was a problem"""
     try:
-        data = polygon_data[point_id]
+        data = polygon_data[point_id][group_id]
     except KeyError:
         return None
 
+    if group_id:
+        point_name = str(point_id) + "/" + str(group_id)
+    else:
+        point_name = str(point_id)
+
     if len(data) < 3:
-        msg = "Polygon %d has only %d pairs of Azimuth/Distance, skipping." \
-              % (point_id, len(data))
+        msg = "Polygon {0} has only {1:d} pairs of Azimuth/Distance, skipping.".format(point_name, len(data))
         print("Warning: " + msg)
         arcpy.AddWarning(msg)
         return None
 
     vertices = []
-    old_azimuth = None
     for azimuth, distance in data:
-        if old_azimuth and azimuth < old_azimuth:
-            msg = "Azimuths for polygon {0:d} go backwards from {1:3.2f} to {2:3.2f}."\
-                .format(point_id, old_azimuth, azimuth)
-            print("Warning: " + msg)
-            arcpy.AddWarning(msg)
-        old_azimuth = azimuth
         if azimuth < 0 or azimuth > 360:
             if azimuth is None:
-                msg = u"An azimuth is null for polygon {0:d}.".format(point_id)
+                msg = u"An azimuth is null for polygon {0}.  Skipping".format(point_name)
             else:
-                msg = "Azimuth {0:3.2f} for polygon {1:d} is out of range 0-360.".format(azimuth, point_id)
+                msg = "Azimuth {0:3.2f} for polygon {1} is out of range 0-360.  Skipping".format(azimuth, point_name)
             print("Warning: " + msg)
             arcpy.AddWarning(msg)
             continue
         if distance <= 0:
             if distance is None:
-                msg = u"A distance is null for polygon {0:d}." \
-                    .format(point_id)
+                msg = u"A distance is null for polygon {0:d}.  Skipping".format(point_name)
             else:
-                msg = "Distance {0:3.2f} for polygon {1:d} is out of range d <= 0.".format(distance, point_id)
+                msg = "Distance {0:3.2f} for polygon {1} is out of range d <= 0.  Skipping".format(distance, point_name)
             print("Warning: " + msg)
             arcpy.AddWarning(msg)
             continue
@@ -193,7 +191,7 @@ def make_polygon(point, point_id, polygon_data):
         y = point.getPart().Y + distance * (math.cos(azimuth * math.pi / 180))
         vertices.append(arcpy.Point(x, y))
     if len(vertices) < 3:
-        msg = "Polygon {0:d} has {1:d} pairs of valid Azimuth/Distance, skipping.".format(point_id, len(vertices))
+        msg = "Polygon {0} has {1:d} pairs of valid Azimuth/Distance.  Skipping.".format(point_name, len(vertices))
         print("Warning: " + msg)
         arcpy.AddWarning(msg)
         return None
@@ -203,9 +201,9 @@ def make_polygon(point, point_id, polygon_data):
 
 def polygon_from_control_point(
         point_layer, point_id_field_name,
-        polygon_data_table, data_table_field_name, data_table_identifier,
-        polygon_id_field_name, polygon_azimuth_field_name,
-        polygon_distance_field_name, polygon_feature_class):
+        polygon_data_table, polygon_id_field_name, polygon_group_field_name, polygon_sort_field_name,
+        polygon_azimuth_field_name, polygon_distance_field_name, polygon_feature_class):
+
     workspace, feature_class = os.path.split(polygon_feature_class)
     arcpy.CreateFeatureclass_management(
         workspace, feature_class, "Polygon", point_layer, "SAME_AS_TEMPLATE",
@@ -225,7 +223,7 @@ def polygon_from_control_point(
 
     #create a simple field mapping from input to output
     point_layer_description = arcpy.Describe(point_layer)
-    poly_layer_description = arcpy.Describe(polygon_feature_class)
+    polygon_layer_description = arcpy.Describe(polygon_feature_class)
     fields = {}
     for field in point_layer_description.fields:
         name = field.name
@@ -234,10 +232,18 @@ def polygon_from_control_point(
             fields[name] = arcpy.ValidateFieldName(name, workspace)
             #print workspace, name, "=>", fields[name]  
 
-    #Add the dataTableFieldName to the polygon FC
-    if data_table_field_name:
-        data_table_field_name = arcpy.ValidateFieldName(data_table_field_name, workspace)
-        arcpy.AddField_management(polygon_feature_class, data_table_field_name, "TEXT")
+    #Add the polygon_group_field_name to the polygon FC
+    polygon_group_new_field_name = None
+    if polygon_group_field_name:
+        polygon_group_new_field_name = arcpy.ValidateFieldName(polygon_group_field_name, workspace)
+        field_type = None
+        for field in polygon_layer_description.fields:
+            if field.name == polygon_group_field_name:
+                field_type = field.type
+                break
+        if field_type is None:
+            sys.exit()
+        arcpy.AddField_management(polygon_feature_class, polygon_group_new_field_name, field_type)
 
     #preprocess the polygonTable data
     polygon_data = parse_polygon_data(
@@ -251,15 +257,16 @@ def polygon_from_control_point(
     for point in points:
         point_shape = point.getValue(point_layer_description.shapeFieldName)
         if point_shape:
+            group_id = None  # FIXME: set this in a loop
             polygon_shape = make_polygon(
-                point_shape, point.getValue(point_id_field_name), polygon_data)
+                point_shape, point.getValue(point_id_field_name), group_id, polygon_data)
             if polygon_shape:
                 poly = polygons.newRow()
                 for field in fields:
                     poly.setValue(fields[field], point.getValue(field))
-                if data_table_field_name:
-                    poly.setValue(data_table_field_name, data_table_identifier)
-                poly.setValue(poly_layer_description.shapeFieldName, polygon_shape)
+                if polygon_group_field_name:
+                    poly.setValue(polygon_group_new_field_name, group_id)
+                poly.setValue(polygon_layer_description.shapeFieldName, polygon_shape)
                 polygons.insertRow(poly)
 
     arcpy.AddMessage("Output feature class has been populated")
@@ -277,14 +284,14 @@ if __name__ == "__main__":
     pointLayer = arcpy.GetParameterAsText(0)
     pointIdFieldName = arcpy.GetParameterAsText(1)
     polygonDataTable = arcpy.GetParameterAsText(2)
-    dataTableFieldName = arcpy.GetParameterAsText(3)
-    dataTableIdentifier = arcpy.GetParameterAsText(4)
-    polygonIdFieldName = arcpy.GetParameterAsText(5)
+    polygonIdFieldName = arcpy.GetParameterAsText(3)
+    polygonGroupFieldName = arcpy.GetParameterAsText(4)
+    polygonSortFieldName = arcpy.GetParameterAsText(5)
     polygonAzimuthFieldName = arcpy.GetParameterAsText(6)
     polygonDistanceFieldName = arcpy.GetParameterAsText(7)
     polygonFeatureClass = arcpy.GetParameterAsText(8)
 
-    test = False
+    test = True
     if test:
         #pointLayer = r"c:\tmp\test.gdb\w2011a0901"
         #pointIdFieldName = "ESRI_OID"
@@ -292,9 +299,9 @@ if __name__ == "__main__":
         pointLayer = r"T:\PROJECTS\KEFJ\CampsiteInventory\Data\GPSData\KEFJ_2010\GPSData\Export\Campsite.shp"
         pointIdFieldName = "Tag_Number"
         polygonDataTable = r"C:\tmp\VariableTransectData.xls\year2010$"
-        dataTableFieldName = "Year"
-        dataTableIdentifier = "2012"
         polygonIdFieldName = "Tag"
+        polygonGroupFieldName = "Year"
+        polygonSortFieldName = "AutoSort"
         polygonAzimuthFieldName = "A_Calc_T"
         polygonDistanceFieldName = "D"
         polygonFeatureClass = r"c:\tmp\test.gdb\poly4"
@@ -303,7 +310,7 @@ if __name__ == "__main__":
     # Input validation
     #  for command line and IDE usage,
     #  ArcToolbox provides validation before calling script.
-    # 
+    #
     if not polygonFeatureClass:
         print("No output requested. Quitting.")
         sys.exit()
@@ -339,6 +346,5 @@ if __name__ == "__main__":
     #
     polygon_from_control_point(
         pointLayer, pointIdFieldName,
-        polygonDataTable, dataTableFieldName, dataTableIdentifier,
-        polygonIdFieldName, polygonAzimuthFieldName,
-        polygonDistanceFieldName, polygonFeatureClass)
+        polygonDataTable, polygonIdFieldName, polygonGroupFieldName, polygonSortFieldName,
+        polygonAzimuthFieldName, polygonDistanceFieldName, polygonFeatureClass)
