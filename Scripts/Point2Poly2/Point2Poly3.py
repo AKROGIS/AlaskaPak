@@ -197,8 +197,7 @@ def polygon_from_control_point(
 
     utils.info("Empty polygon feature class has been created")
 
-    # TODO: check if this bug still exists in 10.1 or 10.2
-    # workaround for bug wherein
+    # workaround for bug (still in 10.2) wherein
     # ValidateFieldName(field,workspace\feature_data_set)
     # returns incorrect results.  Fix is to remove the feature_data_set"
     workspace = workspace.lower()
