@@ -108,8 +108,8 @@ import arcpy
 import utils
 
 
-def sort_polygon_data(polygon_data_table, point_id, polygon_id_field_name, polygon_group_field_name,
-                      polygon_sort_field_name, polygon_azimuth_field_name, polygon_distance_field_name):
+def get_polygon_data(polygon_data_table, polygon_id_field_name, polygon_group_field_name,
+                     polygon_sort_field_name, polygon_azimuth_field_name, polygon_distance_field_name):
     """ Selects and sorts all the records in polygon_data_table where the value in polygon_id_field_name
     equals point_id.  Records are sorted by polygon_group_field_name and then polygon_sort_field_name.
     If there is no polygon_group_field_name then a list of (azimuth,distance) tuples is returned
@@ -120,25 +120,47 @@ def sort_polygon_data(polygon_data_table, point_id, polygon_id_field_name, polyg
         fields = [polygon_id_field_name, polygon_group_field_name, polygon_sort_field_name,
                   polygon_azimuth_field_name, polygon_distance_field_name]
         data = {}
+        previous_point_id = None
         previous_group_id = None
-        filtered_rows = [(g,s,a,d) for (t,g,s,a,d) in arcpy.da.SearchCursor(polygon_data_table, fields) if t == point_id]
-        for row in sorted(filtered_rows):
-            group_id = row[0]
-            azimuth = row[2]
-            distance = row[3]
+        for row in sorted(arcpy.da.SearchCursor(polygon_data_table, fields)):
+            point_id = row[0]
+            group_id = row[1]
+            azimuth = row[3]
+            distance = row[4]
+            if not point_id:
+                msg = "Found record with null {0} in polygon table. Skipping".format(polygon_id_field_name)
+                utils.warn(msg)
+                continue
+            if not group_id:
+                msg = "Found record with null {0} in polygon table. Skipping".format(polygon_group_field_name)
+                utils.warn(msg)
+                continue
+            if point_id != previous_point_id:
+                previous_point_id = point_id
+                data[point_id] = {}
+                previous_group_id = None
             if group_id != previous_group_id:
                 previous_group_id = group_id
-                data[group_id] = []
-            data[group_id].append((azimuth, distance))
+                data[point_id][group_id] = []
+            data[point_id][group_id].append((azimuth, distance))
         return data
     else:
-        fields = [polygon_id_field_name, polygon_sort_field_name, polygon_azimuth_field_name, polygon_distance_field_name]
-        data = []
-        filtered_rows = [(s,a,d) for (t,s,a,d) in arcpy.da.SearchCursor(polygon_data_table, fields) if t == point_id]
-        for row in sorted(filtered_rows):
-            azimuth = row[1]
-            distance = row[2]
-            data.append((azimuth, distance))
+        fields = [polygon_id_field_name, polygon_sort_field_name,
+                  polygon_azimuth_field_name, polygon_distance_field_name]
+        data = {}
+        previous_point_id = None
+        for row in sorted(arcpy.da.SearchCursor(polygon_data_table, fields)):
+            point_id = row[0]
+            azimuth = row[2]
+            distance = row[3]
+            if not point_id:
+                msg = "Found record with null {0} in polygon table. Skipping".format(polygon_id_field_name)
+                utils.warn(msg)
+                continue
+            if point_id != previous_point_id:
+                previous_point_id = point_id
+                data[point_id] = []
+            data[point_id].append((azimuth, distance))
         return data
 
 
@@ -236,6 +258,9 @@ def polygon_from_control_point(
             utils.die(msg)
         arcpy.AddField_management(polygon_feature_class, polygon_group_new_field_name, field_type)
 
+    all_polygon_data = get_polygon_data(polygon_data_table, polygon_id_field_name, polygon_group_field_name,
+                                        polygon_sort_field_name, polygon_azimuth_field_name,
+                                        polygon_distance_field_name)
     if polygon_group_new_field_name:
         polygon_fields = [polygon_id_new_field_name, polygon_group_new_field_name, "SHAPE@"]
     else:
@@ -247,10 +272,7 @@ def polygon_from_control_point(
                 point_id = int(point[0])
                 centroid = point[1]
                 utils.info("Creating polygons for point {0:d}".format(point_id))
-                polygon_data = sort_polygon_data(polygon_data_table, point_id,
-                                                 polygon_id_field_name, polygon_group_field_name,
-                                                 polygon_sort_field_name, polygon_azimuth_field_name,
-                                                 polygon_distance_field_name)
+                polygon_data = all_polygon_data[point_id]
                 if polygon_group_new_field_name:
                     for group_id in polygon_data:
                         polygon_shape = make_polygon(centroid, point_id, group_id, polygon_data[group_id])
