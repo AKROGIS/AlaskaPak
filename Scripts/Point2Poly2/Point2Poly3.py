@@ -22,9 +22,10 @@
 # Control_Point_Features
 # A point feature class or layer with the control point for polygons. The control point is the basis or origin of the
 # azimuth and distance measurements to the perimeter vertices.
+# The Control_Point_Features must be in a spatial reference system with linear units (i.e. projected coordinates)
 # If a layer is used, then only the points in the current selection set are used.
-# If there is a point without matching data in the Azimuth/Distance table, then that point will be skipped.
-# Attributes from the points will be applied to all polygons generated from that point.
+# If there is a point without matching data in the Azimuth_Distance_Table, then that point will be skipped with a
+# warning. Attributes from the Control_Point_Features will NOT be transfered to the Polygon_Features.
 #
 # Parameter 2:
 # Control_Point_Id_Field
@@ -62,25 +63,25 @@
 # The name of a field in the Azimuth_Distance_Table that contains the azimuth measurements (floating point number)
 # Azimuth values are assumed to be in degrees and referenced from the control point to true north.
 # True north is zero degrees and azimuth values increase clockwise up to 360 degrees.
-# A value less than zero or greater than 360 is considered is ignored with a warning.
+# A value less than zero or greater than 360 is considered invalid and is ignored with a warning.
 #
 # Parameter 8:
 # Distance_Field
 # The name of a field in the Azimuth_Distance_Table that contains the distance measurements (floating point number)
-# Distances are assumed to be meters from the control point to the perimeter of the polygon.
+# Distances are distance measures from the control point to a vertex in the perimeter of the polygon.  Distances are
+# assumed to be in the same linear units as the spatial reference of the Control_Point_Features.
 # A value less than or equal to zero is ignored with a warning.
 #
 # Parameter 9:
 # Polygon_Features
 # The output polygon feature class to be created.
-# The polygons will inherit the spatial reference and all attributes of the control points, as well as the data
-# in the in the Year_Id_Field of the Azimuth_Distance_Table.
-# There may be multiple polygons for each control point which are distinguished by the Year_Id_Field attribute.
+# The polygons will inherit the spatial reference of the Control_Point_Features, but no other attributes.
+# The Polygon_Id_Field and Group_Field (if provided) attributes from the Azimuth_Distance_Table will be inherited.
+# There may be multiple polygons for each control point which are distinguished by the attributes in the Group_Field.
 #
 # Scripting Syntax:
 # PolygonBuilder (Control_Point_Features, Control_Point_Id_Field, Azimuth_Distance_Table,
-# Fieldname_for_table_Identifier, Identifier_for_table_data, Polygon_Id_Field, Azimuth_Field, Distance_Field,
-# Polygon_Features)
+# Polygon_Id_Field, Group_Field, Sort_Field, Azimuth_Field, Distance_Field, Polygon_Features)
 #
 # Credits:
 # Regan Sarwas, Alaska Region GIS Team, National Park Service
@@ -222,9 +223,9 @@ def polygon_from_control_point(
 
     utils.info("Empty polygon feature class has been created")
 
-    # workaround for bug (still in 10.2) wherein
-    # ValidateFieldName(field,workspace\feature_data_set)
-    # returns incorrect results.  Fix is to remove the feature_data_set"
+    # Workaround for bug (still in 10.2) wherein
+    #   ValidateFieldName(field,workspace\feature_data_set) returns incorrect results.
+    # Fix is to remove the feature_data_set"
     workspace = workspace.lower()
     if workspace.rfind(".mdb") > 0:
         workspace = workspace[:workspace.rfind(".mdb") + 4]
