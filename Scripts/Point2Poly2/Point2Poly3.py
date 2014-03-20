@@ -110,11 +110,14 @@ import utils
 
 def get_polygon_data(polygon_data_table, polygon_id_field_name, polygon_group_field_name,
                      polygon_sort_field_name, polygon_azimuth_field_name, polygon_distance_field_name):
-    """ Selects and sorts all the records in polygon_data_table where the value in polygon_id_field_name
-    equals point_id.  Records are sorted by polygon_group_field_name and then polygon_sort_field_name.
-    If there is no polygon_group_field_name then a list of (azimuth,distance) tuples is returned
-    otherwise it returns a dictionary with keys in type of group_id (values in polygon_group_field_name)
-    and values of list of (azimuth,distance) tuples.
+    """Selects and sorts all the records in polygon_data_table.
+    Assumes data are small enough that it is faster to query the database once, and do the rest in python.
+    Records are sorted by polygon_id_field_name, polygon_group_field_name and then polygon_sort_field_name.
+    If there is no polygon_group_field_name then lists of (azimuth,distance) tuples are returned in a dictionary
+    keyed on the polygon id (values in the polygon_id_field_name).
+    otherwise the lists of (azimuth,distance) tuples are returned in dictionaries keyed on the
+    group ids (values in polygon_group_field_name) which is wrapped in a dictionary keyed on the
+    polygon ids (values in the polygon_id_field_name).
     """
     if polygon_group_field_name:
         fields = [polygon_id_field_name, polygon_group_field_name, polygon_sort_field_name,
