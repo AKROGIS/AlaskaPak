@@ -11,8 +11,8 @@
 # Azimuth, Distance, Campsite 
 #
 # Summary:
-# Takes point features and an ordered sets of azimuth/distance measurements to create a polygon feature class
-# 
+# Creates polygon features from point features and azimuth/distance measurements relative to the point features.
+#
 # Usage:
 # Provided point features, and a table of related azimuth/distance measurements this tool will create a
 # polygon for each point with at least three valid azimuth/distance measurements.
@@ -25,12 +25,12 @@
 # The Control_Point_Features must be in a spatial reference system with linear units (i.e. projected coordinates)
 # If a layer is used, then only the points in the current selection set are used.
 # If there is a point without matching data in the Azimuth_Distance_Table, then that point will be skipped with a
-# warning. Attributes from the Control_Point_Features will NOT be transfered to the Polygon_Features.
+# warning. Attributes from the Control_Point_Features will NOT be transferred to the Polygon_Features.
 #
 # Parameter 2:
 # Control_Point_Id_Field
 # The name of the field in the control points that uniquely identifies each control points.
-# The values in this field will be matched with the values in the Table Id field.
+# The values in this field will be matched with the values in the Polygon_Id_Field in the Azimuth_Distance_Table.
 #
 # Parameter 3:
 # Azimuth_Distance_Table
@@ -48,26 +48,28 @@
 #
 # Parameter 5:
 # Group_Field
-# The name of a field in the Azimuth_Distance_Table that groups the azimuth & distance records into distinct
+# The name of a field in the Azimuth_Distance_Table that groups the azimuth/distance records into distinct
 # polygons for a given control point.
-# For example, if azimuth & distance measurements are collected on a yearly basis for each control point, then
-# The year attribute would be used as the Group_Field.
+# For example, if azimuth/distance measurements are collected on a yearly basis for each control point, then
+# the year attribute would be used as the Group_Field.
+# If the Group_Field is not provided, then one polygon per control point is assumed.
 #
 # Parameter 6:
 # Sort_Field
 # The name of a field in the Azimuth_Distance_Table that sorts the azimuth & distance records in clockwise
 # order around the perimeter of the polygon.
+# If the vertices are not sorted properly, you will get some very bizarre looking polygons.
 #
 # Parameter 7:
 # Azimuth_Field
-# The name of a field in the Azimuth_Distance_Table that contains the azimuth measurements (floating point number)
+# The name of a field in the Azimuth_Distance_Table that contains the azimuth measurements (as numbers)
 # Azimuth values are assumed to be in degrees and referenced from the control point to true north.
 # True north is zero degrees and azimuth values increase clockwise up to 360 degrees.
 # A value less than zero or greater than 360 is considered invalid and is ignored with a warning.
 #
 # Parameter 8:
 # Distance_Field
-# The name of a field in the Azimuth_Distance_Table that contains the distance measurements (floating point number)
+# The name of a field in the Azimuth_Distance_Table that contains the distance measurements (as numbers)
 # Distances are distance measures from the control point to a vertex in the perimeter of the polygon.  Distances are
 # assumed to be in the same linear units as the spatial reference of the Control_Point_Features.
 # A value less than or equal to zero is ignored with a warning.
