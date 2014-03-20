@@ -267,12 +267,16 @@ def polygon_from_control_point(
         polygon_fields = [polygon_id_new_field_name, "SHAPE@"]
     point_fields = [point_id_field_name, "SHAPE@XY"]
     with arcpy.da.InsertCursor(polygon_feature_class, polygon_fields) as polygons:
-        with  arcpy.da.SearchCursor(point_layer, point_fields) as points:
+        with arcpy.da.SearchCursor(point_layer, point_fields) as points:
             for point in points:
                 point_id = int(point[0])
                 centroid = point[1]
+                try:
+                    polygon_data = all_polygon_data[point_id]
+                except KeyError:
+                    utils.warn("No polygon data for point {0:d}. Skipping.".format(point_id))
+                    continue
                 utils.info("Creating polygons for point {0:d}".format(point_id))
-                polygon_data = all_polygon_data[point_id]
                 if polygon_group_new_field_name:
                     for group_id in polygon_data:
                         polygon_shape = make_polygon(centroid, point_id, group_id, polygon_data[group_id])
