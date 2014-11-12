@@ -40,6 +40,8 @@ _ReSharper*/
 *.resharper
 [Tt]est[Rr]esult*
 *.sass-cache
+.idea/
+Scripts/.idea/
 
 #Project files
 [Bb]uild/
