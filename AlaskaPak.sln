@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlaskaPak", "AlaskaPak\AlaskaPak.csproj", "{86818D39-DE46-4491-ACEF-4340389F22EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationEditor", "ConfigurationEditor\ConfigurationEditor.csproj", "{4F68E96F-E054-4DEE-B1CA-91B6D01397AB}"
@@ -20,12 +22,12 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{86818D39-DE46-4491-ACEF-4340389F22EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86818D39-DE46-4491-ACEF-4340389F22EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86818D39-DE46-4491-ACEF-4340389F22EA}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{86818D39-DE46-4491-ACEF-4340389F22EA}.Debug|Any CPU.Build.0 = Debug|x86
 		{86818D39-DE46-4491-ACEF-4340389F22EA}.Debug|x86.ActiveCfg = Release|x86
 		{86818D39-DE46-4491-ACEF-4340389F22EA}.Debug|x86.Build.0 = Release|x86
-		{86818D39-DE46-4491-ACEF-4340389F22EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86818D39-DE46-4491-ACEF-4340389F22EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86818D39-DE46-4491-ACEF-4340389F22EA}.Release|Any CPU.ActiveCfg = Release|x86
+		{86818D39-DE46-4491-ACEF-4340389F22EA}.Release|Any CPU.Build.0 = Release|x86
 		{86818D39-DE46-4491-ACEF-4340389F22EA}.Release|x86.ActiveCfg = Release|x86
 		{86818D39-DE46-4491-ACEF-4340389F22EA}.Release|x86.Build.0 = Release|x86
 		{4F68E96F-E054-4DEE-B1CA-91B6D01397AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
