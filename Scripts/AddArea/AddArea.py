@@ -126,6 +126,7 @@ def AddArea(feature, shapename, fieldname, units, sr):
 
 
 for feature in featureList.split(";"):
+    feature = feature.replace("'","")
     featureDescription = arcpy.Describe(feature)
     fsr = featureDescription.spatialReference
     featureIsProjected = fsr.type == "Projected" and fsr.name != "Unknown"
@@ -137,4 +138,3 @@ for feature in featureList.split(";"):
                                                                 units + "!", "PYTHON_9.3", "")
         else:
             AddArea(feature, featureDescription.shapeFieldName, fieldName, units, sr)
-
