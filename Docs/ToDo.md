@@ -2,7 +2,7 @@
 
 ## GenerateGridPoints
 
-* Requires an advanced license, make a basic licence version
+* Requires an advanced license, make a basic license version
 
 ## GenerateGrid
 

@@ -100,5 +100,7 @@ own models and scripts just like any other GP tool.
 
 Most tools require only an ArcView (basic) license, however some tools
 require a more advanced license.  See
-[License Requirements](./Docs/License%20Level%20Requirements.txt)
+[License Requirements](./Docs/LicenseRequirements.md)
 for details.
+
+See the [To Do List](./Docs/ToDo.md) for a list of known issues.
