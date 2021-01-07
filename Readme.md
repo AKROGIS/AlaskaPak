@@ -94,6 +94,10 @@ individual GP tools in the toolbox interface.
 The scripts in the toolbox folder can be run from the command line or in the
 ArcMap python window.  See the individual script files for details on usage.
 
+Each tool is registered with the ArcGIS customization system, so you can build
+your own toolbar with just the tools you want. The GP tools can be used in your
+own models and scripts just like any other GP tool.
+
 Most tools require only an ArcView (basic) license, however some tools
 require a more advanced license.  See
 [License Requirements](./Docs/License%20Level%20Requirements.txt)
