@@ -35,7 +35,7 @@
 #
 # Parameter 5:
 # Sort_Field
-# The name of an existing field in all feature classes.  Data will be sorted in ascenging order before the id is added.
+# The name of an existing field in all feature classes.  Data will be sorted in ascending order before the id is added.
 # This field is optional.  Default value is None (i.e. no sorting)
 #
 # Scripting Syntax:
@@ -50,7 +50,7 @@
 #
 # Example2:
 # Command Line Example
-# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
+# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
 #  C:\tmp> python AddMiles.py "C:\tmp\roads.shp;C:\tmp\test.gdb\fences" newID 1 1
 #
 # Credits:

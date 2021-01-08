@@ -17,7 +17,7 @@
         <!--
 					id       is used for referencing the object in this document and must be unique across all items in the customization commands list
 					class    is the class that does the work, must be in the namespace above
-					message  apears in the status bar
+					message  appears in the status bar
 					caption  is the button or tool text (it appears in the menu/toolbar, and in the customization commands list
 					tip      is a popup tooltip (does not appear when button is a menu item);
 					category is the folder in the customization commands list

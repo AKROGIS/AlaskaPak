@@ -330,8 +330,8 @@
 <tr>
 <td class="info">Table</td>
 <td class="info" align="left">
-<span style="font-weight: bold">Dialog Reference</span><br /><DIV STYLE="text-align:Left;"><DIV><DIV><P><SPAN>The full name of a data table.</SPAN></P><UL><LI><P><SPAN>This can be any format uderstood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...).</SPAN></P></LI><LI><P><SPAN>All attributes in the input table are copied to the output file.</SPAN></P></LI><LI><P><SPAN>The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.</SPAN></P></LI><LI><P><SPAN>The data type for these columns must be comptible with the data type in the Point_ID parameter.</SPAN></P></LI></UL><P><SPAN /></P></DIV></DIV></DIV><div class="noContent" style="text-align:center;">___________________</div><br />
-<span style="font-weight: bold">Python Reference</span><br /><DIV STYLE="text-align:Left;"><P><SPAN>The full name of a data table.</SPAN></P><UL><LI><P><SPAN>This can be any format uderstood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...).</SPAN></P></LI><LI><P><SPAN>All attributes in the input table are copied to the output file.</SPAN></P></LI><LI><P><SPAN>The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.</SPAN></P></LI><LI><P><SPAN>The data type for these columns must be comptible with the data type in the Point_ID parameter.</SPAN></P></LI></UL></DIV></td>
+<span style="font-weight: bold">Dialog Reference</span><br /><DIV STYLE="text-align:Left;"><DIV><DIV><P><SPAN>The full name of a data table.</SPAN></P><UL><LI><P><SPAN>This can be any format understood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...).</SPAN></P></LI><LI><P><SPAN>All attributes in the input table are copied to the output file.</SPAN></P></LI><LI><P><SPAN>The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.</SPAN></P></LI><LI><P><SPAN>The data type for these columns must be compatible with the data type in the Point_ID parameter.</SPAN></P></LI></UL><P><SPAN /></P></DIV></DIV></DIV><div class="noContent" style="text-align:center;">___________________</div><br />
+<span style="font-weight: bold">Python Reference</span><br /><DIV STYLE="text-align:Left;"><P><SPAN>The full name of a data table.</SPAN></P><UL><LI><P><SPAN>This can be any format understood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...).</SPAN></P></LI><LI><P><SPAN>All attributes in the input table are copied to the output file.</SPAN></P></LI><LI><P><SPAN>The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.</SPAN></P></LI><LI><P><SPAN>The data type for these columns must be compatible with the data type in the Point_ID parameter.</SPAN></P></LI></UL></DIV></td>
 <td class="info" align="left">Table View</td>
 </tr>
 <tr>
@@ -375,15 +375,15 @@
 <p>
 <b>Scripting Example</b><br /><DIV STYLE="text-align:Left;"><DIV><DIV><P><SPAN>The following example shows how this script can be used in another python script, or directly in the ArcGIS Python Window. It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.</SPAN></P><P><SPAN /></P></DIV></DIV></DIV></p>
 <div class="gpcode">
-<pre class="gp">table = r"C:\tmp\utilites.mdb\pipe_segments"
+<pre class="gp">table = r"C:\tmp\utilities.mdb\pipe_segments"
 ptFC = r"C:\tmp\gps_pts.shp"
 outFC = r"C:\tmp\test.gdb\utilities\pipe_cl"
-Table2Shape_AlaskPak(table, "start;end", ptFC, "id", "Polyline", outFC)</pre>
+Table2Shape_AlaskaPak(table, "start;end", ptFC, "id", "Polyline", outFC)</pre>
 </div>
 <p>
-<b>Command Line Example</b><br /><DIV STYLE="text-align:Left;"><DIV><P><SPAN>The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.</SPAN></P><P><SPAN /></P></DIV></DIV></p>
+<b>Command Line Example</b><br /><DIV STYLE="text-align:Left;"><DIV><P><SPAN>The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.</SPAN></P><P><SPAN /></P></DIV></DIV></p>
 <div class="gpcode">
-<pre class="gp">C:\tmp&gt; python Table2Shape.py "C:\tmp\utilites.mdb\pipe_segments" start;end C:\tmp\gps_pts.shp id Polyline "C:\tmp\test.gdb\utilities\pipe_cl"
+<pre class="gp">C:\tmp&gt; python Table2Shape.py "C:\tmp\utilities.mdb\pipe_segments" start;end C:\tmp\gps_pts.shp id Polyline "C:\tmp\test.gdb\utilities\pipe_cl"
 </pre>
 </div>
 </div>

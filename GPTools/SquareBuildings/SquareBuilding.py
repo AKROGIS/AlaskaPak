@@ -11,7 +11,7 @@
 import arcpy
 
 # Load required toolboxes
-arcpy.ImportToolbox("C:/Users/resarwas/Documents/Visual Studio 2010/Projects/AlaskaPak/Scripts/Alaska Pak Development.tbx")
+arcpy.ImportToolbox("X:/GIS/Toolboxes/10.0/Alaska Pak Development.tbx")
 
 # Script arguments
 Building_Edges = arcpy.GetParameterAsText(0)

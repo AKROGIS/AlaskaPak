@@ -16,7 +16,7 @@
 #
 # Parameter 1:
 # Table
-# The full name of a data table.  This can be any format uderstood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...).  All attributes in the input table are copied to the output file. The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.  The data type for these columns must be comptible with the data type in the Point_ID parameter.
+# The full name of a data table.  This can be any format understood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...).  All attributes in the input table are copied to the output file. The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.  The data type for these columns must be compatible with the data type in the Point_ID parameter.
 #
 # Parameter 2:
 # VertexList
@@ -45,15 +45,15 @@
 # Example1:
 # Scripting Example
 # The following example shows how this script can be used in another python script, or directly in the ArcGIS Python Window.  It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.
-#  table = r"C:\tmp\utilites.mdb\pipe_segments"
+#  table = r"C:\tmp\utilities.mdb\pipe_segments"
 #  ptFC = r"C:\tmp\gps_pts.shp"
 #  outFC = r"C:\tmp\test.gdb\utilities\pipe_cl"
-#  Table2Shape_AlaskPak(table, "start;end", ptFC, "id", "Polyline", outFC)
+#  Table2Shape_AlaskaPak(table, "start;end", ptFC, "id", "Polyline", outFC)
 #
 # Example2:
 # Command Line Example
-# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
-#  C:\tmp> python Table2Shape.py "C:\tmp\utilites.mdb\pipe_segments" start;end C:\tmp\gps_pts.shp id Polyline "C:\tmp\test.gdb\utilities\pipe_cl"
+# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
+#  C:\tmp> python Table2Shape.py "C:\tmp\utilities.mdb\pipe_segments" start;end C:\tmp\gps_pts.shp id Polyline "C:\tmp\test.gdb\utilities\pipe_cl"
 #
 # Credits:
 # Regan Sarwas, Alaska Region GIS Team, National Park Service
@@ -316,7 +316,7 @@ for field in tableDescription.fields:
     name = field.name
     #if (name != tableDescription.shapeFieldName and
     #    name != tableDescription.OIDFieldName and
-    #    field.editable): #skip uneditable fields like Shape_Length
+    #    field.editable): #skip un-editable fields like Shape_Length
     fields[name] = arcpy.ValidateFieldName(name,workspace)
     #AddField_management (in_table, field_name, field_type, {field_precision},
     # {field_scale}, {field_length}, {field_alias}, {field_is_nullable},

@@ -16,11 +16,11 @@
 #
 # Parameter 1:
 # Line_Features
-# The full name of a polyline feature class.  Each line defines the base or first side of a generated rectangle. Each line can have 1 or more parts (i.e. it may be a multi-line), and there may be two or more vertices in each part, however only the first and last vertex of each part are used in the output rectangle.  If the line is a multi-part shape, then the rectangle is also a multi-part shape.  If any line (or part) is degenerate (i.e. a single vertex, or first vertex and last vertext are the same) then that line (or line part) is skipped. If all parts in the line are degenerate then no output is created for that line.
+# The full name of a polyline feature class.  Each line defines the base or first side of a generated rectangle. Each line can have 1 or more parts (i.e. it may be a multi-line), and there may be two or more vertices in each part, however only the first and last vertex of each part are used in the output rectangle.  If the line is a multi-part shape, then the rectangle is also a multi-part shape.  If any line (or part) is degenerate (i.e. a single vertex, or first vertex and last vertex are the same) then that line (or line part) is skipped. If all parts in the line are degenerate then no output is created for that line.
 #
 # Parameter 2:
 # Rectangle_Width_Field
-# This is the name of an attribute (column/field) in the line feature class which specifies the width of the rectangle. Width may also be known as offset or height.  Specifically It is the distance perpendicular to the line at which the far side of the rectangle is drawn. If the width is positive, the rectangle is drawn on the right side of the line.  If it is negative it is drawn on the left side.  Right and left are from the prespective of the line looking from the first vertex to the last. The width must be a numeric (integer or real) field, and it must be in the same units/coordinate system as the line feature class. The field name can be either an actual field name, or the alias for the field name.  Actual field names are given priority in case of ambiguity.
+# This is the name of an attribute (column/field) in the line feature class which specifies the width of the rectangle. Width may also be known as offset or height.  Specifically It is the distance perpendicular to the line at which the far side of the rectangle is drawn. If the width is positive, the rectangle is drawn on the right side of the line.  If it is negative it is drawn on the left side.  Right and left are from the perspective of the line looking from the first vertex to the last. The width must be a numeric (integer or real) field, and it must be in the same units/coordinate system as the line feature class. The field name can be either an actual field name, or the alias for the field name.  Actual field names are given priority in case of ambiguity.
 #
 # Parameter 3:
 # Rectangle_Features
@@ -38,7 +38,7 @@
 #
 # Example2:
 # Command Line Example
-# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
+# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
 #  C:\tmp> python Line2Rect.py "c:\tmp\gps_lines.shp" "width" "c:\tmp\test.gdb\park\bldg"
 #
 # Credits:
@@ -191,7 +191,7 @@ for field in lineDescription.fields:
     name = field.name
     if (name != lineDescription.shapeFieldName and
         name != lineDescription.OIDFieldName and
-        field.editable): #skip uneditable fields like Shape_Length
+        field.editable): #skip un-editable fields like Shape_Length
         fields[name] = arcpy.ValidateFieldName(name,workspace)
         #print workspace, name, "=>", fields[name]  
 
@@ -212,7 +212,7 @@ for line in lines:
 
 arcpy.AddMessage("Output feature class has been populated")
 
-#When writing to a PGDB, you must delete the last row or it will not
+#When writing to a Personal GDB, you must delete the last row or it will not
 #get written to the database.
 if poly:
     del poly

@@ -12,7 +12,7 @@
 # Takes an point feature class and an ordered sets of azimuth/distance measurements to create a polygon feature class
 # 
 # Usage:
-# Provide a point feature class, and a table of related azimuth/distance measurements, and this tool will create a polygon for each point with at leat three valid azimuth/distance measurements.
+# Provide a point feature class, and a table of related azimuth/distance measurements, and this tool will create a polygon for each point with at least three valid azimuth/distance measurements.
 #
 # Parameter 1:
 # Control_Point_Features
@@ -29,10 +29,10 @@
 # Azimuth_Distance_Table
 # If there is Azimuth/Distance data for which the tag does not match to a point in the Control Point Features, a warning will be given, and that data will be skipped.
 # It is assumed that the data will be sorted first by polygon id, then by azimuth/distance data. The azimuths should generally proceed counter clockwise from zero to 360 degrees.
-# The vertices of the polygons will be generated in the order the azimuth/distance data is provided, An out of sequence azimuth (i.e. an azimuth value is less than the value of the preceeding azimuth), is valid, but will generate a warning.
+# The vertices of the polygons will be generated in the order the azimuth/distance data is provided, An out of sequence azimuth (i.e. an azimuth value is less than the value of the preceding azimuth), is valid, but will generate a warning.
 # There should only be one set of azimuth/distance measurements for each polygon id in the input table. 
 # When the polygon id changes, a new polygon will be started.
-# If a polygon id is re-encountered after that polygon has been finished (i.e. one or more polygons are inbetween, then the new data will generate an error and be ignored. The ignored lines will not signal the end of the preceeding polygon.
+# If a polygon id is re-encountered after that polygon has been finished (i.e. one or more polygons are in between, then the new data will generate an error and be ignored. The ignored lines will not signal the end of the preceding polygon.
 # It is an error for a polygon to have less than 3 azimuth/distance pairs. These polygons will generate a warning, and will be skipped.
 # A blank polygon id, will signal the end of data processing.
 #
@@ -51,7 +51,7 @@
 #
 # Parameter 7:
 # Azimuth_Field
-# Azimuth values are assumed to be in degress and referenced from the control point to true north. True north is zero degrees and azimuth values increase clockwise up to 360 degrees.
+# Azimuth values are assumed to be in degrees and referenced from the control point to true north. True north is zero degrees and azimuth values increase clockwise up to 360 degrees.
 # A value less than zero, or greater than 360 is considered an error, and will be noted and skipped.
 #
 # Parameter 8:
@@ -215,7 +215,7 @@ def PolygonFromControlPoint(
         name = field.name
         if (name != pointLayerDescription.shapeFieldName and
             name != pointLayerDescription.OIDFieldName and
-            field.editable): #skip uneditable fields like Shape_Length
+            field.editable): #skip un-editable fields like Shape_Length
             fields[name] = arcpy.ValidateFieldName(name,workspace)
             #print workspace, name, "=>", fields[name]  
 
@@ -249,7 +249,7 @@ def PolygonFromControlPoint(
 
     arcpy.AddMessage("Output feature class has been populated")
 
-    #When writing to a PGDB, you must delete the last row or it will not
+    #When writing to a Personal GDB, you must delete the last row or it will not
     #get written to the database.
     if poly:
         del poly

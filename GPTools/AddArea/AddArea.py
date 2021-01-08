@@ -38,7 +38,7 @@
 #
 # Example2:
 # Command Line Example
-# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
+# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
 #  C:\tmp> python AddArea.py "C:\tmp\parks.shp;C:\tmp\test.gdb\preserves" SqKm SQUAREKILOMETERS
 #
 # Credits:
@@ -67,7 +67,7 @@
 # still used for calc field
 # * If coordinate system is unknown or geographic, units are assumed to be units
 # requested
-# * Feature may be locked or uneditable
+# * Feature may be locked or un-editable
 
 validUnits = ["ACRES", "ARES", "HECTARES", "SQUARECENTIMETERS", "SQUAREDECIMETERS", "SQUAREINCHES", "SQUAREFEET",
               "SQUAREKILOMETERS", "SQUAREMETERS", "SQUAREMILES", "SQUAREMILLIMETERS", "SQUAREYARDS"]

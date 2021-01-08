@@ -12,7 +12,7 @@
 # Creates random survey transects (lines) within a polygon boundary.
 #
 # Usage:
-# This tool uses CreateFeature_Mangement to create a new polyline feature class
+# This tool uses CreateFeature_Management to create a new polyline feature class
 # (See the help for that tool regarding the environment variables that will
 # control the feature class creation).  These feature will have no attributes.
 # the geometry will be simple straight lines that are wholey within the
@@ -59,7 +59,7 @@
 # This parameter is optional.  The default value is 1000 Meters.
 # This parameter must be greater than or equal to Minimum_length.
 # See Minimum_length for a discussion of units.
-# If the length is too large then finding a transcect that fits within the
+# If the length is too large then finding a transect that fits within the
 # boundary may not by possible.
 #
 # Parameter 6:
@@ -100,7 +100,7 @@
 # Command Line Example
 # The following example shows how the script can be used from the operating
 # system command line.  It assumes that the current directory is the location
-# of the script, and that the python interpeter is the path.
+# of the script, and that the python interpreter is the path.
 # It will try to create 10 100 meter transects in each polygon in polys.shp
 #  C:\tmp> python ObscurePoints.py polys.shp c:\tmp\lines.shp 10 100 100
 #
@@ -181,7 +181,7 @@ def SanitizeInput(arcpy, inFC, outFC, linesPerPoly,
         if not arcpy.env.overwriteOutput:
             arcpy.AddError("Cannot overwrite existing data at: " + fc)
             sys.exit()
-    # no easy way to check that fc is not readonly or locked, so dont
+    # no easy way to check that fc is not readonly or locked, so don't
 
     # validate linesPerPoly
     if linesPerPoly in ["","#"]:
@@ -372,7 +372,7 @@ def GetLines(arcpy, polygonName, polygonShape, lineGoal, maxAttempts,
         x,y = GetRandomPointInPolygon(arcpy, polygonShape)
         pt1, pt2 = GetRandomLineEnds(x, y, minLength, maxLength)
         # Spatial compare (i.e. contains) will always fail if the two geometries
-        # have different spatial refereces (including null and not null).
+        # have different spatial references (including null and not null).
         line = arcpy.Polyline(arcpy.Array([arcpy.Point(pt1[0], pt1[1]),
                                            arcpy.Point(pt2[0], pt2[1])]),
                                            spatialReference)

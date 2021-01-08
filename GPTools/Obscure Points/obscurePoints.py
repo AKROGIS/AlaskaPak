@@ -73,7 +73,7 @@
 #
 # Example2:
 # Command Line Example
-# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
+# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
 #  C:\tmp> python ObscurePoints.py c:\tmp\nests.shp c:\tmp\newnests.shp Points 0 100 
 #
 # Credits:
@@ -98,7 +98,7 @@
 # ------------------------------------------------------------------------------
 
 # Problems:
-#  Source data canot have a CID field
+#  Source data cannot have a CID field
 
 import sys, os
 import random, math
@@ -162,7 +162,7 @@ def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo, mustgo):
         if not arcpy.env.overwriteOutput:
             arcpy.AddError("Cannot overwrite existing data at: " + fc)
             sys.exit()
-    # no easy way to check that fc is not readonly or locked, so dont
+    # no easy way to check that fc is not readonly or locked, so don't
 
     # validate output type
     if type in ["","#"]:
@@ -269,7 +269,7 @@ def CreateLimitedPoints(arcpy, pts, min, max, nogo, mustgo):
     # buffer each input point with the max offset
     # erase with a buffer of each point with min offset (if not 0)
     # erase with each polygon in no go
-    # if any polyogn has area < 0 issue warning
+    # if any polygon has area < 0 issue warning
     # put 1 random point in this area.
     allowed = arcpy.Buffer_analysis(pts,"in_memory\\allow",max)
     if min > 0:

@@ -38,7 +38,7 @@
 #
 # Example2:
 # Command Line Example
-# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpeter is the path.
+# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
 #  C:\tmp> python AddLength.py "C:\tmp\roads.shp;C:\tmp\test.gdb\fences" Km KILOMETERS
 #
 # Credits:
@@ -69,7 +69,7 @@
 # requested.
 # * If coordinates are geographic, results are wrong. (the shape_length is also
 # wrong - it uses planar geometry with the spherical coordinates.)
-# * Feature may be locked or uneditable
+# * Feature may be locked or un-editable
 
 validUnits = ["CENTIMETERS","DECIMALDEGREES","DECIMETERS","FEET","INCHES","KILOMETERS","METERS","MILES","MILLIMETERS","NAUTICALMILES","POINTS","UNKNOWN","YARDS"]
 
