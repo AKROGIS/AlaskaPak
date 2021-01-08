@@ -103,4 +103,6 @@ require a more advanced license.  See
 [License Requirements](./Docs/LicenseRequirements.md)
 for details.
 
-See the [To Do List](./Docs/ToDo.md) for a list of known issues.
+See the [To Do List](./Docs/ToDo.md) and
+[GitHub Issues](https://github.com/AKROGIS/AlaskaPak/issues)
+for known issues.
