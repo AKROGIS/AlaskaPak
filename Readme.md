@@ -48,7 +48,7 @@ version of ArcGIS.
   to the path in [PathToThemeManager](./AlaskaPak/PathToThemeManager.txt).
 * Double click the file `AlaskaPak/bin/release/AlaskaPak3.esriAddIn` to
   invoke the esri Add-In installer.
-* See the [installation instructions](./Docs/AlaskaPakV3_Installation.docx)
+* See the [installation instructions](./Docs/InstallationInstructions.md)
   if you need additional assistance.
 
 ### For Organizational Use
@@ -79,13 +79,13 @@ version of ArcGIS.
 * Zip up deployment folder.
 * Publish on the distribution site (i.e.
   [IRMA](https://irma.nps.gov/DataStore/Reference/Profile/2176910))
-* If the [installation instructions](./Docs/AlaskaPakV3_Installation.docx)
+* If the [installation instructions](./Docs/InstallationInstructions.md)
   have changed, export them to PDF and upload to the distribution site.
 
 ## Using
 
 If necessary, see the detailed
-[installation instructions](./Docs/AlaskaPakV3_Installation.docx)
+[installation instructions](./Docs/InstallationInstructions.md)
 to activate the AlaskaPak toolbar in ArcMap.
 
 There is a help option in the menu on the toolbar, as well as help with
