@@ -2,19 +2,14 @@
 
 ArcGIS comes in three license levels: Basic, Standard and Advanced. These
 use to be called ArcView, ArcEditor and ArcInfo. You may see references
-to these older names in the comments in the code.
+to these older names in the comments in the code.  The following has been
+checked for Desktop 10.3+ and Pro 2.6+
 
 ## Add-In Tools
 
 The following commands require more than a Basic license. For each command I
 have referenced the builtin geo processing tool(s) responsible for the license
 escalation.
-
-### Add Attribute/Add Globally Unique Id
-
-* license: **Standard**
-* class file: `AddGUID.cs`
-* builtin: `AddGlobalIDs_management`
 
 ### Conversions/Point To Polygon
 
@@ -79,16 +74,16 @@ calls and the license level for those builtin commands.
 * license: **Advanced** (only if using `No Go` or `Must Go` areas)
 * builtin: `FeatureClassToFeatureClass_conversion`: **Basic**
 * builtin: `Delete_management`: **Basic**
-* builtin: `Buffer_analysis`: **Basic**
+* builtin: `Buffer_analysis`: **Basic** (as used in script)
 * builtin: `Clip_analysis`: **Basic**
 * builtin: `DeleteField_management`: **Basic**
+* builtin: `JoinField_management`: **Basic**
 
 In the `CreateLimitedPoints` function:
 
 * builtin: `Erase_analysis`: **Advanced**
 * builtin: `CreateRandomPoints_management`: **Advanced** or
   **Spatial Analyst**, or **3D Analyst**
-* builtin: `JoinField_management`: **Advanced**
 
 ### `Point2Poly.py`
 
