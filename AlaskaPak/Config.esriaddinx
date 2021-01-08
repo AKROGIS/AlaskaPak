@@ -2,13 +2,13 @@
   <Name>Alaska Pak</Name>
   <AddInID>{f27bc194-1406-4cd9-ab22-067660801251}</AddInID>
   <Description>A tool kit for increasing GIS productivity</Description>
-  <Version>3.0.5</Version>
+  <Version>3.0.7</Version>
   <Image>Images\NPS_Logo.png</Image>
   <Author>Regan Sarwas, GIS Team</Author>
   <Company>National Park Service, Alaska Regional Office</Company>
-  <Date>2/22/2017</Date>
+  <Date>8/29/2019</Date>
   <Targets>
-    <Target name="Desktop" version="10.5" />
+    <Target name="Desktop" version="10.7" />
   </Targets>
   <!-- All custom classes (Tools, Buttons, Extensions, etc.) referenced in this file must be in the AddIn namespace, no exceptions!! -->
   <AddIn language="CLR" library="AlaskaPak3.dll" namespace="NPS.AKRO.ArcGIS.Buttons">
@@ -17,7 +17,7 @@
         <!--
 					id       is used for referencing the object in this document and must be unique across all items in the customization commands list
 					class    is the class that does the work, must be in the namespace above
-					message  apears in the status bar
+					message  appears in the status bar
 					caption  is the button or tool text (it appears in the menu/toolbar, and in the customization commands list
 					tip      is a popup tooltip (does not appear when button is a menu item);
 					category is the folder in the customization commands list
