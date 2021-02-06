@@ -103,6 +103,12 @@
 import sys, os
 import random, math
 
+# Python 2/3 compatible xrange() cabability
+# pylint: disable=undefined-variable,redefined-builtin
+if sys.version_info[0] < 3:
+    range = xrange
+
+
 def ObscurePoints():
     import arcpy
     cleanParams = SanitizeInput(arcpy,
@@ -355,7 +361,7 @@ def RandomizeGeom(arcpy, geom, min, max):
         return arcpy.PointGeometry(arcpy.Point(x,y))
         
     a = arcpy.Array()    
-    for i in xrange(pc):
+    for i in range(pc):
         pnt = geom.getPart(i)
         x,y = RandomizePoint(pnt.X, pnt.Y, min, max)
         a.append(arcpy.Point(x,y))
