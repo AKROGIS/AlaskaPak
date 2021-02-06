@@ -97,6 +97,8 @@ import sys
 
 import arcpy
 
+import utils
+
 # FIXME: Merge with or replace polygon_from_point_alt.py
 
 
@@ -115,9 +117,8 @@ def ParsePolygonData(
             break
         # If we have seen this id before, then skip this row
         if result.has_key(id):
-            msg = "Polygon %d has already been closed, skipping." % id
-            print("Warning: " + msg)
-            arcpy.AddWarning(msg)
+            msg = "Polygon {0} has already been closed, skipping."
+            utils.warn(msg.format(id))
             continue
         # we have a new id, and an old id
         if id != currentId:
@@ -143,50 +144,40 @@ def MakePolygon(point, pointId, polygonData):
         return None
 
     if len(data) < 3:
-        msg = "Polygon %d has only %d pairs of Azimuth/Distance, skipping." \
-            % (pointId,len(data))
-        print("Warning: " + msg)
-        arcpy.AddWarning(msg)
+        msg = "Polygon {0} has only {0} pairs of Azimuth/Distance, skipping."
+        utils.warn(msg.format(pointId, len(data)))
         return None
 
     vertices = []
     oldAzimuth = None
     for azimuth,distance in data:
         if oldAzimuth and azimuth < oldAzimuth:
-            msg = "Azimuths for polygon %d go backwards from %3.2f to %3.2f." \
-                % (pointId, oldAzimuth, azimuth)
-            print("Warning: " + msg)
-            arcpy.AddWarning(msg)
+            msg = "Azimuths for polygon {0} go backwards from {0:.2} to {0:.2}."
+            utils.warn(msg.format(pointId, oldAzimuth, azimuth))
         oldAzimuth = azimuth
         if azimuth < 0 or azimuth > 360:
             if azimuth == None:
-                msg = "An azimuth is null for polygon %d." \
-                    % (pointId)
+                msg = "An azimuth is null for polygon {0}.".format(pointId)
             else:
-                msg = "Azimuth %3.2f for polygon %d is out of range 0-360." \
-                    % (azimuth, pointId)
-            print("Warning: " + msg)
-            arcpy.AddWarning(msg)
+                msg = "Azimuth {0:.2} for polygon {1} is out of range 0-360."
+                msg = msg.format(azimuth, pointId)
+            utils.warn(msg)
             continue
         if distance <= 0:
             if distance == None:
-                msg = "A distance is null for polygon %d." \
-                    % (pointId)
+                msg = "A distance is null for polygon {0}.".format(pointId)
             else:
-                msg = "Distance %3.2f for polygon %d is out of range d <= 0." \
-                    % (distance, pointId)
-            print("Warning: " + msg)
-            arcpy.AddWarning(msg)
+                msg = "Distance {0:.2} for polygon {1} is out of range d <= 0."
+                msg = msg.format(distance, pointId)
+            utils.warn(msg)
             continue
 
         x = point.getPart().X + distance*(math.sin(azimuth*math.pi/180))
         y = point.getPart().Y + distance*(math.cos(azimuth*math.pi/180))
         vertices.append(arcpy.Point(x,y))
     if len(vertices) < 3:
-        msg = "Polygon %d has %d pairs of valid Azimuth/Distance, skipping." \
-            % (pointId, len(vertices))
-        print("Warning: " + msg)
-        arcpy.AddWarning(msg)
+        msg = "Polygon {0} has {1} pairs of valid Azimuth/Distance, skipping."
+        utils.warn(msg.format(pointId, len(vertices)))
         return None
     vertices.append(vertices[0])
     return arcpy.Polygon(arcpy.Array(vertices))

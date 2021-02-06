@@ -149,13 +149,14 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
         arcpy.AddError("No input feature class specified.")
         sys.exit()
     if not arcpy.Exists(inFC):
-        arcpy.AddError("The input feature specified ("+inFC+") does not exist.")
+        msg = "The input feature specified ({0}) does not exist."
+        arcpy.AddError(msg.format(inFC))
         sys.exit()
     desc = arcpy.Describe(inFC)
     shape = desc.shapeType.lower()
     if shape not in ['point', 'multipoint']:
-        arcpy.AddError("The input feature specified (" + inFC +
-                       ") is not a point or multipoint.")
+        msg = "The input feature specified ({0}) is not a point or multipoint."
+        arcpy.AddError(msg.format(inFC))
         sys.exit()
     multi = (shape == 'multipoint')
 
@@ -165,14 +166,15 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
         sys.exit()
     workspace, name = os.path.split(outFC)
     if not arcpy.Exists(workspace):
-        arcpy.AddError("The output workspace specified (" + workspace +
-                       ") does not exist.")
+        msg = "The output workspace specified ({0}) does not exist."
+        arcpy.AddError(msg.format(workspace))
         sys.exit()
     name = arcpy.ValidateTableName(name,workspace)
     fc = os.path.join(workspace,name)
     if arcpy.Exists(fc):
         if not arcpy.env.overwriteOutput:
-            arcpy.AddError("Cannot overwrite existing data at: " + fc)
+            msg = "Cannot overwrite existing data at: {0}"
+            arcpy.AddError(msg.format(fc))
             sys.exit()
     # no easy way to check that fc is not readonly or locked, so don't
 
@@ -184,8 +186,8 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
         if potential.startswith(type.lower()):
             type = potential
     if type not in choices:
-        arcpy.AddError("The output type specified (" + type +
-                       ") is not in" + choices + ".")
+        msg = "The output type specified ({0}) is not in {1}."
+        arcpy.AddError(msg.format(type, choices))
         sys.exit()
     circles = (type == 'circles')
 
@@ -199,24 +201,25 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
     try:
         min = float(min)
     except ValueError:
-        arcpy.AddError("The minimum offset (" + min + ") is not a number.")
+        arcpy.AddError("The minimum offset ({0}) is not a number.".format(min))
         sys.exit()
     try:
         max = float(max)
     except ValueError:
-        arcpy.AddError("The maximum offset (" + max + ") is not a number.")
+        arcpy.AddError("The maximum offset ({0}) is not a number.".format(max))
         sys.exit()
     if (min < 0):
-        arcpy.AddError("The minimum offset specified (" + str(min) +
-                       ") is not greater than zero.")
+        msg = "The minimum offset specified ({0}) is not greater than zero."
+        arcpy.AddError(msg.format(min))
+
         sys.exit()
     if (max < min):
-        arcpy.AddError("The maximum offset specified (" + str(max) +
-                       ") is not greater than the minimum offset.")
+        msg = "The maximum offset specified ({0}) is not greater than the minimum offset."
+        arcpy.AddError(msg.format(max))
         sys.exit()
     if (max == 0):
-        arcpy.AddError("The maximum offset specified (" + str(max) +
-                       ") is not greater than zero.")
+        msg = "The maximum offset specified ({0}) is not greater than zero."
+        arcpy.AddError(msg.format(max))
         sys.exit()
 
     #validate nogo
@@ -228,15 +231,15 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
     removelist = []
     for fc in nogo:
         if not arcpy.Exists(fc):
-            arcpy.AddMessage("'No-Go' feature class (" + fc +
-                             ") could not be found - skipping.")
+            msg = "'No-Go' feature class ({0}) could not be found - skipping."
+            arcpy.AddMessage(msg.format(fc))
             removelist.append(fc)
             continue
         desc = arcpy.Describe(fc)
         shape = desc.shapeType.lower()
         if shape not in ['polygon']:
-            arcpy.AddMessage("'No-Go' feature class (" + fc +
-                             ") is not polygons - skipping.")
+            msg = "'No-Go' feature class ({0}) is not polygons - skipping."
+            arcpy.AddMessage(msg.format(fc))
             removelist.append(fc)
     for fc in removelist:
         nogo.remove(fc)
@@ -250,15 +253,15 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
     removelist = []
     for fc in mustgo:
         if not arcpy.Exists(fc):
-            arcpy.AddMessage("'Must-Go' feature class (" + fc +
-                             ") could not be found - skipping.")
+            msg = "'Must-Go' feature class ({0}) could not be found - skipping."
+            arcpy.AddMessage(msg.format(fc))
             removelist.append(fc)
             continue
         desc = arcpy.Describe(fc)
         shape = desc.shapeType.lower()
         if shape not in ['polygon']:
-            arcpy.AddMessage("'Must-Go' feature class (" + fc +
-                             ") is not polygons - skipping.")
+            msg = "'Must-Go' feature class ({0}) is not polygons - skipping."
+            arcpy.AddMessage(msg.format(fc))
             removelist.append(fc)
     for fc in removelist:
         mustgo.remove(fc)
@@ -266,8 +269,8 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
     if (nogo or mustgo) and multi:
         # Not supported because random point in polygon will only put 1
         # point in a multipart polygon
-        arcpy.AddError("Cannot use multipoint input when No-Go or Must-Go " +
-                       " areas are specified.")
+        msg = "Cannot use multipoint input when No-Go or Must-Go areas are specified."
+        arcpy.AddError(msg)
         sys.exit()
 
     arcpy.AddMessage("Input has been validated.")
@@ -294,13 +297,13 @@ def CreateLimitedPoints(pts, min, max, nogo, mustgo):
     index = 0
     for fc in nogo:
         newAllowed = arcpy.Erase_analysis(allowed, fc,
-                                          "in_memory\\allow"+ str(index))
+                                          "in_memory\\allow{0}".format(index))
         index = index + 1
         arcpy.Delete_management(allowed)
         allowed = newAllowed
     for fc in mustgo:
         newAllowed = arcpy.Clip_analysis(allowed, fc,
-                                         "in_memory\\allow"+ str(index))
+                                         "in_memory\\allow{0}".format(index))
         index = index + 1
         arcpy.Delete_management(allowed)
         allowed = newAllowed

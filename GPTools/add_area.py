@@ -153,10 +153,10 @@ def add_area_to_feature(feature, units, fieldname="Area", overwrite=False):
 
     #Sanitize Units
     if units.upper() in valid_units:
-        out_units = "@" + units.upper()
+        out_units = "@{0}".format(units.upper())
     else:
-        utils.warn("Unknown units {},"
-                   "area will be in the feature's units".format(units))
+        msg = "Unknown units {0}, area will be in the feature's units."
+        utils.warn(msg.format(units))
         out_units = ""
 
     #Determine Area Calculation Method
@@ -165,21 +165,21 @@ def add_area_to_feature(feature, units, fieldname="Area", overwrite=False):
     else:
         if out_units:
             area_method = ".geodesicArea"
-            utils.info("Calculating geodesic area for {}".format(feature))
+            utils.info("Calculating geodesic area for {0}".format(feature))
         else:
             area_method = ".area"
             utils.warn("Calculating area in square degrees."
                        "This is usually meaningless.")
 
     #Do Calculation
-    calculation = "!" + shape_name + area_method + out_units + "!"
+    calculation = "!{0}{1}{2}!".format(shape_name, area_method, out_units)
     arcpy.CalculateField_management(feature, new_fieldname, calculation,
                                     "PYTHON_9.3")
 
 
 def add_area_to_features(features, units, fieldname="Area", overwrite=False):
     for feature in features:
-        utils.info("Adding Area to " + feature)
+        utils.info("Adding Area to {0}".format(feature))
         add_area_to_feature(feature, fieldname, units, overwrite)
 
 

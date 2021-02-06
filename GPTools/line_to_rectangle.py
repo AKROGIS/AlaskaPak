@@ -131,8 +131,8 @@ def MakeRectFromLine(line, width):
 #Get and check input
 if len(sys.argv) != 4:
     arcpy.AddError("This tool requires exactly 3 parameters.")
-    print("Usage: " + sys.argv[0] +
-          " path_to_lineFC Offset_Field_Name path_to_outputFC")
+    usage = "Usage: {0} path_to_lineFC Offset_Field_Name path_to_outputFC"
+    print(usage.format(sys.argv[0]))
     sys.exit(1)
 
 lineFC = arcpy.GetParameterAsText(0)
@@ -142,8 +142,8 @@ rectFC = arcpy.GetParameterAsText(2)
 lineDescription = arcpy.Describe(lineFC)
 
 if lineDescription.shapeType != "Polyline":
-    arcpy.AddError(lineFC +" is a " + lineDescription.shapeType +
-                   " not Polyline feature class")
+    msg = "{0} is a {1} not Polyline feature class."
+    arcpy.AddError(msg.format(lineFC, lineDescription.shapeType ))
     sys.exit(1)
 
 offsetFieldType = ""
@@ -161,15 +161,16 @@ if offsetFieldType == "":
             break
 
 if offsetFieldType == "":
-    arcpy.AddError(offsetFN +" was not found as a field in " + lineFC)
+    msg = "{0} was not found as a field in {1}."
+    arcpy.AddError(msg.format(offsetFN, lineFC))
     sys.exit(1)
 
 if  (offsetFieldType != "SmallInteger" and
      offsetFieldType != "Integer" and
      offsetFieldType != "Single" and
      offsetFieldType != "Double"):
-    arcpy.AddError(offsetFN +"(" + offsetFieldType +
-                   ") is not a numeric data type")
+    msg = "{0}({1}) is not a numeric data type."
+    arcpy.AddError(msg.format(offsetFN, offsetFieldType))
     sys.exit(1)
 
 arcpy.AddMessage("Input has been validated")

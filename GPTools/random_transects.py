@@ -169,8 +169,8 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
     desc = arcpy.Describe(inFC)
     shape = desc.shapeType.lower()
     if shape != 'polygon':
-        arcpy.AddError("The input features specified (" + inFC +
-                       ") is not a polygons.")
+        msg = "The input features specified ({0}) is not a polygons."
+        arcpy.AddError(msg.format(inFC))
         sys.exit()
 
     # validate output feature class
@@ -179,14 +179,15 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
         sys.exit()
     workspace, name = os.path.split(outFC)
     if not arcpy.Exists(workspace):
-        arcpy.AddError("The output workspace specified (" + workspace +
-                       ") does not exist.")
+        msg = "The output workspace specified ({0}) does not exist."
+        arcpy.AddError(msg.format(workspace))
         sys.exit()
     name = arcpy.ValidateTableName(name,workspace)
     fc = os.path.join(workspace,name)
     if arcpy.Exists(fc):
         if not arcpy.env.overwriteOutput:
-            arcpy.AddError("Cannot overwrite existing data at: " + fc)
+            msg = "Cannot overwrite existing data at: {0}"
+            arcpy.AddError(msg.format(fc))
             sys.exit()
     # no easy way to check that fc is not readonly or locked, so don't
 
@@ -197,12 +198,12 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
     try:
         linesPerPoly = int(linesPerPoly)
     except ValueError:
-        arcpy.AddError("The transects per feature (" + linesPerPoly +
-                       ") is not a whole number.")
+        msg = "The transects per feature ({0}) is not a whole number."
+        arcpy.AddError(msg.format(linesPerPoly))
         sys.exit()
     if (linesPerPoly < 0):
-        arcpy.AddError("The transects per feature (" + str(linesPerPoly) +
-                       ") is not greater than zero.")
+        msg = "The transects per feature ({0}) is not greater than zero."
+        arcpy.AddError(msg.format(linesPerPoly))
         sys.exit()
 
     # validate maxTrys
@@ -212,42 +213,46 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
     try:
         maxTrys = int(maxTrys)
     except ValueError:
-        arcpy.AddError("The number of attempts (" + maxTrys +
-                       ") is not a whole number.")
+        msg = "The number of attempts ({0}) is not a whole number."
+        arcpy.AddError(msg.format(maxTrys))
         sys.exit()
     if (maxTrys < 0):
-        arcpy.AddError("The number of attempts (" + str(maxTrys) +
-                       ") is not greater than zero.")
+        msg = "The number of attempts ({0}) is not greater than zero."
+        arcpy.AddError(msg.format(maxTrys))
         sys.exit()
 
     #validate min/max
     min_input, max_input = min, max
     if min in ["","#"]:
         min = "1 Meters"
-        arcpy.AddMessage("Using a default value of 1 Meter " +
-                         "for the minimum transect length.")
+        arcpy.AddMessage(
+            "Using a default value of 1 Meter for the minimum transect length."
+        )
     if max in ["","#"]:
         max = "1000 Meters"
-        arcpy.AddMessage("Using a default value of 1000 Meters " +
-                         "for the minimum transect length.")
+        arcpy.AddMessage(
+            "Using a default value of 1000 Meters for the minimum transect length."
+            )
     min = LinearUnitsToMeters(min)
     if min == -1:
-        arcpy.AddError("The minimum transect length (" + min_input +
-                       ") is not a number or the units are invalid.")
+        msg = "The minimum transect length ({0}) is not a number or the units are invalid."
+        arcpy.AddError(msg.format(min_input))
         sys.exit()
     max = LinearUnitsToMeters(max)
     if max == -1:
-        arcpy.AddError("The maximum transect length (" + max_input +
-                       ") is not a number or the units are invalid.")
+        msg = "The maximum transect length ({0}) is not a number or the units are invalid."
+        arcpy.AddError(msg.format(max_input))
         sys.exit()
     if (min <= 0):
-        arcpy.AddError("The minimum transect length specified (" + str(min) +
-                       " Meters) is not greater than zero.")
+        msg = "The minimum transect length specified ({0} Meters) is not greater than zero."
+        arcpy.AddError(msg.format(min))
         sys.exit()
     if (max < min):
-        arcpy.AddError("The maximum transect length specified (" + str(max) +
-                       " Meters) is not greater than the minimum transect " +
-                        "length (" + str(min) + " Meters) .")
+        msg = (
+            "The maximum transect length specified ({0} Meters) is not greater "
+            "than the minimum transect length ({1} Meters)."
+        )
+        arcpy.AddError(msg.format(max, min))
         sys.exit()
 
     # validate allowOverlap
@@ -341,9 +346,9 @@ def CreateLines(polygons, lines, lineGoal, maxAttempts,
     count = 1
     while (polygon):
         oid = polygon.getValue(oidFieldName)
-        arcpy.SetProgressorLabel("Processing polygon "+ str(count))
+        arcpy.SetProgressorLabel("Processing polygon {0}".format(count))
         shape = polygon.getValue(shapeFieldName)
-        name = oidFieldName + " = " + str(oid)
+        name = "{0} = {1}".format(oidFieldName, oid)
         lines = GetLines(name, shape, lineGoal, maxAttempts,
                          minLength, maxLength, allowOverlap, spatialReference)
         for line in lines:
@@ -392,13 +397,13 @@ def GetLines(polygonName, polygonShape, lineGoal, maxAttempts,
             attemptCount = attemptCount + 1;
     if attemptCount == maxAttempts:
         if len(linesInPoly) == 0:
-            arcpy.AddWarning("No transect could be created for polygon " +
-                             polygonName + ". Try reducing the length.")
+            msg = "No transect could be created for polygon {0}. Try reducing the length."
+            arcpy.AddWarning(msg.format(polygonName))
         else:
-            arcpy.AddWarning("Polygon " + polygonName + " exceeded maximum " +
-                             "attempts at finding all transects.")
-            arcpy.AddWarning("   Try increasing the number of attempts, or " +
-                             "reducing the transect length.")
+            msg = "Polygon {0} exceeded maximum attempts at finding all transects."
+            arcpy.AddWarning(msg.format(polygonName))
+            msg = "   Try increasing the number of attempts, or reducing the transect length."
+            arcpy.AddWarning(msg)
     return linesInPoly
 
 

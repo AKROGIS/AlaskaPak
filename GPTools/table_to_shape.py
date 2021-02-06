@@ -102,9 +102,9 @@ def GetPoints(pointFC,pointIdField):
     pointDescription = arcpy.Describe(pointFC)
     pointShapeField = pointDescription.ShapeFieldName
     pointIdFieldDelimited = arcpy.AddFieldDelimiters(pointFC, pointIdField)
-    where = pointIdFieldDelimited + " is not null"
+    where = "{0} is not null".format(pointIdFieldDelimited)
     spatialRef = ""
-    fields = pointIdField +"; " + pointShapeField
+    fields = "{0}; {2}".format(pointIdField, pointShapeField)
     sort = ""
     pts = arcpy.SearchCursor(pointFC, where, spatialRef, fields, sort)
 
@@ -158,8 +158,11 @@ mapType = {"SmallInteger" : "SHORT",
 if (len(sys.argv) != 7):
     #ArcGIS won't call the script without the correct number of parameters,
     #so this is for command line usage
-    print("Usage: " + sys.argv[0] + " Shape_Table Vertex_List Shape_Type " +
-           "Point_Features Point_ID Output_Features")
+    usage = (
+        "Usage: {0} Shape_Table Vertex_List Shape_Type "
+        "Point_Features Point_ID Output_Features"
+    )
+    print(usage.format(sys.argv[0]))
     sys.exit()
 
 table = arcpy.GetParameterAsText(0)
@@ -173,10 +176,12 @@ outFC = arcpy.GetParameterAsText(5)
 # verify input files
 print() #start output with a blank line
 if not arcpy.Exists(table):
-    arcpy.AddError("Shape_Table (" + table +") does not exist.")
+    msg = "Shape_Table ({0}) does not exist."
+    arcpy.AddError(msg.format(table))
     sys.exit()
 if not arcpy.Exists(pointFC):
-    arcpy.AddError("Point_Features (" + pointFC +") does not exist.")
+    msg = "Point_Features ({0}) does not exist."
+    arcpy.AddError(msg.format(pointFC))
     sys.exit()
 
 # verify output shape type:
@@ -184,14 +189,17 @@ shape = shapeType.lower()
 if shape == "" or shape == "#":
     shape = "polyline"
 if shape not in ["polyline", "polygon", "multipoint"]:
-    arcpy.AddError("Shape_Type of '" + shapeType + "' not understood. " +
-                   "Use one of 'Polyline', 'Polygon', 'Multipoint', '#' or ''")
+    msg = (
+        "Shape_Type of '{0}' not understood. Use one of "
+        "'Polyline', 'Polygon', 'Multipoint', '#' or ''"
+    )
+    arcpy.AddError(msg.format(shapeType))
     sys.exit()
 
 # Sanitize the vertex list and check for correct numbers
 if ";;;" in vertexList:
-    arcpy.AddError("Vertex_List (" + vertexList +
-                   ") cannot have more than two consecutive semicolons")
+    msg = "Vertex_List ({0}) cannot have more than two consecutive semicolons"
+    arcpy.AddError(msg.format(vertexList))
     sys.exit()
 if shape == "multipoint":
     vertexList = vertexList.replace(";;",";")
@@ -249,19 +257,19 @@ for v in vset:
     if not vertexFieldType.has_key(v):
         notFound.append(v)
 if len(notFound) == 1:
-    arcpy.AddError("The following field '" + notFound[0] +
-                   "' was not found in " + table)
+    msg = "The following field '{0}' was not found in {1}."
+    arcpy.AddError(msg.format(notFound[0], table))
     sys.exit()
 if len(notFound) > 1:
-    arcpy.AddError("The following fields " + str(notFound) +
-                   " were not found in " + table)
+    msg = "The following fields {0} were not found in {1}."
+    arcpy.AddError(msg.format(notFound, table))
     sys.exit()
 
 
 pointDescription = arcpy.Describe(pointFC)
 if pointDescription.shapeType != "Point":
-    arcpy.AddError(pointFC + " is a " + pointDescription.shapeType +
-                     " not a point feature class.")
+    msg = "{0} is a {1} not a point feature class."
+    arcpy.AddError(msg.format(pointFC, pointDescription.shapeType))
     sys.exit()
 
 pointIdFieldType = ""
@@ -271,7 +279,8 @@ for field in pointDescription.Fields:
         break
 
 if pointIdFieldType == "":
-    arcpy.AddError("Field '" + pointIdField + "' not found in " + pointFC)
+    msg = "Field '{0}' not found in {1}"
+    arcpy.AddError(msg.format(pointIdField,pointFC))
     sys.exit()
 for field in vertexFieldType:
     if vertexFieldType[field] != pointIdFieldType:
@@ -284,8 +293,8 @@ if workspace == "":
     workspace = os.getcwd()
     outFC = os.path.join(workspace,outFC)
 if not arcpy.Exists(workspace):
-    arcpy.AddError("The destination workspace '" + workspace +
-                   "' does not exist.")
+    msg = "The destination workspace '{0}' does not exist."
+    arcpy.AddError(msg.format(workspace))
     sys.exit()
 
 arcpy.AddMessage("Input validated")
@@ -339,9 +348,9 @@ points = GetPoints(pointFC,pointIdField)
 
 #fromPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, fromPointIdField)
 #toPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, toPointIdField)
-#where = fromPointIdFieldDelimited + " is not null and " + toPointIdFieldDelimited + " is not null"
+# where = "{0} is not null and {1} is not null".format(fromPointIdFieldDelimited, toPointIdFieldDelimited)
 #spatialRef = ""
-#fields = lineIdField +"; " + fromPointIdField +"; " +toPointIdField
+# fields = "{0}; {1}; {2}".format(lineIdField, fromPointIdField, toPointIdField)
 #fields = ""
 #sort = ""
 
@@ -360,7 +369,8 @@ while row != None:
         print("exception")
         geom = None
     if geom == None:
-        arcpy.AddWarning("Unable to create geometry for " + str(RowInfo(row,table)))
+        msg = "Unable to create geometry for {0}"
+        arcpy.AddWarning(msg.format(RowInfo(row,table)))
     else:
         # Create a new feature in the feature class
         newRow = outRows.newRow()
@@ -375,7 +385,7 @@ if newRow:
     del newRow
 del outRows
 
-arcpy.AddMessage( "Saving in memory feature class to " + outFC )
+arcpy.AddMessage( "Saving in memory feature class to {0}".format(outFC))
 #fs = arcpy.FeatureSet(tempFC)
 fs = arcpy.FeatureSet()
 fs.load(tempFC)

@@ -87,5 +87,5 @@ for feature in featureList.split(";"):
     if fieldName not in arcpy.ListFields(feature):
         arcpy.AddField_management(feature, fieldName, "Double", "", "", "", "",
                                   "NULLABLE", "NON_REQUIRED", "")
-    arcpy.CalculateField_management(feature, fieldName, "!shape.length@" +
-                                    units + "!", "PYTHON_9.3", "")
+    length = "!shape.length@{0}!".format(units)
+    arcpy.CalculateField_management(feature, fieldName, length, "PYTHON_9.3", "")

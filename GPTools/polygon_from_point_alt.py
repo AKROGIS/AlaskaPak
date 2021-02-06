@@ -186,9 +186,9 @@ def make_polygon(point, point_id, group_id, polygon_data):
     Returns an arcpy.Polygon or None if there was a problem"""
 
     if group_id:
-        point_name = str(point_id) + "/" + str(group_id)
+        point_name = "{0}/{1}".format(point_id, group_id)
     else:
-        point_name = str(point_id)
+        point_name = "{0}".format(point_id)
 
     if len(polygon_data) < 3:
         msg = "Polygon {0} has only {1:d} pairs of Azimuth/Distance, skipping.".format(point_name, len(polygon_data))
@@ -198,18 +198,18 @@ def make_polygon(point, point_id, group_id, polygon_data):
     vertices = []
     for azimuth, distance in polygon_data:
         if not isinstance(azimuth, Number) or azimuth < 0 or azimuth > 360:
-            msg = "Azimuth {0} for polygon {1} is out of range 0-360.  Skipping".format(str(azimuth), point_name)
+            msg = "Azimuth {0} for polygon {1} is out of range 0-360.  Skipping".format(azimuth, point_name)
             utils.warn(msg)
             continue
         if not isinstance(distance, Number) or distance <= 0:
-            msg = "Distance {0} for polygon {1} is not a positive number.  Skipping".format(str(distance), point_name)
+            msg = "Distance {0} for polygon {1} is not a positive number.  Skipping".format(distance, point_name)
             utils.warn(msg)
             continue
         try:
             x = point[0] + distance * (math.sin(azimuth * math.pi / 180.0))
             y = point[1] + distance * (math.cos(azimuth * math.pi / 180.0))
         except (KeyError, TypeError):
-            msg = "Point {0} for polygon {1} is not valid.  Skipping".format(str(point), point_name)
+            msg = "Point {0} for polygon {1} is not valid.  Skipping".format(point, point_name)
             utils.warn(msg)
             continue
         vertices.append(arcpy.Point(x, y))
@@ -289,9 +289,9 @@ def polygon_from_control_point(
                 try:
                     polygon_data = all_polygon_data[point_id]
                 except KeyError:
-                    utils.warn("No polygon data for point {0}. Skipping.".format(str(point_id)))
+                    utils.warn("No polygon data for point {0}. Skipping.".format(point_id))
                     continue
-                #utils.info("Creating polygons for point {0}".format(str(point_id)))
+                #utils.info("Creating polygons for point {0}".format(point_id))
                 if polygon_group_new_field_name:
                     for group_id in polygon_data:
                         polygon_shape = make_polygon(centroid, point_id, group_id, polygon_data[group_id])
