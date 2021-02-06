@@ -1,6 +1,7 @@
 # ------------------------------------------------------------------------------
-# AddArea.py
+# add_area.py
 # Created: 2011-01-25
+# rewritten 2014-11-13 for 10.2 to use the new geodesicArea field calculation
 #
 # Title:
 # Add an area field to polygon features
@@ -69,72 +70,78 @@
 # requested
 # * Feature may be locked or un-editable
 
-validUnits = ["ACRES", "ARES", "HECTARES", "SQUARECENTIMETERS", "SQUAREDECIMETERS", "SQUAREINCHES", "SQUAREFEET",
-              "SQUAREKILOMETERS", "SQUAREMETERS", "SQUAREMILES", "SQUAREMILLIMETERS", "SQUAREYARDS"]
-
+import os.path
 import arcpy
-
-featureList = arcpy.GetParameterAsText(0)
-fieldName = arcpy.GetParameterAsText(1)
-units = arcpy.GetParameterAsText(2)
-#sr = arcpy.GetParameter(3)
-#spatial reference must be a equal area projection with units of meters
-proj = 'PROJCS["NAD_1983_Alaska_Albers",GEOGCS["GCS_North_American_1983",DATUM["D_North_American_1983",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Albers"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-154.0],PARAMETER["Standard_Parallel_1",55.0],PARAMETER["Standard_Parallel_2",65.0],PARAMETER["Latitude_Of_Origin",50.0],UNIT["Meter",1.0],AUTHORITY["EPSG",3338]]'
-sr = arcpy.SpatialReference()
-sr.loadFromString(proj)
+import utils
 
 
-def getFactor(units):
-    units = units.upper()
-    if units == "ACRES":
-        return 0.00024710538
-    if units == "ARES":
-        return 0.01
-    if units == "HECTARES":
-        return 0.0001
-    if units == "SQUARECENTIMETERS":
-        return 10000
-    if units == "SQUAREDECIMETERS":
-        return 100
-    if units == "SQUAREINCHES":
-        return 1550.0031
-    if units == "SQUAREFEET":
-        return 10.76391
-    if units == "SQUAREKILOMETERS":
-        return 1E-006
-    if units == "SQUAREMETERS":
-        return 1.0
-    if units == "SQUAREMILES":
-        return 3.8610216E-007
-    if units == "SQUAREMILLIMETERS":
-        return 1000000
-    if units == "SQUAREYARDS":
-        return 1.19599
+def add_area_to_feature(feature, units, fieldname="Area", overwrite=False):
+    #Check for a feature
+    if not arcpy.Exists(feature):
+        utils.warn("feature not found.  Skipping...")
+        return
 
+    #Get some info about the feature
+    feature_description = arcpy.Describe(feature)
+    shape_name = feature_description.shapeFieldName
+    feature_sr = feature_description.spatialReference
+    feature_is_projected = feature_sr.type == "Projected" and feature_sr.name != "Unknown"
+    feature_is_polygon = feature_description.shapeType != "Polygon"
 
-def AddArea(feature, shapename, fieldname, units, sr):
-    rows = arcpy.UpdateCursor(feature, "", sr, fieldname + "," + shapename, "")
-    metersToUnits = getFactor(units)
-    for row in rows:
-        geom = row.getValue(shapename)
-        #assumes projection will return square meters
-        area = geom.area * metersToUnits
-        row.setValue(fieldname, area)
-        rows.updateRow(row)
-    del row
-    del rows
+    #Validate Feature - We only work on polygons
+    if not feature_is_polygon:
+        utils.warn("feature is not a polygon.  Skipping...")
+        return
 
-
-for feature in featureList.split(";"):
-    feature = feature.replace("'","")
-    featureDescription = arcpy.Describe(feature)
-    fsr = featureDescription.spatialReference
-    featureIsProjected = fsr.type == "Projected" and fsr.name != "Unknown"
-    if fieldName not in arcpy.ListFields(feature):
-        arcpy.AddField_management(feature, fieldName, "Double", "", "", "", "",
-                                  "NULLABLE", "NON_REQUIRED", "")
-        if featureIsProjected:
-            arcpy.CalculateField_management(feature, fieldName, "!shape.area@" +
-                                                                units + "!", "PYTHON_9.3", "")
+    #Validate or Sanitize Field Name
+    if fieldname in arcpy.ListFields(feature):
+        if overwrite:
+            if not fieldname in arcpy.ListFields(feature, fieldname, "Double"):
+                utils.warn("field {} exists, but is not the right type.  Skipping...".format(fieldname))
+                return
         else:
-            AddArea(feature, featureDescription.shapeFieldName, fieldName, units, sr)
+            utils.warn("field {} already exists.  Skipping...".format(fieldname))
+            return
+        new_fieldname = fieldname
+    else:
+        workspace = os.path.dirname(feature)
+        new_fieldname = arcpy.ValidateFieldName(field_name, workspace)
+        arcpy.AddField_management(feature, new_fieldname, "Double", "", "", "", "", "NULLABLE", "NON_REQUIRED", "")
+
+    #Sanitize Units
+    valid_units = ["ACRES", "ARES", "HECTARES", "SQUARECENTIMETERS", "SQUAREDECIMETERS", "SQUAREINCHES", "SQUAREFEET",
+                   "SQUAREKILOMETERS", "SQUAREMETERS", "SQUAREMILES", "SQUAREMILLIMETERS", "SQUAREYARDS"]
+    if units.upper() in valid_units:
+        out_units = "@"+units.upper()
+    else:
+        utils.warn("Unknown units {}, area will be in the feature's units".format(units))
+        out_units = ""
+
+    #Determine Area Calculation Method
+    if feature_is_projected:
+        area_method = ".area"
+    else:
+        if out_units:
+            area_method = ".geodesicArea"
+            utils.info("Calculating geodesic area for {}".format(feature))
+        else:
+            area_method = ".area"
+            utils.warn("Calculating area in square degrees. This is usually meaningless.")
+
+    #Do Calculation
+    calculation = "!" + shape_name + area_method + out_units + "!"
+    arcpy.CalculateField_management(feature, new_fieldname, calculation, "", "")
+
+
+def add_area_to_features(features, units, fieldname="Area", overwrite=False):
+    for feature in features:
+        utils.info("Adding Area to " + feature)
+        add_area_to_feature(feature, fieldname, units, overwrite)
+
+
+if __name__ == "__main__":
+    feature_list = arcpy.GetParameterAsText(0).split(";")
+    user_units = arcpy.GetParameterAsText(1)
+    field_name = arcpy.GetParameterAsText(2)
+    overwrite_field = arcpy.GetParameterAsText(3).lower() == 'true'
+    add_area_to_features(feature_list, user_units, field_name, overwrite_field)

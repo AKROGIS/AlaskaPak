@@ -354,7 +354,7 @@ while row != None:
     try:
         geom = MakeShape(row,shape,vertices)
     except:
-        print "exception"
+        print("exception")
         geom = None
     if geom == None:
         arcpy.AddWarning("Unable to create geometry for " + str(RowInfo(row,table)))

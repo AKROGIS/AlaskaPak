@@ -31,4 +31,3 @@ arcpy.PointsToLine_management(Point_Features, lines, Polygon_Id_Field, Sort_Fiel
 
 # Process: Feature To Polygon
 arcpy.FeatureToPolygon_management("in_memory\\lines", Polygon_Features, "", "ATTRIBUTES", "")
-

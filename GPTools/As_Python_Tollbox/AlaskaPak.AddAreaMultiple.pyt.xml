@@ -1,0 +1,92 @@
+<metadata xml:lang="en">
+	<Esri>
+		<CreaDate>20141114</CreaDate>
+		<CreaTime>10291000</CreaTime>
+		<ArcGISFormat>1.0</ArcGISFormat>
+		<SyncOnce>TRUE</SyncOnce>
+		<ModDate>20141119</ModDate>
+		<ModTime>14565600</ModTime>
+		<scaleRange>
+			<minScale>150000000</minScale>
+			<maxScale>5000</maxScale>
+		</scaleRange>
+		<ArcGISProfile>ItemDescription</ArcGISProfile>
+	</Esri>
+	<tool name="AddAreaMultiple" displayname="Add Area (Multiple)" toolboxalias="AlaskaPak" xmlns="">
+		<arcToolboxHelpPath>c:\program files (x86)\arcgis\desktop10.3\Help\gp</arcToolboxHelpPath>
+		<parameters>
+			<param name="features" displayname="Input Features" type="Required" direction="Input" datatype="Multiple Value" expression="features;features...">
+				<dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;A semicolon separated list of polygon feature classes. This parameter is required, and there is no default.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+				<pythonReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;A semicolon separated list of polygon feature classes. This parameter is required, and there is no default.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</pythonReference>
+			</param>
+			<param name="field_name" displayname="Field name" type="Optional" direction="Input" datatype="Field" expression="{field_name}">
+				<dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;The name of the field to add or update. If the field does not exist, it will be added. If the field exists, it must be a double field. The Field_Name may get mangled to ensure it is valid for the feature's workspace. If no Field_Name is provided, the default is "Area".&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+				<pythonReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;The name of the field to add or update. If the field does not exist, it will be added. If the field exists, it must be a double field. The Field_Name may get mangled to ensure it is valid for the feature's workspace. If no Field_Name is provided, the default is "Area".&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</pythonReference>
+			</param>
+			<param name="units" displayname="Areal Units" type="Optional" direction="Input" datatype="String" expression="{Acres | Ares | Hectares | Square Centimeters | Square Decimeters | Square Inches | Square Feet | Square Kilometers | Square Meters | Square Miles | Square Millimeters | Square Yards}">
+				<dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;The units for the area of the polygon. See the system tool &lt;/SPAN&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;Calculate Field (Data Management)&lt;/SPAN&gt;&lt;SPAN&gt;for valid units. If units are not valid, or not provided, then the units of the feature class are used.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+				<pythonReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;The units for the area of the polygon. See the system tool &lt;/SPAN&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;Calculate Field (Data Management)&lt;/SPAN&gt;&lt;SPAN&gt;for valid units. If units are not valid, or not provided, then the units of the feature class are used.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</pythonReference>
+			</param>
+			<param name="overwrite" displayname="Overwrite Existing Values" type="Optional" direction="Input" datatype="Boolean" expression="{overwrite}">
+				<dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;If the Field_Name already exists in a feature class, it will not be overwritten, unless this parameter is "True". The default is "False".&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+				<pythonReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;If the Field_Name already exists in a feature class, it will not be overwritten, unless this parameter is "True". The default is "False".&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</pythonReference>
+			</param>
+		</parameters>
+		<summary>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Add or update an area field in a set of polygon feature classes.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</summary>
+		<usage>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;This tool will add (or update) a field with the area of the polygon features. The field and areal units are defined by the user. By default if the feature class has geographic coordinates and units are provided then a geodesic area is calculated. If the feature class has geographic coordinates and no units are provided then the area is calculated in square degrees, which is generally meaningless.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</usage>
+		<scriptExamples>
+			<scriptExample>
+				<title>Scripting Example</title>
+				<para>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;The following example shows how this script can be used in the ArcGIS Python Window. It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</para>
+				<code>features = r"C:\tmp\parks.shp"
+add_area(features, "ACRES")</code>
+			</scriptExample>
+		</scriptExamples>
+		<scriptExamples>
+			<scriptExample>
+				<title>Command Line Example</title>
+				<para>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is in the path.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;</para>
+				<code>C:\tmp&gt; python add_area.py
+        "C:\tmp\parks.shp;C:\tmp\test.gdb\preserves"
+        SQUAREKILOMETERS SqKm True
+				</code>
+			</scriptExample>
+		</scriptExamples>
+	</tool>
+	<dataIdInfo>
+		<idCitation>
+			<resTitle>Add Area (Multiple)</resTitle>
+		</idCitation>
+		<idAbs>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Add or update an area field in a set of polygon feature classes.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</idAbs>
+		<idCredit>Regan Sarwas, Alaska Region GIS Team, National Park Service</idCredit>
+		<searchKeys>
+			<keyword>calculate</keyword>
+			<keyword>acres</keyword>
+			<keyword>square</keyword>
+			<keyword>unit</keyword>
+			<keyword>attribute</keyword>
+			<keyword>column</keyword>
+			<keyword>field</keyword>
+		</searchKeys>
+		<resConst>
+			<Consts>
+				<useLimit>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Public Domain&lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;This software is provide "as is" and the National Park Service gives no warranty, expressed or implied, as to the accuracy, reliability, or completeness of this software. Although this software has been processed successfully on a computer system at the National Park Service, no warranty expressed or implied is made regarding the functioning of the software on another system or for general or scientific purposes, nor shall the act of distribution constitute any such warranty. This disclaimer applies both to individual use of the software and aggregate use with other software.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</useLimit>
+			</Consts>
+		</resConst>
+		<dataExt>
+			<geoEle xmlns="">
+				<GeoBndBox esriExtentType="search"/>
+			</geoEle>
+		</dataExt>
+	</dataIdInfo>
+	<distInfo>
+		<distributor>
+			<distorFormat>
+				<formatName>ArcToolbox Tool</formatName>
+			</distorFormat>
+		</distributor>
+	</distInfo>
+	<mdHrLv>
+		<ScopeCd value="005"/>
+	</mdHrLv>
+</metadata>
