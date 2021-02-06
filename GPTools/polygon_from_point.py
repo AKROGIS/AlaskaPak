@@ -224,7 +224,7 @@ def PolygonFromControlPoint(
             name != pointLayerDescription.OIDFieldName and
             field.editable): #skip un-editable fields like Shape_Length
             fields[name] = arcpy.ValidateFieldName(name,workspace)
-            #print workspace, name, "=>", fields[name]
+            # print(workspace, name, "=>", fields[name])
 
     #Add the dataTableFieldName to the polygon FC
     if dataTableFieldName:

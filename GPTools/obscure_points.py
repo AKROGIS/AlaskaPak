@@ -271,7 +271,7 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
         sys.exit()
 
     arcpy.AddMessage("Input has been validated.")
-    #print inFC, circles, workspace, name, min, max, nogo, mustgo
+    # print(inFC, circles, workspace, name, min, max, nogo, mustgo)
     return inFC, circles, workspace, name, min, max, nogo, mustgo
 
 

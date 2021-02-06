@@ -131,7 +131,7 @@ def MakeRectFromLine(line, width):
 #Get and check input
 if len(sys.argv) != 4:
     arcpy.AddError("This tool requires exactly 3 parameters.")
-    print ("Usage: " + sys.argv[0] +
+    print("Usage: " + sys.argv[0] +
           " path_to_lineFC Offset_Field_Name path_to_outputFC")
     sys.exit(1)
 
@@ -200,7 +200,7 @@ for field in lineDescription.fields:
         name != lineDescription.OIDFieldName and
         field.editable): #skip un-editable fields like Shape_Length
         fields[name] = arcpy.ValidateFieldName(name,workspace)
-        #print workspace, name, "=>", fields[name]
+        # print(workspace, name, "=>", fields[name])
 
 #create the cursors
 polys = arcpy.InsertCursor(rectFC)

@@ -158,7 +158,7 @@ mapType = {"SmallInteger" : "SHORT",
 if (len(sys.argv) != 7):
     #ArcGIS won't call the script without the correct number of parameters,
     #so this is for command line usage
-    print ("Usage: " + sys.argv[0] + " Shape_Table Vertex_List Shape_Type " +
+    print("Usage: " + sys.argv[0] + " Shape_Table Vertex_List Shape_Type " +
            "Point_Features Point_ID Output_Features")
     sys.exit()
 
@@ -171,7 +171,7 @@ outFC = arcpy.GetParameterAsText(5)
 
 #VERIFY INPUT (mostly for command line.  Toolbox does some validation for us)
 # verify input files
-print #start output with a blank line
+print() #start output with a blank line
 if not arcpy.Exists(table):
     arcpy.AddError("Shape_Table (" + table +") does not exist.")
     sys.exit()
@@ -298,7 +298,7 @@ if pointDescription.hasM:
 if pointDescription.hasZ:
     hasZ = "ENABLED"
 
-#print "in_memory", "tempfc", shape, table, hasM, hasZ, outSpatialRef
+# print("in_memory", "tempfc", shape, table, hasM, hasZ, outSpatialRef)
 
 tempFC = arcpy.CreateFeatureclass_management("in_memory", "tempfc",
                                              shape, "", hasM,
@@ -327,7 +327,7 @@ for field in tableDescription.fields:
     arcpy.AddField_management(tempFC, fields[name], field.type,
                    field.precision, field.scale, field.length, field.aliasName,
                    field.isNullable, field.required, field.domain)
-#print fields
+# print(fields)
 
 arcpy.AddMessage("Reading Points database")
 
@@ -335,7 +335,7 @@ arcpy.AddMessage("Reading Points database")
 #assumes Python is more efficient and faster than ArcGIS.  Should be tested.
 
 points = GetPoints(pointFC,pointIdField)
-#print points
+# print(points)
 
 #fromPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, fromPointIdField)
 #toPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, toPointIdField)

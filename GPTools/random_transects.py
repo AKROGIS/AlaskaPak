@@ -260,7 +260,7 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
         allowOverlap = False
 
     arcpy.AddMessage("Input has been validated.")
-    #print inFC, workspace, name, linesPerPoly, min, max, maxTrys, allowOverlap
+    # print(inFC, workspace, name, linesPerPoly, min, max, maxTrys, allowOverlap)
     return inFC, workspace, name, linesPerPoly, min, max, maxTrys, allowOverlap
 
 def LinearUnitsToMeters(distance):
@@ -366,7 +366,7 @@ def GetFeatureCount(data):
         count = count + 1
         row = cursor.next()
     del cursor, row
-    #print count
+    # print(count)
     return count
 
 
