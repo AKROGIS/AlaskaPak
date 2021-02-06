@@ -14,22 +14,15 @@ import arcpy
 
 # Script arguments
 Point_Features = arcpy.GetParameterAsText(0)
-
 Polygon_Features = arcpy.GetParameterAsText(1)
-
 Polygon_Id_Field = arcpy.GetParameterAsText(2)
-
 Sort_Field = arcpy.GetParameterAsText(3)
 
-# Local variables:
-lines = Point_Features
+lines = "in_memory\\lines"
 
-# Process: Points To Line
+# Points To Lines
 arcpy.PointsToLine_management(
     Point_Features, lines, Polygon_Id_Field, Sort_Field, "CLOSE"
 )
-
-# Process: Feature To Polygon
-arcpy.FeatureToPolygon_management(
-    "in_memory\\lines", Polygon_Features, "", "ATTRIBUTES", ""
-)
+# Lines To Polygon
+arcpy.FeatureToPolygon_management(lines, Polygon_Features, "", "ATTRIBUTES", "")
