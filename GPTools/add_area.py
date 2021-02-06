@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 ArcGIS script to add an area attribute to polygon features
 
@@ -93,6 +94,8 @@ the path.
           "C:\tmp\parks.shp;C:\tmp\test.gdb\preserves"
           SQUAREKILOMETERS SqKm True
 """
+
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os.path
 

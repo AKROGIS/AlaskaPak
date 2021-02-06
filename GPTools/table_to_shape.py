@@ -1,90 +1,93 @@
-# ------------------------------------------------------------------------------
-# Table2Shape.py
-# Created: 2011-01-20
-#
-# Title:
-# Table to Shape
-#
-# Tags:
-# point, vertex, list, geometry, polyline, polygon, multi, create, data, convert
-#
-# Summary:
-# This tool will create a new feature class from a table of point IDs and a point feature class.
-#
-# Usage:
-# Use this tool to build polygons, polylines, or multi-points if you have a point feature class, and a table of vertex ids related to the point feature class.
-#
-# Parameter 1:
-# Table
-# The full name of a data table.  This can be any format understood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...).  All attributes in the input table are copied to the output file. The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.  The data type for these columns must be compatible with the data type in the Point_ID parameter.
-#
-# Parameter 2:
-# VertexList
-# This is a semicolon separated list of the attribute (field/column) name for the vertices to use to make this shape.  The vertices are used in the order provided.  If a Polygon shape is requested, the last vertex can be but does not need to be the same as the first vertex.  Two semicolons without a vertex in between (i.e. "pt1;pt2;;pt3;pt4" separate the parts (in a multi-part feature) of a polygon or a polyline. Three or more adjacent semicolons are not allowed.  Double semicolons are treated as a single semicolon for multipoints. The minimum number of vertices is 1 for Multipoint, two for Polyline, and three for Polygon.  If a multipart feature is being created, then each part must have the required number of vertices.
-# If the parts in a multipart polygon overlap, this will create holes in the polygon (If one part is completely inside another part then it becomes an interior ring instead of a multipart.
-#
-# Parameter 3:
-# Points
-# The full name of the feature class that has the point geometry for the vertices of the output shapes.  This must be a simple point shape (cannot be a multipoint feature class).  All attributes of this feature class are ignored except the shape and the ID column specified by the Point_ID Parameter.  If the points have M or Z values, then the generated shape will have those same values.
-#
-# Parameter 4:
-# Point_ID
-# The name of the attribute (column/field) that contains the ID (name) of the point that is used to reference it in the Shape_Table.  The data type of this attribute must be compatible with the attributes in the Vertex List. 
-#
-# Parameter 5:
-# Geometry
-# This determines the shape created by the points.  Valid values are Polygon, Polyline, Multipoint.  Polyline is the default if either "" or "#" is given for this parameter.
-#
-# Parameter 6:
-# Output_feature_class
-# The full name of the feature class to create.  Any existing feature class at that path will not be overwritten, and the script will issue an error if the feature class exists (unless the geoprocessing options are set to overwrite output). The output feature class will have the same spatial reference system as the Point_Features. If the Point_Features has Z or M values then the output will as well, and Z and M values will be preserved. All attributes in the Shape_Table are copied to Output_Features.
-#
-# Scripting Syntax:
-# Table2Shape_AlaskaPak (Table, VertexList, Points, Point_ID, Geometry, Output_feature_class)
-#
-# Example1:
-# Scripting Example
-# The following example shows how this script can be used in another python script, or directly in the ArcGIS Python Window.  It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.
-#  table = r"C:\tmp\utilities.mdb\pipe_segments"
-#  ptFC = r"C:\tmp\gps_pts.shp"
-#  outFC = r"C:\tmp\test.gdb\utilities\pipe_cl"
-#  Table2Shape_AlaskaPak(table, "start;end", ptFC, "id", "Polyline", outFC)
-#
-# Example2:
-# Command Line Example
-# The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
-#  C:\tmp> python Table2Shape.py "C:\tmp\utilities.mdb\pipe_segments" start;end C:\tmp\gps_pts.shp id Polyline "C:\tmp\test.gdb\utilities\pipe_cl"
-#
-# Credits:
-# Regan Sarwas, Alaska Region GIS Team, National Park Service
-#
-# Limitations:
-# Public Domain
-#
-# Requirements
-# arcpy module - requires ArcGIS v10+ and a valid license
-#
-# Disclaimer:
-# This software is provide "as is" and the National Park Service gives
-# no warranty, expressed or implied, as to the accuracy, reliability,
-# or completeness of this software. Although this software has been
-# processed successfully on a computer system at the National Park
-# Service, no warranty expressed or implied is made regarding the
-# functioning of the software on another system or for general or
-# scientific purposes, nor shall the act of distribution constitute any
-# such warranty. This disclaimer applies both to individual use of the
-# software and aggregate use with other software.
-# ------------------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+"""
+Table2Shape.py
+Created: 2011-01-20
 
-#ISSUES
-#
-# fix documentation on vertices (rings are no longer supported)
-# esri bug 1: featureset cannot initialize with in_memory feature class
-#            (load does work)
-# esri bug 2: cannot save a feature set to a feature dataset in a FGDB or PGDB
+Title:
+Table to Shape
 
-import os, sys
+Tags:
+point, vertex, list, geometry, polyline, polygon, multi, create, data, convert
+
+Summary:
+This tool will create a new feature class from a table of point IDs and a point feature class.
+
+Usage:
+Use this tool to build polygons, polylines, or multi-points if you have a point feature class, and a table of vertex ids related to the point feature class.
+
+Parameter 1:
+Table
+The full name of a data table.  This can be any format understood by ArcGIS (i.e. a CSV text file, a data table in a geodatabase, an Excel spreadsheet, ...).  All attributes in the input table are copied to the output file. The data table must have the column names that match the names of the vertices given in the Vertex_List parameter.  The data type for these columns must be compatible with the data type in the Point_ID parameter.
+
+Parameter 2:
+VertexList
+This is a semicolon separated list of the attribute (field/column) name for the vertices to use to make this shape.  The vertices are used in the order provided.  If a Polygon shape is requested, the last vertex can be but does not need to be the same as the first vertex.  Two semicolons without a vertex in between (i.e. "pt1;pt2;;pt3;pt4" separate the parts (in a multi-part feature) of a polygon or a polyline. Three or more adjacent semicolons are not allowed.  Double semicolons are treated as a single semicolon for multipoints. The minimum number of vertices is 1 for Multipoint, two for Polyline, and three for Polygon.  If a multipart feature is being created, then each part must have the required number of vertices.
+If the parts in a multipart polygon overlap, this will create holes in the polygon (If one part is completely inside another part then it becomes an interior ring instead of a multipart.
+
+Parameter 3:
+Points
+The full name of the feature class that has the point geometry for the vertices of the output shapes.  This must be a simple point shape (cannot be a multipoint feature class).  All attributes of this feature class are ignored except the shape and the ID column specified by the Point_ID Parameter.  If the points have M or Z values, then the generated shape will have those same values.
+
+Parameter 4:
+Point_ID
+The name of the attribute (column/field) that contains the ID (name) of the point that is used to reference it in the Shape_Table.  The data type of this attribute must be compatible with the attributes in the Vertex List.
+
+Parameter 5:
+Geometry
+This determines the shape created by the points.  Valid values are Polygon, Polyline, Multipoint.  Polyline is the default if either "" or "#" is given for this parameter.
+
+Parameter 6:
+Output_feature_class
+The full name of the feature class to create.  Any existing feature class at that path will not be overwritten, and the script will issue an error if the feature class exists (unless the geoprocessing options are set to overwrite output). The output feature class will have the same spatial reference system as the Point_Features. If the Point_Features has Z or M values then the output will as well, and Z and M values will be preserved. All attributes in the Shape_Table are copied to Output_Features.
+
+Scripting Syntax:
+Table2Shape_AlaskaPak (Table, VertexList, Points, Point_ID, Geometry, Output_feature_class)
+
+Example1:
+Scripting Example
+The following example shows how this script can be used in another python script, or directly in the ArcGIS Python Window.  It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.
+ table = r"C:\tmp\utilities.mdb\pipe_segments"
+ ptFC = r"C:\tmp\gps_pts.shp"
+ outFC = r"C:\tmp\test.gdb\utilities\pipe_cl"
+ Table2Shape_AlaskaPak(table, "start;end", ptFC, "id", "Polyline", outFC)
+
+Example2:
+Command Line Example
+The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
+ C:\tmp> python Table2Shape.py "C:\tmp\utilities.mdb\pipe_segments" start;end C:\tmp\gps_pts.shp id Polyline "C:\tmp\test.gdb\utilities\pipe_cl"
+
+Credits:
+Regan Sarwas, Alaska Region GIS Team, National Park Service
+
+Limitations:
+Public Domain
+
+Requirements
+arcpy module - requires ArcGIS v10+ and a valid license
+
+Disclaimer:
+This software is provide "as is" and the National Park Service gives
+no warranty, expressed or implied, as to the accuracy, reliability,
+or completeness of this software. Although this software has been
+processed successfully on a computer system at the National Park
+Service, no warranty expressed or implied is made regarding the
+functioning of the software on another system or for general or
+scientific purposes, nor shall the act of distribution constitute any
+such warranty. This disclaimer applies both to individual use of the
+software and aggregate use with other software.
+"""
+
+from __future__ import absolute_import, division, print_function, unicode_literals
+
+import os
+import sys
+
 import arcpy
+
+# TODO: fix documentation on vertices (rings are no longer supported)
+# TODO: esri bug 1: featureset cannot initialize with in_memory feature class
+#            (load does work)
+# TODO: esri bug 2: cannot save a feature set to a feature dataset in a FGDB or PGDB
 
 arcpy.Overwriteoutput = 1
 
@@ -104,13 +107,13 @@ def GetPoints(pointFC,pointIdField):
     fields = pointIdField +"; " + pointShapeField
     sort = ""
     pts = arcpy.SearchCursor(pointFC, where, spatialRef, fields, sort)
-    
+
     pt = pts.next()
     while pt != None:
         points[pt.getValue(pointIdField)] = pt.shape.getPart()
         pt = pts.next()
     return points
-   
+
 def MakeShape(row,shape,vertices):
     if shape == 'multipoint':
         a = arcpy.Array([points[x] for x in map(row.getValue, vertices)])
@@ -207,7 +210,7 @@ if shape == "polygon":
         if not vertexs[0] == vertexs[-1]:
             vertexs.append(vertexs[0])
         vertices.append(vertexs)
-         
+
 if shape == "polyline":
     parts = vertexList.split(";;")
     vertices = []
@@ -261,8 +264,8 @@ if pointDescription.shapeType != "Point":
                      " not a point feature class.")
     sys.exit()
 
-pointIdFieldType = ""    
-for field in pointDescription.Fields:  
+pointIdFieldType = ""
+for field in pointDescription.Fields:
     if field.name == pointIdField:
         pointIdFieldType = mapType[field.type]
         break
@@ -309,7 +312,7 @@ if workspace.rfind(".mdb") > 0:
 else:
     if workspace.rfind(".gdb") > 0:
         workspace = workspace[:workspace.rfind(".gdb")+4]
-    
+
 #create a simple field mapping from input to output
 fields = {}
 for field in tableDescription.fields:
@@ -324,7 +327,7 @@ for field in tableDescription.fields:
     arcpy.AddField_management(tempFC, fields[name], field.type,
                    field.precision, field.scale, field.length, field.aliasName,
                    field.isNullable, field.required, field.domain)
-#print fields  
+#print fields
 
 arcpy.AddMessage("Reading Points database")
 
@@ -366,7 +369,7 @@ while row != None:
         newRow.shape = geom
         outRows.insertRow(newRow)
     row = inRows.next()
-    
+
 #Closes the insert cursor, and release the exclusive lock
 if newRow:
     del newRow
