@@ -74,7 +74,7 @@
 # Example2:
 # Command Line Example
 # The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
-#  C:\tmp> python ObscurePoints.py c:\tmp\nests.shp c:\tmp\newnests.shp Points 0 100 
+#  C:\tmp> python ObscurePoints.py c:\tmp\nests.shp c:\tmp\newnests.shp Points 0 100
 #
 # Credits:
 # Regan Sarwas, Alaska Region GIS Team, National Park Service
@@ -121,7 +121,7 @@ def ObscurePoints():
                                 arcpy.GetParameterAsText(6))
     pts, circles, workspace, name, min, max, nogo, mustgo = cleanParams
 
-    newFC = None    
+    newFC = None
     if nogo or mustgo:
         if circles:
             newFC = CreateLimitedCircles(arcpy, pts, min, max, nogo, mustgo)
@@ -182,7 +182,7 @@ def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo, mustgo):
                        ") is not in" + choices + ".")
         sys.exit()
     circles = (type == 'circles')
-    
+
     #validate min/max
     if min in ["","#"]:
         min = 0.0
@@ -268,7 +268,7 @@ def SanitizeInput(arcpy, inFC, outFC, type, min, max, nogo, mustgo):
     #print inFC, circles, workspace, name, min, max, nogo, mustgo
     return inFC, circles, workspace, name, min, max, nogo, mustgo
 
-          
+
 def CreateLimitedPoints(arcpy, pts, min, max, nogo, mustgo):
     #It is very slow to create a random point, then check it against
     #a no-go area.  The New strategy is:
@@ -298,8 +298,8 @@ def CreateLimitedPoints(arcpy, pts, min, max, nogo, mustgo):
         index = index + 1
         arcpy.Delete_management(allowed)
         allowed = newAllowed
-        
-    newpts = arcpy.CreateRandomPoints_management("in_memory", "pts", allowed, 
+
+    newpts = arcpy.CreateRandomPoints_management("in_memory", "pts", allowed,
                                                  "", 1, "", "POINT", "")
 
     #CID is an attribute created by CreateRandomPoints to tie back to source
@@ -309,7 +309,7 @@ def CreateLimitedPoints(arcpy, pts, min, max, nogo, mustgo):
     arcpy.Delete_management(allowed)
     del allowed
     return newpts
-    
+
 def CreateLimitedCircles(arcpy, pts, min, max, nogo, mustgo):
     """returns a polygon feature class called "in_memory\circles". The
     caller is responsible for deleting this feature class when they are
@@ -324,7 +324,7 @@ def CreatePoints(arcpy, existing, min, max):
     """existing is a point or multipoint feature class
     min = minimum distance of random point from source point in (0,max)
     max = maximum distance of random point from source point in (min,..)
-    returns a feature class called "in_memory\temp". The caller 
+    returns a feature class called "in_memory\temp". The caller
     is responsible for deleting this feature class when they are done."""
     newpts = arcpy.FeatureClassToFeatureClass_conversion(existing,
                                                          "in_memory", "temp")
@@ -336,7 +336,7 @@ def CreatePoints(arcpy, existing, min, max):
         pt = pts.next()
     del pt, pts
     return newpts
-        
+
 def CreateCircles(arcpy, existing, min, max):
     """returns a polygon feature class called "in_memory\circles". The
     caller is responsible for deleting this feature class when they are
@@ -354,13 +354,13 @@ def RandomizeGeom(arcpy, geom, min, max):
     pc = geom.partCount
     if pc == 0:
         return None
-    
+
     if pc == 1:
         pnt = geom.getPart(0)
         x,y = RandomizePoint(pnt.X, pnt.Y, min, max)
         return arcpy.PointGeometry(arcpy.Point(x,y))
-        
-    a = arcpy.Array()    
+
+    a = arcpy.Array()
     for i in range(pc):
         pnt = geom.getPart(i)
         x,y = RandomizePoint(pnt.X, pnt.Y, min, max)
@@ -370,7 +370,7 @@ def RandomizeGeom(arcpy, geom, min, max):
 def RandomizePoint(x,y,r1,r2):
     r = random.uniform(r1,r2)
     phi = random.uniform(0,2*math.pi)
-    x2 = x + r*math.cos(phi) 
+    x2 = x + r*math.cos(phi)
     y2 = y + r*math.sin(phi)
     return (x2,y2)
 
