@@ -46,15 +46,15 @@ Table2Shape_AlaskaPak (Table, VertexList, Points, Point_ID, Geometry, Output_fea
 Example1:
 Scripting Example
 The following example shows how this script can be used in another python script, or directly in the ArcGIS Python Window.  It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.
- table = r"C:\tmp\utilities.mdb\pipe_segments"
+ table = r"C:\tmp\facilities.mdb\pipe_segments"
  ptFC = r"C:\tmp\gps_pts.shp"
- outFC = r"C:\tmp\test.gdb\utilities\pipe_cl"
+ outFC = r"C:\tmp\test.gdb\facilities\pipe_cl"
  Table2Shape_AlaskaPak(table, "start;end", ptFC, "id", "Polyline", outFC)
 
 Example2:
 Command Line Example
 The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
- C:\tmp> python Table2Shape.py "C:\tmp\utilities.mdb\pipe_segments" start;end C:\tmp\gps_pts.shp id Polyline "C:\tmp\test.gdb\utilities\pipe_cl"
+ C:\tmp> python Table2Shape.py "C:\tmp\facilities.mdb\pipe_segments" start;end C:\tmp\gps_pts.shp id Polyline "C:\tmp\test.gdb\facilities\pipe_cl"
 
 Credits:
 Regan Sarwas, Alaska Region GIS Team, National Park Service
