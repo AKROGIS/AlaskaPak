@@ -25,7 +25,11 @@ Sort_Field = arcpy.GetParameterAsText(3)
 lines = Point_Features
 
 # Process: Points To Line
-arcpy.PointsToLine_management(Point_Features, lines, Polygon_Id_Field, Sort_Field, "CLOSE")
+arcpy.PointsToLine_management(
+    Point_Features, lines, Polygon_Id_Field, Sort_Field, "CLOSE"
+)
 
 # Process: Feature To Polygon
-arcpy.FeatureToPolygon_management("in_memory\\lines", Polygon_Features, "", "ATTRIBUTES", "")
+arcpy.FeatureToPolygon_management(
+    "in_memory\\lines", Polygon_Features, "", "ATTRIBUTES", ""
+)

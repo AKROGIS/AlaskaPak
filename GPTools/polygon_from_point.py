@@ -103,9 +103,12 @@ import utils
 
 
 def ParsePolygonData(
-        polygonDataTable, polygonIdFieldName,
-        polygonAzimuthFieldName, polygonDistanceFieldName):
-    """ Returns a dictionary where key is the point/polygon id, and
+    polygonDataTable,
+    polygonIdFieldName,
+    polygonAzimuthFieldName,
+    polygonDistanceFieldName,
+):
+    """Returns a dictionary where key is the point/polygon id, and
     the value is an ordered list of (azimuth/distance) tuples"""
     result = {}
     currentId = None
@@ -122,20 +125,24 @@ def ParsePolygonData(
             continue
         # we have a new id, and an old id
         if id != currentId:
-            #save the old list
+            # save the old list
             if currentId and currentList:
                 result[currentId] = currentList
             # start a new list
             currentList = []
             currentId = id
-        #add the point to the current list
+        # add the point to the current list
         currentList.append(
-            (row.getValue(polygonAzimuthFieldName),
-             row.getValue(polygonDistanceFieldName)))
+            (
+                row.getValue(polygonAzimuthFieldName),
+                row.getValue(polygonDistanceFieldName),
+            )
+        )
     # save any open lists
     if currentId and currentList:
         result[currentId] = currentList
     return result
+
 
 def MakePolygon(point, pointId, polygonData):
     try:
@@ -150,7 +157,7 @@ def MakePolygon(point, pointId, polygonData):
 
     vertices = []
     oldAzimuth = None
-    for azimuth,distance in data:
+    for azimuth, distance in data:
         if oldAzimuth and azimuth < oldAzimuth:
             msg = "Azimuths for polygon {0} go backwards from {0:.2} to {0:.2}."
             utils.warn(msg.format(pointId, oldAzimuth, azimuth))
@@ -172,9 +179,9 @@ def MakePolygon(point, pointId, polygonData):
             utils.warn(msg)
             continue
 
-        x = point.getPart().X + distance*(math.sin(azimuth*math.pi/180))
-        y = point.getPart().Y + distance*(math.cos(azimuth*math.pi/180))
-        vertices.append(arcpy.Point(x,y))
+        x = point.getPart().X + distance * (math.sin(azimuth * math.pi / 180))
+        y = point.getPart().Y + distance * (math.cos(azimuth * math.pi / 180))
+        vertices.append(arcpy.Point(x, y))
     if len(vertices) < 3:
         msg = "Polygon {0} has {1} pairs of valid Azimuth/Distance, skipping."
         utils.warn(msg.format(pointId, len(vertices)))
@@ -182,16 +189,29 @@ def MakePolygon(point, pointId, polygonData):
     vertices.append(vertices[0])
     return arcpy.Polygon(arcpy.Array(vertices))
 
-def PolygonFromControlPoint(
-        pointLayer, pointIdFieldName,
-        polygonDataTable, dataTableFieldName, dataTableIdentifier,
-        polygonIdFieldName, polygonAzimuthFieldName,
-        polygonDistanceFieldName, polygonFeatureClass):
 
-    workspace,featureClass = os.path.split(polygonFeatureClass)
+def PolygonFromControlPoint(
+    pointLayer,
+    pointIdFieldName,
+    polygonDataTable,
+    dataTableFieldName,
+    dataTableIdentifier,
+    polygonIdFieldName,
+    polygonAzimuthFieldName,
+    polygonDistanceFieldName,
+    polygonFeatureClass,
+):
+
+    workspace, featureClass = os.path.split(polygonFeatureClass)
     arcpy.CreateFeatureclass_management(
-        workspace,featureClass, "Polygon", pointLayer,"SAME_AS_TEMPLATE",
-        "SAME_AS_TEMPLATE", pointLayer)
+        workspace,
+        featureClass,
+        "Polygon",
+        pointLayer,
+        "SAME_AS_TEMPLATE",
+        "SAME_AS_TEMPLATE",
+        pointLayer,
+    )
 
     arcpy.AddMessage("Empty polygon feature class has been created")
 
@@ -200,34 +220,39 @@ def PolygonFromControlPoint(
     # returns incorrect results.  Fix is to remove the feature_dataset"
     workspace = workspace.lower()
     if workspace.rfind(".mdb") > 0:
-        workspace = workspace[:workspace.rfind(".mdb")+4]
+        workspace = workspace[: workspace.rfind(".mdb") + 4]
     else:
         if workspace.rfind(".gdb") > 0:
-            workspace = workspace[:workspace.rfind(".gdb")+4]
+            workspace = workspace[: workspace.rfind(".gdb") + 4]
 
-    #create a simple field mapping from input to output
+    # create a simple field mapping from input to output
     pointLayerDescription = arcpy.Describe(pointLayer)
     polyLayerDescription = arcpy.Describe(polygonFeatureClass)
     fields = {}
     for field in pointLayerDescription.fields:
         name = field.name
-        if (name != pointLayerDescription.shapeFieldName and
-            name != pointLayerDescription.OIDFieldName and
-            field.editable): #skip un-editable fields like Shape_Length
-            fields[name] = arcpy.ValidateFieldName(name,workspace)
+        if (
+            name != pointLayerDescription.shapeFieldName
+            and name != pointLayerDescription.OIDFieldName
+            and field.editable
+        ):  # skip un-editable fields like Shape_Length
+            fields[name] = arcpy.ValidateFieldName(name, workspace)
             # print(workspace, name, "=>", fields[name])
 
-    #Add the dataTableFieldName to the polygon FC
+    # Add the dataTableFieldName to the polygon FC
     if dataTableFieldName:
-        dataTableFieldName = arcpy.ValidateFieldName(dataTableFieldName,workspace)
+        dataTableFieldName = arcpy.ValidateFieldName(dataTableFieldName, workspace)
         arcpy.AddField_management(polygonFeatureClass, dataTableFieldName, "TEXT")
 
-    #preprocess the polygonTable data
+    # preprocess the polygonTable data
     polygonData = ParsePolygonData(
-        polygonDataTable, polygonIdFieldName, polygonAzimuthFieldName,
-        polygonDistanceFieldName)
+        polygonDataTable,
+        polygonIdFieldName,
+        polygonAzimuthFieldName,
+        polygonDistanceFieldName,
+    )
 
-    #create the cursors
+    # create the cursors
     poly = None
     polys = arcpy.InsertCursor(polygonFeatureClass)
     points = arcpy.SearchCursor(pointLayer)
@@ -235,25 +260,25 @@ def PolygonFromControlPoint(
         pointShape = point.getValue(pointLayerDescription.shapeFieldName)
         if pointShape:
             polyShape = MakePolygon(
-                pointShape, point.getValue(pointIdFieldName), polygonData)
+                pointShape, point.getValue(pointIdFieldName), polygonData
+            )
             if polyShape:
                 poly = polys.newRow()
                 for field in fields:
                     poly.setValue(fields[field], point.getValue(field))
                 if dataTableFieldName:
-                     poly.setValue(dataTableFieldName, dataTableIdentifier)
+                    poly.setValue(dataTableFieldName, dataTableIdentifier)
                 poly.setValue(polyLayerDescription.shapeFieldName, polyShape)
                 polys.insertRow(poly)
 
     arcpy.AddMessage("Output feature class has been populated")
 
-    #When writing to a Personal GDB, you must delete the last row or it will not
-    #get written to the database.
+    # When writing to a Personal GDB, you must delete the last row or it will not
+    # get written to the database.
     if poly:
         del poly
-    #delete the insert cursor to close it and remove the exclusive lock
+    # delete the insert cursor to close it and remove the exclusive lock
     del polys
-
 
 
 if __name__ == "__main__":
@@ -270,9 +295,9 @@ if __name__ == "__main__":
 
     test = False
     if test:
-        #pointLayer = r"c:\tmp\test.gdb\w2011a0901"
-        #pointIdFieldName = "ESRI_OID"
-        #polygonDataTable = r"c:\tmp\test.gdb\pdata"
+        # pointLayer = r"c:\tmp\test.gdb\w2011a0901"
+        # pointIdFieldName = "ESRI_OID"
+        # polygonDataTable = r"c:\tmp\test.gdb\pdata"
         pointLayer = r"T:\PROJECTS\KEFJ\CampsiteInventory\Data\GPSData\KEFJ_2010\GPSData\Export\Campsite.shp"
         pointIdFieldName = "Tag_Number"
         polygonDataTable = r"C:\tmp\VariableTransectData.xls\year2010$"
@@ -316,15 +341,19 @@ if __name__ == "__main__":
         print("Polygon data table cannot be found. Quitting.")
         sys.exit()
 
-    #TODO - validate field names.
-
+    # TODO - validate field names.
 
     #
     # Create polygons
     #
     PolygonFromControlPoint(
-        pointLayer, pointIdFieldName,
-        polygonDataTable, dataTableFieldName, dataTableIdentifier,
-        polygonIdFieldName, polygonAzimuthFieldName,
-        polygonDistanceFieldName, polygonFeatureClass)
-
+        pointLayer,
+        pointIdFieldName,
+        polygonDataTable,
+        dataTableFieldName,
+        dataTableIdentifier,
+        polygonIdFieldName,
+        polygonAzimuthFieldName,
+        polygonDistanceFieldName,
+        polygonFeatureClass,
+    )

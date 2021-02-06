@@ -135,46 +135,56 @@ import sys
 
 import arcpy
 
-#FIXME - use environment SR, Z, M, when creating feature class
+# FIXME - use environment SR, Z, M, when creating feature class
 
 
 def RandomTransects():
     cleanParams = SanitizeInput(
-                                arcpy.GetParameterAsText(0),
-                                arcpy.GetParameterAsText(1),
-                                arcpy.GetParameterAsText(2),
-                                arcpy.GetParameterAsText(3),
-                                arcpy.GetParameterAsText(4),
-                                arcpy.GetParameterAsText(5),
-                                arcpy.GetParameterAsText(6))
-    polygons, workspace, name, linesPerPoly, minLength, maxLength, maxTrys, allowOverlap = cleanParams
+        arcpy.GetParameterAsText(0),
+        arcpy.GetParameterAsText(1),
+        arcpy.GetParameterAsText(2),
+        arcpy.GetParameterAsText(3),
+        arcpy.GetParameterAsText(4),
+        arcpy.GetParameterAsText(5),
+        arcpy.GetParameterAsText(6),
+    )
+    (
+        polygons,
+        workspace,
+        name,
+        linesPerPoly,
+        minLength,
+        maxLength,
+        maxTrys,
+        allowOverlap,
+    ) = cleanParams
 
     lines = CreateFeatureClass(polygons, workspace, name)
     featureCount = GetFeatureCount(polygons)
     arcpy.SetProgressor("step", "Creating Transects...", 0, featureCount, 1)
-    CreateLines(polygons, lines, linesPerPoly, maxTrys,
-                minLength, maxLength, allowOverlap)
+    CreateLines(
+        polygons, lines, linesPerPoly, maxTrys, minLength, maxLength, allowOverlap
+    )
     arcpy.ResetProgressor()
 
 
-def SanitizeInput(inFC, outFC, linesPerPoly,
-                  min, max, maxTrys, allowOverlap):
+def SanitizeInput(inFC, outFC, linesPerPoly, min, max, maxTrys, allowOverlap):
     # validate input feature class
-    if inFC in ["","#"]:
+    if inFC in ["", "#"]:
         arcpy.AddError("No input feature class specified.")
         sys.exit()
     if not arcpy.Exists(inFC):
-        arcpy.AddError("The input feature specified ("+inFC+") does not exist.")
+        arcpy.AddError("The input feature specified (" + inFC + ") does not exist.")
         sys.exit()
     desc = arcpy.Describe(inFC)
     shape = desc.shapeType.lower()
-    if shape != 'polygon':
+    if shape != "polygon":
         msg = "The input features specified ({0}) is not a polygons."
         arcpy.AddError(msg.format(inFC))
         sys.exit()
 
     # validate output feature class
-    if outFC in ["","#"]:
+    if outFC in ["", "#"]:
         arcpy.AddError("No output feature class specified.")
         sys.exit()
     workspace, name = os.path.split(outFC)
@@ -182,8 +192,8 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
         msg = "The output workspace specified ({0}) does not exist."
         arcpy.AddError(msg.format(workspace))
         sys.exit()
-    name = arcpy.ValidateTableName(name,workspace)
-    fc = os.path.join(workspace,name)
+    name = arcpy.ValidateTableName(name, workspace)
+    fc = os.path.join(workspace, name)
     if arcpy.Exists(fc):
         if not arcpy.env.overwriteOutput:
             msg = "Cannot overwrite existing data at: {0}"
@@ -192,7 +202,7 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
     # no easy way to check that fc is not readonly or locked, so don't
 
     # validate linesPerPoly
-    if linesPerPoly in ["","#"]:
+    if linesPerPoly in ["", "#"]:
         linesPerPoly = 5
         arcpy.AddMessage("Using a default value of 5 for transects per feature")
     try:
@@ -201,13 +211,13 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
         msg = "The transects per feature ({0}) is not a whole number."
         arcpy.AddError(msg.format(linesPerPoly))
         sys.exit()
-    if (linesPerPoly < 0):
+    if linesPerPoly < 0:
         msg = "The transects per feature ({0}) is not greater than zero."
         arcpy.AddError(msg.format(linesPerPoly))
         sys.exit()
 
     # validate maxTrys
-    if maxTrys in ["","#"]:
+    if maxTrys in ["", "#"]:
         maxTrys = 20
         arcpy.AddMessage("Using a default value of 100 for number of attempts")
     try:
@@ -216,23 +226,23 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
         msg = "The number of attempts ({0}) is not a whole number."
         arcpy.AddError(msg.format(maxTrys))
         sys.exit()
-    if (maxTrys < 0):
+    if maxTrys < 0:
         msg = "The number of attempts ({0}) is not greater than zero."
         arcpy.AddError(msg.format(maxTrys))
         sys.exit()
 
-    #validate min/max
+    # validate min/max
     min_input, max_input = min, max
-    if min in ["","#"]:
+    if min in ["", "#"]:
         min = "1 Meters"
         arcpy.AddMessage(
             "Using a default value of 1 Meter for the minimum transect length."
         )
-    if max in ["","#"]:
+    if max in ["", "#"]:
         max = "1000 Meters"
         arcpy.AddMessage(
             "Using a default value of 1000 Meters for the minimum transect length."
-            )
+        )
     min = LinearUnitsToMeters(min)
     if min == -1:
         msg = "The minimum transect length ({0}) is not a number or the units are invalid."
@@ -243,11 +253,11 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
         msg = "The maximum transect length ({0}) is not a number or the units are invalid."
         arcpy.AddError(msg.format(max_input))
         sys.exit()
-    if (min <= 0):
+    if min <= 0:
         msg = "The minimum transect length specified ({0} Meters) is not greater than zero."
         arcpy.AddError(msg.format(min))
         sys.exit()
-    if (max < min):
+    if max < min:
         msg = (
             "The maximum transect length specified ({0} Meters) is not greater "
             "than the minimum transect length ({1} Meters)."
@@ -256,7 +266,7 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
         sys.exit()
 
     # validate allowOverlap
-    if allowOverlap in ["","#"]:
+    if allowOverlap in ["", "#"]:
         allowOverlap = "True"
         arcpy.AddMessage("Allowing overlaping transects (by default)")
     if allowOverlap.lower() == "true":
@@ -268,16 +278,17 @@ def SanitizeInput(inFC, outFC, linesPerPoly,
     # print(inFC, workspace, name, linesPerPoly, min, max, maxTrys, allowOverlap)
     return inFC, workspace, name, linesPerPoly, min, max, maxTrys, allowOverlap
 
+
 def LinearUnitsToMeters(distance):
-    """ Toolbox parameters can have a linear unit type which translates a real
+    """Toolbox parameters can have a linear unit type which translates a real
     number and a pick UOM pick box to a string like '10.3 Meters'.  This
     function will convert the known units to meters.
     Return -1 if there is an error."""
     parts = distance.split()
-    #Too many or two few parts
+    # Too many or two few parts
     if len(parts) < 1 or 2 < len(parts):
         return -1
-    #first part must be a number, if no second part assume units are meters
+    # first part must be a number, if no second part assume units are meters
     number = parts[0]
     try:
         val = float(number)
@@ -285,7 +296,7 @@ def LinearUnitsToMeters(distance):
         val = -1
     if len(parts) == 1:
         return val
-    #second part (if given) must be a well known units - these come from toolbox
+    # second part (if given) must be a well known units - these come from toolbox
     units = parts[1]
     units = units.lower()
     if units == "centimeters":
@@ -294,9 +305,9 @@ def LinearUnitsToMeters(distance):
         return -1
     elif units == "decimeters":
         return val / 10.0
-    elif units == "feet": #international
+    elif units == "feet":  # international
         return val * 12 * 2.54 / 100.0
-    elif units == "inches": #international: 2.54 cm == 1 in
+    elif units == "inches":  # international: 2.54 cm == 1 in
         return val * 2.54 / 100.0
     elif units == "kilometers":
         return val * 1000
@@ -308,14 +319,15 @@ def LinearUnitsToMeters(distance):
         return val / 1000.0
     elif units == "nauticalmiles":
         return val * 1852
-    elif units == "points": # 72 points per inch
-        return val  * 2.54 / 100.0 / 72
-    elif units == "unknown": #assume meters
+    elif units == "points":  # 72 points per inch
+        return val * 2.54 / 100.0 / 72
+    elif units == "unknown":  # assume meters
         return val
-    elif units == "yards": #international
+    elif units == "yards":  # international
         return val * 3 * 12 * 2.54 / 100.0
     else:
         return -1
+
 
 def CreateFeatureClass(template, workspace, name):
     shape = "Polyline"
@@ -326,13 +338,14 @@ def CreateFeatureClass(template, workspace, name):
         hasM = "ENABLED"
     if description.hasZ:
         hasZ = "ENABLED"
-    return arcpy.CreateFeatureclass_management(workspace, name,
-                                                 shape, "", hasM,
-                                                 hasZ, outSpatialRef)
+    return arcpy.CreateFeatureclass_management(
+        workspace, name, shape, "", hasM, hasZ, outSpatialRef
+    )
 
 
-def CreateLines(polygons, lines, lineGoal, maxAttempts,
-                minLength, maxLength, allowOverlap):
+def CreateLines(
+    polygons, lines, lineGoal, maxAttempts, minLength, maxLength, allowOverlap
+):
     description = arcpy.Describe(polygons)
     spatialReference = description.SpatialReference
     shapeFieldName = description.shapeFieldName
@@ -342,15 +355,23 @@ def CreateLines(polygons, lines, lineGoal, maxAttempts,
     polyCursor = arcpy.SearchCursor(polygons)
     lineCursor = arcpy.InsertCursor(lines)
     polygon = polyCursor.next()
-    newLine = None  #positive assignment so del at end will not fail
+    newLine = None  # positive assignment so del at end will not fail
     count = 1
-    while (polygon):
+    while polygon:
         oid = polygon.getValue(oidFieldName)
         arcpy.SetProgressorLabel("Processing polygon {0}".format(count))
         shape = polygon.getValue(shapeFieldName)
         name = "{0} = {1}".format(oidFieldName, oid)
-        lines = GetLines(name, shape, lineGoal, maxAttempts,
-                         minLength, maxLength, allowOverlap, spatialReference)
+        lines = GetLines(
+            name,
+            shape,
+            lineGoal,
+            maxAttempts,
+            minLength,
+            maxLength,
+            allowOverlap,
+            spatialReference,
+        )
         for line in lines:
             newLine = lineCursor.newRow()
             newLine.setValue(d.shapeFieldName, line)
@@ -367,7 +388,7 @@ def GetFeatureCount(data):
     cursor = arcpy.SearchCursor(data)
     row = cursor.next()
     count = 0
-    while (row):
+    while row:
         count = count + 1
         row = cursor.next()
     del cursor, row
@@ -375,29 +396,40 @@ def GetFeatureCount(data):
     return count
 
 
-def GetLines(polygonName, polygonShape, lineGoal, maxAttempts,
-             minLength, maxLength, allowOverlap, spatialReference):
+def GetLines(
+    polygonName,
+    polygonShape,
+    lineGoal,
+    maxAttempts,
+    minLength,
+    maxLength,
+    allowOverlap,
+    spatialReference,
+):
     attemptCount = 0
     linesInPoly = []
 
-    while (len(linesInPoly) < lineGoal and attemptCount < maxAttempts):
-        x,y = GetRandomPointInPolygon(polygonShape)
+    while len(linesInPoly) < lineGoal and attemptCount < maxAttempts:
+        x, y = GetRandomPointInPolygon(polygonShape)
         pt1, pt2 = GetRandomLineEnds(x, y, minLength, maxLength)
         # Spatial compare (i.e. contains) will always fail if the two geometries
         # have different spatial references (including null and not null).
-        line = arcpy.Polyline(arcpy.Array([arcpy.Point(pt1[0], pt1[1]),
-                                           arcpy.Point(pt2[0], pt2[1])]),
-                                           spatialReference)
-        if (polygonShape.contains(line) and
-            (allowOverlap or
-             not DoesOverlap(line, linesInPoly))):
+        line = arcpy.Polyline(
+            arcpy.Array([arcpy.Point(pt1[0], pt1[1]), arcpy.Point(pt2[0], pt2[1])]),
+            spatialReference,
+        )
+        if polygonShape.contains(line) and (
+            allowOverlap or not DoesOverlap(line, linesInPoly)
+        ):
             linesInPoly.append(line)
-            attemptCount = 0;
+            attemptCount = 0
         else:
-            attemptCount = attemptCount + 1;
+            attemptCount = attemptCount + 1
     if attemptCount == maxAttempts:
         if len(linesInPoly) == 0:
-            msg = "No transect could be created for polygon {0}. Try reducing the length."
+            msg = (
+                "No transect could be created for polygon {0}. Try reducing the length."
+            )
             arcpy.AddWarning(msg.format(polygonName))
         else:
             msg = "Polygon {0} exceeded maximum attempts at finding all transects."
@@ -416,26 +448,26 @@ def DoesOverlap(myLine, otherLines):
 
 def GetRandomLineEnds(x1, y1, minLength, maxLength):
     length = random.uniform(minLength, maxLength)
-    angle = random.uniform(0,2*math.pi)
-    x2 = x1 + length* math.cos(angle)
-    y2 = y1 + length* math.sin(angle)
-    return ((x1,y1),(x2,y2))
+    angle = random.uniform(0, 2 * math.pi)
+    x2 = x1 + length * math.cos(angle)
+    y2 = y1 + length * math.sin(angle)
+    return ((x1, y1), (x2, y2))
+
 
 def GetRandomPointInPolygon(polygon):
     while True:
-        x,y = GetRandomPointInEnvelope(polygon.extent)
+        x, y = GetRandomPointInEnvelope(polygon.extent)
         # do not use a point geometry unless you create it with the
         # same spatial reference as polygon.
-        if polygon.contains(arcpy.Point(x,y)):
-            return (x,y)
+        if polygon.contains(arcpy.Point(x, y)):
+            return (x, y)
 
 
 def GetRandomPointInEnvelope(env):
     x = random.uniform(env.XMin, env.XMax)
     y = random.uniform(env.YMin, env.YMax)
-    return (x,y)
+    return (x, y)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     RandomTransects()
-
-

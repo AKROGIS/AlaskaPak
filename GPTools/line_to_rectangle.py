@@ -77,19 +77,20 @@ def MakeRect(pt1, pt2, width):
     Returns a tuple of the next two points in the rectangle.
     Points proceed clockwise for a positive width and
     counterclockwise for a negative width."""
-    #Find the angle of the line between the points
+    # Find the angle of the line between the points
     dx = pt2.X - pt1.X
     dy = pt2.Y - pt1.Y
-    angle = math.atan2(dy,dx)
-    #find the endpoint of a line width long and
-    #rotated 90 degrees to the right
-    angle = angle - math.pi/2.0
+    angle = math.atan2(dy, dx)
+    # find the endpoint of a line width long and
+    # rotated 90 degrees to the right
+    angle = angle - math.pi / 2.0
     y = width * math.sin(angle)
     x = width * math.cos(angle)
-    #add that end point to the two points given
+    # add that end point to the two points given
     pt3 = arcpy.Point(pt2.X + x, pt2.Y + y)
     pt4 = arcpy.Point(pt1.X + x, pt1.Y + y)
-    return (pt3,pt4)
+    return (pt3, pt4)
+
 
 def MakeRectFromLine(line, width):
     """Assumes an arcpy.Polyline for input, and returns an
@@ -99,36 +100,35 @@ def MakeRectFromLine(line, width):
     # skip bad shapes
     if line.partCount == 0:
         return None
-    #skip bad width
+    # skip bad width
     if width == None or width == 0:
         return None
     if line.isMultipart:
         parray = arcpy.Array()
         parts = line.getPart()
         for part in parts:
-            #part is an array of points
+            # part is an array of points
             if len(part) == 0:
-                continue #bad part
+                continue  # bad part
             pt1 = part[0]
-            pt2 = part[len(part)-1]
+            pt2 = part[len(part) - 1]
             if pt1.equals(pt2):
-                continue #baseline for rect cannot be a point
-            pt3,pt4 = MakeRect(pt1, pt2, width)
+                continue  # baseline for rect cannot be a point
+            pt3, pt4 = MakeRect(pt1, pt2, width)
             parray.add(arcpy.Array([pt1, pt2, pt3, pt4, pt1]))
-        if (len(parray) == 0):
+        if len(parray) == 0:
             return None
         return arcpy.Polygon(parray)
     else:
         pt1 = line.firstPoint
         pt2 = line.lastPoint
-        if pt1.equals(pt2): #this equals is an arcpy method
+        if pt1.equals(pt2):  # this equals is an arcpy method
             return None
-        pt3,pt4 = MakeRect(pt1, pt2, width)
+        pt3, pt4 = MakeRect(pt1, pt2, width)
         return arcpy.Polygon(arcpy.Array([pt1, pt2, pt3, pt4, pt1]))
 
 
-
-#Get and check input
+# Get and check input
 if len(sys.argv) != 4:
     arcpy.AddError("This tool requires exactly 3 parameters.")
     usage = "Usage: {0} path_to_lineFC Offset_Field_Name path_to_outputFC"
@@ -143,17 +143,17 @@ lineDescription = arcpy.Describe(lineFC)
 
 if lineDescription.shapeType != "Polyline":
     msg = "{0} is a {1} not Polyline feature class."
-    arcpy.AddError(msg.format(lineFC, lineDescription.shapeType ))
+    arcpy.AddError(msg.format(lineFC, lineDescription.shapeType))
     sys.exit(1)
 
 offsetFieldType = ""
-#check for offsetFN in the field names
+# check for offsetFN in the field names
 for field in lineDescription.fields:
     if field.name == offsetFN:
         offsetFieldType = field.type
         break
 
-#check for offsetFN in the field alias names
+# check for offsetFN in the field alias names
 if offsetFieldType == "":
     for field in lineDescription.fields:
         if field.aliasName == offsetFN:
@@ -165,21 +165,29 @@ if offsetFieldType == "":
     arcpy.AddError(msg.format(offsetFN, lineFC))
     sys.exit(1)
 
-if  (offsetFieldType != "SmallInteger" and
-     offsetFieldType != "Integer" and
-     offsetFieldType != "Single" and
-     offsetFieldType != "Double"):
+if (
+    offsetFieldType != "SmallInteger"
+    and offsetFieldType != "Integer"
+    and offsetFieldType != "Single"
+    and offsetFieldType != "Double"
+):
     msg = "{0}({1}) is not a numeric data type."
     arcpy.AddError(msg.format(offsetFN, offsetFieldType))
     sys.exit(1)
 
 arcpy.AddMessage("Input has been validated")
 
-#start the real work
-workspace,featureClass = os.path.split(rectFC)
-arcpy.CreateFeatureclass_management(workspace,featureClass,
-                                    "Polygon", lineFC, "SAME_AS_TEMPLATE",
-                                    "SAME_AS_TEMPLATE", lineFC)
+# start the real work
+workspace, featureClass = os.path.split(rectFC)
+arcpy.CreateFeatureclass_management(
+    workspace,
+    featureClass,
+    "Polygon",
+    lineFC,
+    "SAME_AS_TEMPLATE",
+    "SAME_AS_TEMPLATE",
+    lineFC,
+)
 
 arcpy.AddMessage("Empty feature class has been created")
 
@@ -188,41 +196,43 @@ arcpy.AddMessage("Empty feature class has been created")
 # returns incorrect results.  Workaround: remove the feature_dataset
 workspace = workspace.lower()
 if workspace.rfind(".mdb") > 0:
-    workspace = workspace[:workspace.rfind(".mdb")+4]
+    workspace = workspace[: workspace.rfind(".mdb") + 4]
 else:
     if workspace.rfind(".gdb") > 0:
-        workspace = workspace[:workspace.rfind(".gdb")+4]
+        workspace = workspace[: workspace.rfind(".gdb") + 4]
 
-#create a simple field mapping from input to output
+# create a simple field mapping from input to output
 fields = {}
 for field in lineDescription.fields:
     name = field.name
-    if (name != lineDescription.shapeFieldName and
-        name != lineDescription.OIDFieldName and
-        field.editable): #skip un-editable fields like Shape_Length
-        fields[name] = arcpy.ValidateFieldName(name,workspace)
+    if (
+        name != lineDescription.shapeFieldName
+        and name != lineDescription.OIDFieldName
+        and field.editable
+    ):  # skip un-editable fields like Shape_Length
+        fields[name] = arcpy.ValidateFieldName(name, workspace)
         # print(workspace, name, "=>", fields[name])
 
-#create the cursors
+# create the cursors
 polys = arcpy.InsertCursor(rectFC)
 lines = arcpy.SearchCursor(lineFC)
 for line in lines:
-    #FIXME - only works if lineDescription.shapeFieldName = 'shape'
+    # FIXME - only works if lineDescription.shapeFieldName = 'shape'
     if line.shape:
         poly = polys.newRow()
         rect = MakeRectFromLine(line.shape, line.getValue(offsetFN))
         if rect:
             for field in fields:
                 poly.setValue(fields[field], line.getValue(field))
-            #FIXME - only works if polyDescription.shapeFieldName = 'shape'
+            # FIXME - only works if polyDescription.shapeFieldName = 'shape'
             poly.shape = rect
             polys.insertRow(poly)
 
 arcpy.AddMessage("Output feature class has been populated")
 
-#When writing to a Personal GDB, you must delete the last row or it will not
-#get written to the database.
+# When writing to a Personal GDB, you must delete the last row or it will not
+# get written to the database.
 if poly:
     del poly
-#delete the insert cursor to close it and remove the exclusive lock
+# delete the insert cursor to close it and remove the exclusive lock
 del polys

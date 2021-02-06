@@ -30,11 +30,18 @@ Building_Polygons__2_ = Building_Polygons
 arcpy.CopyFeatures_management(Building_Edges, edges, "", "0", "0", "0")
 
 # Process: Add Field
-arcpy.AddField_management(edges, "zz_offset", "DOUBLE", "", "", "", "", "NULLABLE", "NON_REQUIRED", "")
+arcpy.AddField_management(
+    edges, "zz_offset", "DOUBLE", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
+)
 
 # Process: Calculate Field
-arcpy.CalculateField_management(edges__2_, "zz_offset",
-                                "!Width_Ft! * 0.3048 * (1 if !Right_Left!.lower()[0] == 'r' else -1)", "PYTHON", "")
+arcpy.CalculateField_management(
+    edges__2_,
+    "zz_offset",
+    "!Width_Ft! * 0.3048 * (1 if !Right_Left!.lower()[0] == 'r' else -1)",
+    "PYTHON",
+    "",
+)
 
 # Process: Line to Rectangle
 arcpy.Line2Rect_AlaskaPak(edges__3_, "zz_offset", Building_Polygons)

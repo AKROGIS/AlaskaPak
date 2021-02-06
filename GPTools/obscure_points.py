@@ -118,13 +118,14 @@ if sys.version_info[0] < 3:
 
 def ObscurePoints():
     cleanParams = SanitizeInput(
-                                arcpy.GetParameterAsText(0),
-                                arcpy.GetParameterAsText(1),
-                                arcpy.GetParameterAsText(2),
-                                arcpy.GetParameterAsText(3),
-                                arcpy.GetParameterAsText(4),
-                                arcpy.GetParameterAsText(5),
-                                arcpy.GetParameterAsText(6))
+        arcpy.GetParameterAsText(0),
+        arcpy.GetParameterAsText(1),
+        arcpy.GetParameterAsText(2),
+        arcpy.GetParameterAsText(3),
+        arcpy.GetParameterAsText(4),
+        arcpy.GetParameterAsText(5),
+        arcpy.GetParameterAsText(6),
+    )
     pts, circles, workspace, name, min, max, nogo, mustgo = cleanParams
 
     newFC = None
@@ -143,9 +144,10 @@ def ObscurePoints():
         arcpy.Delete_management(newFC)
         del newFC
 
+
 def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
     # validate input feature class
-    if inFC in ["","#"]:
+    if inFC in ["", "#"]:
         arcpy.AddError("No input feature class specified.")
         sys.exit()
     if not arcpy.Exists(inFC):
@@ -154,14 +156,14 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
         sys.exit()
     desc = arcpy.Describe(inFC)
     shape = desc.shapeType.lower()
-    if shape not in ['point', 'multipoint']:
+    if shape not in ["point", "multipoint"]:
         msg = "The input feature specified ({0}) is not a point or multipoint."
         arcpy.AddError(msg.format(inFC))
         sys.exit()
-    multi = (shape == 'multipoint')
+    multi = shape == "multipoint"
 
     # validate output feature class
-    if outFC in ["","#"]:
+    if outFC in ["", "#"]:
         arcpy.AddError("No output feature class specified.")
         sys.exit()
     workspace, name = os.path.split(outFC)
@@ -169,8 +171,8 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
         msg = "The output workspace specified ({0}) does not exist."
         arcpy.AddError(msg.format(workspace))
         sys.exit()
-    name = arcpy.ValidateTableName(name,workspace)
-    fc = os.path.join(workspace,name)
+    name = arcpy.ValidateTableName(name, workspace)
+    fc = os.path.join(workspace, name)
     if arcpy.Exists(fc):
         if not arcpy.env.overwriteOutput:
             msg = "Cannot overwrite existing data at: {0}"
@@ -179,9 +181,9 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
     # no easy way to check that fc is not readonly or locked, so don't
 
     # validate output type
-    if type in ["","#"]:
+    if type in ["", "#"]:
         type = "points"
-    choices = ['points', 'circles']
+    choices = ["points", "circles"]
     for potential in choices:
         if potential.startswith(type.lower()):
             type = potential
@@ -189,13 +191,13 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
         msg = "The output type specified ({0}) is not in {1}."
         arcpy.AddError(msg.format(type, choices))
         sys.exit()
-    circles = (type == 'circles')
+    circles = type == "circles"
 
-    #validate min/max
-    if min in ["","#"]:
+    # validate min/max
+    if min in ["", "#"]:
         min = 0.0
         arcpy.AddMessage("Using a default value of 0.0 for the minimum offset")
-    if max in ["","#"]:
+    if max in ["", "#"]:
         max = 500.0
         arcpy.AddMessage("Using a default value of 100.0 for the maximum offset")
     try:
@@ -208,26 +210,28 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
     except ValueError:
         arcpy.AddError("The maximum offset ({0}) is not a number.".format(max))
         sys.exit()
-    if (min < 0):
+    if min < 0:
         msg = "The minimum offset specified ({0}) is not greater than zero."
         arcpy.AddError(msg.format(min))
 
         sys.exit()
-    if (max < min):
-        msg = "The maximum offset specified ({0}) is not greater than the minimum offset."
+    if max < min:
+        msg = (
+            "The maximum offset specified ({0}) is not greater than the minimum offset."
+        )
         arcpy.AddError(msg.format(max))
         sys.exit()
-    if (max == 0):
+    if max == 0:
         msg = "The maximum offset specified ({0}) is not greater than zero."
         arcpy.AddError(msg.format(max))
         sys.exit()
 
-    #validate nogo
+    # validate nogo
     nogo = nogo.split(";")
-    for junk in [";","#",""," "]:
+    for junk in [";", "#", "", " "]:
         while nogo.count(junk) > 0:
             nogo.remove(junk)
-    nogo = list(set(nogo)) #removes redundant feature classes
+    nogo = list(set(nogo))  # removes redundant feature classes
     removelist = []
     for fc in nogo:
         if not arcpy.Exists(fc):
@@ -237,19 +241,19 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
             continue
         desc = arcpy.Describe(fc)
         shape = desc.shapeType.lower()
-        if shape not in ['polygon']:
+        if shape not in ["polygon"]:
             msg = "'No-Go' feature class ({0}) is not polygons - skipping."
             arcpy.AddMessage(msg.format(fc))
             removelist.append(fc)
     for fc in removelist:
         nogo.remove(fc)
 
-    #validate mustgo
+    # validate mustgo
     mustgo = mustgo.split(";")
-    for junk in [";","#",""," "]:
+    for junk in [";", "#", "", " "]:
         while mustgo.count(junk) > 0:
             mustgo.remove(junk)
-    mustgo = list(set(mustgo)) #removes redundant feature classes
+    mustgo = list(set(mustgo))  # removes redundant feature classes
     removelist = []
     for fc in mustgo:
         if not arcpy.Exists(fc):
@@ -259,7 +263,7 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
             continue
         desc = arcpy.Describe(fc)
         shape = desc.shapeType.lower()
-        if shape not in ['polygon']:
+        if shape not in ["polygon"]:
             msg = "'Must-Go' feature class ({0}) is not polygons - skipping."
             arcpy.AddMessage(msg.format(fc))
             removelist.append(fc)
@@ -279,16 +283,16 @@ def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
 
 
 def CreateLimitedPoints(pts, min, max, nogo, mustgo):
-    #It is very slow to create a random point, then check it against
-    #a no-go area.  The New strategy is:
+    # It is very slow to create a random point, then check it against
+    # a no-go area.  The New strategy is:
     # buffer each input point with the max offset
     # erase with a buffer of each point with min offset (if not 0)
     # erase with each polygon in no go
     # if any polygon has area < 0 issue warning
     # put 1 random point in this area.
-    allowed = arcpy.Buffer_analysis(pts,"in_memory\\allow",max)
+    allowed = arcpy.Buffer_analysis(pts, "in_memory\\allow", max)
     if min > 0:
-        minbuf = arcpy.Buffer_analysis(pts,"in_memory\\minbuf",min)
+        minbuf = arcpy.Buffer_analysis(pts, "in_memory\\minbuf", min)
         erase1 = arcpy.Erase_analysis(allowed, minbuf, "in_memory\\erase1")
         arcpy.Delete_management(allowed)
         arcpy.Delete_management(minbuf)
@@ -296,28 +300,32 @@ def CreateLimitedPoints(pts, min, max, nogo, mustgo):
         allowed = erase1
     index = 0
     for fc in nogo:
-        newAllowed = arcpy.Erase_analysis(allowed, fc,
-                                          "in_memory\\allow{0}".format(index))
+        newAllowed = arcpy.Erase_analysis(
+            allowed, fc, "in_memory\\allow{0}".format(index)
+        )
         index = index + 1
         arcpy.Delete_management(allowed)
         allowed = newAllowed
     for fc in mustgo:
-        newAllowed = arcpy.Clip_analysis(allowed, fc,
-                                         "in_memory\\allow{0}".format(index))
+        newAllowed = arcpy.Clip_analysis(
+            allowed, fc, "in_memory\\allow{0}".format(index)
+        )
         index = index + 1
         arcpy.Delete_management(allowed)
         allowed = newAllowed
 
-    newpts = arcpy.CreateRandomPoints_management("in_memory", "pts", allowed,
-                                                 "", 1, "", "POINT", "")
+    newpts = arcpy.CreateRandomPoints_management(
+        "in_memory", "pts", allowed, "", 1, "", "POINT", ""
+    )
 
-    #CID is an attribute created by CreateRandomPoints to tie back to source
+    # CID is an attribute created by CreateRandomPoints to tie back to source
     d = arcpy.Describe(allowed)
-    arcpy.JoinField_management (newpts, "CID", allowed, d.OIDFieldName)
+    arcpy.JoinField_management(newpts, "CID", allowed, d.OIDFieldName)
     arcpy.DeleteField_management(newpts, "CID")
     arcpy.Delete_management(allowed)
     del allowed
     return newpts
+
 
 def CreateLimitedCircles(pts, min, max, nogo, mustgo):
     """returns a polygon feature class called "in_memory\circles". The
@@ -329,14 +337,14 @@ def CreateLimitedCircles(pts, min, max, nogo, mustgo):
     del newpts
     return circles
 
+
 def CreatePoints(existing, min, max):
     """existing is a point or multipoint feature class
     min = minimum distance of random point from source point in (0,max)
     max = maximum distance of random point from source point in (min,..)
     returns a feature class called "in_memory\temp". The caller
     is responsible for deleting this feature class when they are done."""
-    newpts = arcpy.FeatureClassToFeatureClass_conversion(existing,
-                                                         "in_memory", "temp")
+    newpts = arcpy.FeatureClassToFeatureClass_conversion(existing, "in_memory", "temp")
     pts = arcpy.UpdateCursor(newpts)
     pt = pts.next()
     while pt != None:
@@ -345,6 +353,7 @@ def CreatePoints(existing, min, max):
         pt = pts.next()
     del pt, pts
     return newpts
+
 
 def CreateCircles(existing, min, max):
     """returns a polygon feature class called "in_memory\circles". The
@@ -356,6 +365,7 @@ def CreateCircles(existing, min, max):
     del newpts
     return circles
 
+
 def RandomizeGeom(geom, min, max):
     """returns None, new pointGeometry or new multipoint
     depending on the input geometry.  Each new point is
@@ -366,22 +376,24 @@ def RandomizeGeom(geom, min, max):
 
     if pc == 1:
         pnt = geom.getPart(0)
-        x,y = RandomizePoint(pnt.X, pnt.Y, min, max)
-        return arcpy.PointGeometry(arcpy.Point(x,y))
+        x, y = RandomizePoint(pnt.X, pnt.Y, min, max)
+        return arcpy.PointGeometry(arcpy.Point(x, y))
 
     a = arcpy.Array()
     for i in range(pc):
         pnt = geom.getPart(i)
-        x,y = RandomizePoint(pnt.X, pnt.Y, min, max)
-        a.append(arcpy.Point(x,y))
+        x, y = RandomizePoint(pnt.X, pnt.Y, min, max)
+        a.append(arcpy.Point(x, y))
     return arcpy.Multipoint(a)
 
-def RandomizePoint(x,y,r1,r2):
-    r = random.uniform(r1,r2)
-    phi = random.uniform(0,2*math.pi)
-    x2 = x + r*math.cos(phi)
-    y2 = y + r*math.sin(phi)
-    return (x2,y2)
 
-if __name__ == '__main__':
+def RandomizePoint(x, y, r1, r2):
+    r = random.uniform(r1, r2)
+    phi = random.uniform(0, 2 * math.pi)
+    x2 = x + r * math.cos(phi)
+    y2 = y + r * math.sin(phi)
+    return (x2, y2)
+
+
+if __name__ == "__main__":
     ObscurePoints()

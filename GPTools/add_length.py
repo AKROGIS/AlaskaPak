@@ -76,7 +76,21 @@ import arcpy
 # wrong - it uses planar geometry with the spherical coordinates.)
 # * Feature may be locked or un-editable
 
-validUnits = ["CENTIMETERS","DECIMALDEGREES","DECIMETERS","FEET","INCHES","KILOMETERS","METERS","MILES","MILLIMETERS","NAUTICALMILES","POINTS","UNKNOWN","YARDS"]
+validUnits = [
+    "CENTIMETERS",
+    "DECIMALDEGREES",
+    "DECIMETERS",
+    "FEET",
+    "INCHES",
+    "KILOMETERS",
+    "METERS",
+    "MILES",
+    "MILLIMETERS",
+    "NAUTICALMILES",
+    "POINTS",
+    "UNKNOWN",
+    "YARDS",
+]
 
 
 featureList = arcpy.GetParameterAsText(0)
@@ -85,7 +99,8 @@ units = arcpy.GetParameterAsText(2)
 
 for feature in featureList.split(";"):
     if fieldName not in arcpy.ListFields(feature):
-        arcpy.AddField_management(feature, fieldName, "Double", "", "", "", "",
-                                  "NULLABLE", "NON_REQUIRED", "")
+        arcpy.AddField_management(
+            feature, fieldName, "Double", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
+        )
     length = "!shape.length@{0}!".format(units)
     arcpy.CalculateField_management(feature, fieldName, length, "PYTHON_9.3", "")

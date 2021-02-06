@@ -79,14 +79,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import arcpy
 
-#get input
+# get input
 featureList = arcpy.GetParameterAsText(0)
 idFieldName = arcpy.GetParameterAsText(1)
 start = arcpy.GetParameterAsText(2)
 increment = arcpy.GetParameterAsText(3)
 sortFieldName = arcpy.GetParameterAsText(4)
 
-#validate input
+# validate input
 if idFieldName in ["", "#"]:
     idFieldName = "UniqueID"
 try:
@@ -99,18 +99,18 @@ try:
 except ValueError:
     increment = 1
 
-#process features
+# process features
 for feature in featureList.split(";"):
     if feature[0] == "'" and feature[-1] == "'":
         feature = feature[1:-1]
-    arcpy.AddMessage("Adding Id to "+feature)
+    arcpy.AddMessage("Adding Id to " + feature)
     if idFieldName not in arcpy.ListFields(feature):
-        arcpy.AddField_management(feature, idFieldName, "Long", "", "", "", "",
-                                  "NULLABLE", "NON_REQUIRED", "")
+        arcpy.AddField_management(
+            feature, idFieldName, "Long", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
+        )
     id = start
-    rows = arcpy.UpdateCursor(feature,"","",idFieldName, sortFieldName)
+    rows = arcpy.UpdateCursor(feature, "", "", idFieldName, sortFieldName)
     for row in rows:
         row.setValue(idFieldName, id)
         rows.updateRow(row)
         id = id + increment
-

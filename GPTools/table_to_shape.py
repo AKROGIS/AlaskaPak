@@ -97,7 +97,7 @@ arcpy.Overwriteoutput = 1
 # rows returned.  Approx times to create a search cursor is:
 # .007s for Shapefile .38s for FGDB, and .89s for PGDB
 # iterating the cursor is about the same for all datasets.
-def GetPoints(pointFC,pointIdField):
+def GetPoints(pointFC, pointIdField):
     points = {}
     pointDescription = arcpy.Describe(pointFC)
     pointShapeField = pointDescription.ShapeFieldName
@@ -114,8 +114,9 @@ def GetPoints(pointFC,pointIdField):
         pt = pts.next()
     return points
 
-def MakeShape(row,shape,vertices):
-    if shape == 'multipoint':
+
+def MakeShape(row, shape, vertices):
+    if shape == "multipoint":
         a = arcpy.Array([points[x] for x in map(row.getValue, vertices)])
         if len(a) == 0:
             return None
@@ -125,13 +126,14 @@ def MakeShape(row,shape,vertices):
         a.add(arcpy.Array([points[x] for x in map(row.getValue, part)]))
     if len(a) == 0:
         return None
-    if shape == 'polyline':
+    if shape == "polyline":
         return arcpy.Polyline(a)
-    if shape == 'polygon':
+    if shape == "polygon":
         return arcpy.Polygon(a)
     return None
 
-def RowInfo(row,table):
+
+def RowInfo(row, table):
     dict = {}
     for field in arcpy.ListFields(table):
         dict[field.name] = row.getValue(field.name)
@@ -144,20 +146,22 @@ def RowInfo(row,table):
 
 # Maps the string returned by arcpy.describe.Field.type to the string
 # required by arcpy.AddField()
-mapType = {"SmallInteger" : "SHORT",
-           "Integer" : "LONG",
-           "Single" : "FLOAT",
-           "Double" : "DOUBLE",
-           "String" : "TEXT",
-           "Date" : "DATE",
-           "OID" : "LONG",      #Not creatable with AddField() - use caution
-           "Geometry" : "BLOB", #Not creatable with AddField() - use caution
-           "BLOB" : "BLOB"}
+mapType = {
+    "SmallInteger": "SHORT",
+    "Integer": "LONG",
+    "Single": "FLOAT",
+    "Double": "DOUBLE",
+    "String": "TEXT",
+    "Date": "DATE",
+    "OID": "LONG",  # Not creatable with AddField() - use caution
+    "Geometry": "BLOB",  # Not creatable with AddField() - use caution
+    "BLOB": "BLOB",
+}
 
-#GET INPUT
-if (len(sys.argv) != 7):
-    #ArcGIS won't call the script without the correct number of parameters,
-    #so this is for command line usage
+# GET INPUT
+if len(sys.argv) != 7:
+    # ArcGIS won't call the script without the correct number of parameters,
+    # so this is for command line usage
     usage = (
         "Usage: {0} Shape_Table Vertex_List Shape_Type "
         "Point_Features Point_ID Output_Features"
@@ -172,9 +176,9 @@ pointIdField = arcpy.GetParameterAsText(3)
 shapeType = arcpy.GetParameterAsText(4)
 outFC = arcpy.GetParameterAsText(5)
 
-#VERIFY INPUT (mostly for command line.  Toolbox does some validation for us)
+# VERIFY INPUT (mostly for command line.  Toolbox does some validation for us)
 # verify input files
-print() #start output with a blank line
+print()  # start output with a blank line
 if not arcpy.Exists(table):
     msg = "Shape_Table ({0}) does not exist."
     arcpy.AddError(msg.format(table))
@@ -202,15 +206,15 @@ if ";;;" in vertexList:
     arcpy.AddError(msg.format(vertexList))
     sys.exit()
 if shape == "multipoint":
-    vertexList = vertexList.replace(";;",";")
+    vertexList = vertexList.replace(";;", ";")
 
 if shape == "polygon":
     parts = vertexList.split(";;")
     vertices = []
     for part in parts:
         vertexs = part.split(";")
-        while vertexs.count('') > 0:
-            vertexs.remove('')
+        while vertexs.count("") > 0:
+            vertexs.remove("")
         if len(vertexs) < 3:
             arcpy.AddError("Polygons must have at least three vertices")
             sys.exit()
@@ -224,8 +228,8 @@ if shape == "polyline":
     vertices = []
     for part in parts:
         vertexs = part.split(";")
-        while vertexs.count('') > 0:
-            vertexs.remove('')
+        while vertexs.count("") > 0:
+            vertexs.remove("")
         if len(vertexs) < 2:
             arcpy.AddError("Polylines must have at least two vertices")
             sys.exit()
@@ -233,20 +237,20 @@ if shape == "polyline":
 
 if shape == "multipoint":
     vertices = vertexList.split(";")
-    while vertices.count('') > 0:
-        vertices.remove('')
+    while vertices.count("") > 0:
+        vertices.remove("")
     if len(vertices) < 1:
         arcpy.AddError("Multipoints must have at least one vertex")
         sys.exit()
 
 # verify vertex names exist in input table
 # ignore the nesting for rings and parts, and put in a set to remove duplicates
-vlist = vertexList.replace(";;",";")
+vlist = vertexList.replace(";;", ";")
 while ";;" in vlist:
-    vlist = vlist.replace(";;",";")
+    vlist = vlist.replace(";;", ";")
 vset = set(vlist.split(";"))
-if '' in vset:
-    vset.remove('')
+if "" in vset:
+    vset.remove("")
 vertexFieldType = {}
 tableDescription = arcpy.Describe(table)
 for field in tableDescription.Fields:
@@ -280,18 +284,18 @@ for field in pointDescription.Fields:
 
 if pointIdFieldType == "":
     msg = "Field '{0}' not found in {1}"
-    arcpy.AddError(msg.format(pointIdField,pointFC))
+    arcpy.AddError(msg.format(pointIdField, pointFC))
     sys.exit()
 for field in vertexFieldType:
     if vertexFieldType[field] != pointIdFieldType:
         arcpy.AddError("Field types do not match. Cannot link points to table.")
         sys.exit()
 
-#check for output workspace
-workspace,name = os.path.split(outFC)
+# check for output workspace
+workspace, name = os.path.split(outFC)
 if workspace == "":
     workspace = os.getcwd()
-    outFC = os.path.join(workspace,outFC)
+    outFC = os.path.join(workspace, outFC)
 if not arcpy.Exists(workspace):
     msg = "The destination workspace '{0}' does not exist."
     arcpy.AddError(msg.format(workspace))
@@ -309,68 +313,77 @@ if pointDescription.hasZ:
 
 # print("in_memory", "tempfc", shape, table, hasM, hasZ, outSpatialRef)
 
-tempFC = arcpy.CreateFeatureclass_management("in_memory", "tempfc",
-                                             shape, "", hasM,
-                                             hasZ, outSpatialRef)
+tempFC = arcpy.CreateFeatureclass_management(
+    "in_memory", "tempfc", shape, "", hasM, hasZ, outSpatialRef
+)
 
 # workaround for bug wherein ValidateFieldName(field,workspace\feature_dataset)
 # returns incorrect results.  Fix is to remove the feature_dataset"
 workspace = workspace.lower()
 if workspace.rfind(".mdb") > 0:
-    workspace = workspace[:workspace.rfind(".mdb")+4]
+    workspace = workspace[: workspace.rfind(".mdb") + 4]
 else:
     if workspace.rfind(".gdb") > 0:
-        workspace = workspace[:workspace.rfind(".gdb")+4]
+        workspace = workspace[: workspace.rfind(".gdb") + 4]
 
-#create a simple field mapping from input to output
+# create a simple field mapping from input to output
 fields = {}
 for field in tableDescription.fields:
     name = field.name
-    #if (name != tableDescription.shapeFieldName and
+    # if (name != tableDescription.shapeFieldName and
     #    name != tableDescription.OIDFieldName and
     #    field.editable): #skip un-editable fields like Shape_Length
-    fields[name] = arcpy.ValidateFieldName(name,workspace)
-    #AddField_management (in_table, field_name, field_type, {field_precision},
+    fields[name] = arcpy.ValidateFieldName(name, workspace)
+    # AddField_management (in_table, field_name, field_type, {field_precision},
     # {field_scale}, {field_length}, {field_alias}, {field_is_nullable},
     # {field_is_required}, {field_domain})
-    arcpy.AddField_management(tempFC, fields[name], field.type,
-                   field.precision, field.scale, field.length, field.aliasName,
-                   field.isNullable, field.required, field.domain)
+    arcpy.AddField_management(
+        tempFC,
+        fields[name],
+        field.type,
+        field.precision,
+        field.scale,
+        field.length,
+        field.aliasName,
+        field.isNullable,
+        field.required,
+        field.domain,
+    )
 # print(fields)
 
 arcpy.AddMessage("Reading Points database")
 
-#Put the points in a dictionary, to avoid two search cursors for each line
-#assumes Python is more efficient and faster than ArcGIS.  Should be tested.
+# Put the points in a dictionary, to avoid two search cursors for each line
+# assumes Python is more efficient and faster than ArcGIS.  Should be tested.
 
-points = GetPoints(pointFC,pointIdField)
+points = GetPoints(pointFC, pointIdField)
 # print(points)
 
-#fromPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, fromPointIdField)
-#toPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, toPointIdField)
+# fromPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, fromPointIdField)
+# toPointIdFieldDelimited = arcpy.AddFieldDelimiters(lineTable, toPointIdField)
 # where = "{0} is not null and {1} is not null".format(fromPointIdFieldDelimited, toPointIdFieldDelimited)
-#spatialRef = ""
+# spatialRef = ""
 # fields = "{0}; {1}; {2}".format(lineIdField, fromPointIdField, toPointIdField)
-#fields = ""
-#sort = ""
+# fields = ""
+# sort = ""
 
 arcpy.AddMessage("Reading table")
 
-#Create the input(search) and output(insert) cursors.
-inRows = arcpy.SearchCursor(table) #, where, spatialRef, fields, sort)
+# Create the input(search) and output(insert) cursors.
+inRows = arcpy.SearchCursor(table)  # , where, spatialRef, fields, sort)
 outRows = arcpy.InsertCursor(tempFC)
 newRow = None
 
 row = inRows.next()
 while row != None:
     try:
-        geom = MakeShape(row,shape,vertices)
+        geom = MakeShape(row, shape, vertices)
     except:
         print("exception")
         geom = None
     if geom == None:
         msg = "Unable to create geometry for {0}"
-        arcpy.AddWarning(msg.format(RowInfo(row,table)))
+        arcpy.AddWarning(msg.format(RowInfo(row, table)))
     else:
         # Create a new feature in the feature class
         newRow = outRows.newRow()
@@ -380,13 +393,13 @@ while row != None:
         outRows.insertRow(newRow)
     row = inRows.next()
 
-#Closes the insert cursor, and release the exclusive lock
+# Closes the insert cursor, and release the exclusive lock
 if newRow:
     del newRow
 del outRows
 
-arcpy.AddMessage( "Saving in memory feature class to {0}".format(outFC))
-#fs = arcpy.FeatureSet(tempFC)
+arcpy.AddMessage("Saving in memory feature class to {0}".format(outFC))
+# fs = arcpy.FeatureSet(tempFC)
 fs = arcpy.FeatureSet()
 fs.load(tempFC)
 fs.save(outFC)
