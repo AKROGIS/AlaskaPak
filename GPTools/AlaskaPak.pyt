@@ -44,8 +44,8 @@ class Toolbox(object):
     Define the toolbox.
 
     The name of the toolbox is the name of the .pyt file.
-    The label is the display name for the toolbox as shown in the Geoprocessing pane.
-    The alias is used as a command suffix for scripting in the python window
+    The label is the display name as shown in the Geoprocessing pane.
+    The alias is used as a command suffix for scripting in the python window.
     The description is shown in the Geoprocessing pane.
     """
 
@@ -141,7 +141,8 @@ class AddAreaMultiple(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -183,7 +184,7 @@ class AddAreaSingle(object):
             datatype="Field",
             parameterType="Optional",
         )
-        # FIXME: the parameter dependency is preventing input of a _new_ field name.
+        # FIXME: this dependency is preventing input of a _new_ field name.
         field_name.value = "Area"
         field_name.parameterDependencies = [feature.name]
         field_name.filter.list = ["Double"]
@@ -236,7 +237,8 @@ class AddAreaSingle(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -253,11 +255,14 @@ class AddAreaSingle(object):
 
 
 class AddLengthSingle(object):
-    """A tool to add a length attribute to a single polyline or polygon feature class."""
+    """A tool to add a length attribute to a single polyline or polygon
+    feature class."""
 
     def __init__(self):
         self.label = "Add Length (Single)"
-        self.description = "Add a length attribute to a single polyline or polygon feature class."
+        self.description = (
+            "Add a length attribute to a single polyline or polygon feature class."
+        )
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -280,7 +285,7 @@ class AddLengthSingle(object):
             datatype="Field",
             parameterType="Optional",
         )
-        # FIXME: the parameter dependency is preventing input of a _new_ field name.
+        # FIXME: this dependency is preventing input of a _new_ field name.
         field_name.value = "Length"
         field_name.parameterDependencies = [feature.name]
         field_name.filter.list = ["Double"]
@@ -330,7 +335,8 @@ class AddLengthSingle(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -343,11 +349,14 @@ class AddLengthSingle(object):
 
 
 class AddLengthMultiple(object):
-    """A tool to add a length attribute to multiple polyline or polygon feature classes."""
+    """A tool to add a length attribute to multiple polyline or polygon
+    feature classes."""
 
     def __init__(self):
         self.label = "Add Length (Multiple)"
-        self.description = "Add a length attribute to multiple polyline or polygon feature classes."
+        self.description = (
+            "Add a length attribute to multiple polyline or polygon feature classes."
+        )
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -406,7 +415,8 @@ class AddLengthMultiple(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -462,7 +472,8 @@ class AddIdSingle(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -494,7 +505,6 @@ class AddIdMultiple(object):
             multiValue=True,
         )
 
-
         parameters = [features]
         return parameters
 
@@ -513,7 +523,8 @@ class AddIdMultiple(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -550,7 +561,6 @@ class AddXYSingle(object):
         # X Field Name (Longitude, Easting) - Default Lon
         # Y Field Name (Latitude, Northing) - Default Lat
 
-
         parameters = [features]
         return parameters
 
@@ -569,7 +579,8 @@ class AddXYSingle(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -601,7 +612,6 @@ class AddXYMultiple(object):
             multiValue=True,
         )
 
-
         parameters = [features]
         return parameters
 
@@ -620,7 +630,8 @@ class AddXYMultiple(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -654,7 +665,6 @@ class Buildings(object):
         # Building Edges - input line feature class
         # Building Polygon - output feature class
 
-
         parameters = [features]
         return parameters
 
@@ -673,7 +683,8 @@ class Buildings(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -726,7 +737,8 @@ class LineToRectangle(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -780,7 +792,8 @@ class PointsToPolygon(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -793,11 +806,15 @@ class PointsToPolygon(object):
 
 
 class PolygonFromPoint(object):
-    """A tool to create polygons from a control point and a set of azimuths and distances."""
+    """A tool to create polygons from a control point and a set of
+    azimuths and distances."""
 
     def __init__(self):
         self.label = "Polygons from Control Point"
-        self.description = "Create polygons from a control point and a set of azimuths and distances."
+        self.description = (
+            "Create polygons from a control point and a "
+            "set of azimuths and distances."
+        )
         self.category = "Polygon Generation"
         self.canRunInBackground = True
 
@@ -821,7 +838,6 @@ class PolygonFromPoint(object):
         # distance field optional
         # polygon features - output
 
-
         parameters = [features]
         return parameters
 
@@ -840,7 +856,8 @@ class PolygonFromPoint(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -878,7 +895,6 @@ class RandomizePoints(object):
         # no go areas - multiple polygon feature classes
         # must go areas - multiple polygon features
 
-
         parameters = [features]
         return parameters
 
@@ -897,7 +913,8 @@ class RandomizePoints(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -953,7 +970,8 @@ class ObscurePoints(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -966,11 +984,14 @@ class ObscurePoints(object):
 
 
 class RandomTransects(object):
-    """A tool to create random survey transects (lines) within a polygon boundary."""
+    """A tool to create random survey transects (lines) within a
+    polygon boundary."""
 
     def __init__(self):
         self.label = "Random Transects"
-        self.description = "Create random survey transects (lines) within a polygon boundary."
+        self.description = (
+            "Create random survey transects (lines) within a polygon boundary."
+        )
         self.category = "Randomize"
         self.canRunInBackground = True
 
@@ -992,7 +1013,6 @@ class RandomTransects(object):
         # maximum attempts - long default 100
         # Allow overlap - Boolean - default True
 
-
         parameters = [features]
         return parameters
 
@@ -1011,7 +1031,8 @@ class RandomTransects(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
@@ -1048,7 +1069,6 @@ class TableToShape(object):
         # Geometry - String (Polyline, Polygon, multipoint - picklist)
         # Output Feature Class - Feature Class
 
-
         parameters = [features]
         return parameters
 
@@ -1067,7 +1087,8 @@ class TableToShape(object):
 
     def updateMessages(self, parameters):
         """
-        Modify the messages created by internal validation for each tool parameter.
+        Modify the messages created by internal validation for each tool
+        parameter.
 
         This method is called after internal validation.
         """
