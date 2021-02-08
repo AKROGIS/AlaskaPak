@@ -150,8 +150,8 @@ class AddAreaMultiple(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
-        units = parameters[1].valueAsText
-        fieldname = parameters[2].valueAsText
+        fieldname = parameters[1].valueAsText
+        units = parameters[2].valueAsText
         overwrite = parameters[3].value
         alaskapak.add_area_to_features(features, units, fieldname, overwrite)
 
@@ -244,9 +244,10 @@ class AddAreaSingle(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         feature = parameters[0].valueAsText
-        units = parameters[1].valueAsText
-        field_name = parameters[2].valueAsText
+        field_name = parameters[1].valueAsText
+        units = parameters[2].valueAsText
         overwrite = parameters[3].value
+        # TODO: Support or drop the out feature parameter (4)
         alaskapak.add_area_to_feature(feature, units, field_name, overwrite)
 
 
@@ -323,7 +324,7 @@ class AddLengthMultiple(object):
             parameterType="Required",
             multiValue=True,
         )
- 
+
 
         parameters = [features]
         return parameters
@@ -430,7 +431,7 @@ class AddIdMultiple(object):
             parameterType="Required",
             multiValue=True,
         )
- 
+
 
         parameters = [features]
         return parameters
@@ -537,7 +538,7 @@ class AddXYMultiple(object):
             parameterType="Required",
             multiValue=True,
         )
- 
+
 
         parameters = [features]
         return parameters
@@ -752,11 +753,11 @@ class PolygonFromPoint(object):
         # control point id field
         # azimuth distance tableview
         # polygon id field
-        # group field optional 
-        # sort field optional 
-        # azimuth field optional 
+        # group field optional
+        # sort field optional
+        # azimuth field optional
         # distance field optional
-        # polygon features - output 
+        # polygon features - output
 
 
         parameters = [features]

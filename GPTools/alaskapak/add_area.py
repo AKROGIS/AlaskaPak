@@ -203,7 +203,7 @@ def add_area_to_feature(feature, units, fieldname="Area", overwrite=False):
 def add_area_to_features(features, units, fieldname="Area", overwrite=False):
     for feature in features:
         utils.info("Adding Area to {0}".format(feature))
-        add_area_to_feature(feature, fieldname, units, overwrite)
+        add_area_to_feature(feature, units, fieldname, overwrite)
 
 
 if __name__ == "__main__":
