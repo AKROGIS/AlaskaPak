@@ -39,7 +39,6 @@ imp.reload(alaskapak)
 # required for Python 2/3 compatibility
 
 
-
 class Toolbox(object):
     """
     Define the toolbox.
@@ -62,7 +61,7 @@ class Toolbox(object):
             AddAreaSingle,
             AddLengthSingle,
             AddLengthMultiple,
-            AddUniqueID,
+            AddIdSingle,
             AddIdMultiple,
             AddXYSingle,
             AddXYMultiple,
@@ -78,11 +77,11 @@ class Toolbox(object):
 
 
 class AddAreaMultiple(object):
-    """A tool to add an Area column to multiple polygon feature classes."""
+    """A tool to add an area attribute to multiple polygon feature classes."""
 
     def __init__(self):
         self.label = "Add Area (Multiple)"
-        self.description = "Add an area attribute to multiple polygon feature Classes"
+        self.description = "Add an area attribute to multiple polygon feature classes."
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -158,11 +157,11 @@ class AddAreaMultiple(object):
 
 
 class AddAreaSingle(object):
-    """A tool to add an Area column to multiple polygon feature classes."""
+    """A tool to add an area attribute to a polygon feature class."""
 
     def __init__(self):
         self.label = "Add Area (Single)"
-        self.description = "Add an area attribute to polygon features"
+        self.description = "Add an area attribute to a polygon feature class."
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -254,11 +253,11 @@ class AddAreaSingle(object):
 
 
 class AddLengthSingle(object):
-    """A tool to add an Area column to multiple polygon feature classes."""
+    """A tool to add a length attribute to a single polyline or polygon feature class."""
 
     def __init__(self):
         self.label = "Add Length (Single)"
-        self.description = "Add a length attribute to a single polyline feature Class"
+        self.description = "Add a length attribute to a single polyline or polygon feature class."
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -308,11 +307,11 @@ class AddLengthSingle(object):
 
 
 class AddLengthMultiple(object):
-    """A tool to add a length attribute to multiple polyline feature Classes."""
+    """A tool to add a length attribute to multiple polyline or polygon feature classes."""
 
     def __init__(self):
-        self.label = "Add Area (Multiple)"
-        self.description = "Add a length attribute to multiple polyline feature Classes"
+        self.label = "Add Length (Multiple)"
+        self.description = "Add a length attribute to multiple polyline or polygon feature classes."
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -358,12 +357,12 @@ class AddLengthMultiple(object):
         alaskapak.add_area_to_features(features)
 
 
-class AddUniqueID(object):
-    """A tool to add an Area column to multiple polygon feature classes."""
+class AddIdSingle(object):
+    """A tool to add a unique integer id to a feature class."""
 
     def __init__(self):
         self.label = "Add Unique ID (Single)"
-        self.description = "Add an area attribute to multiple polygon feature Classes"
+        self.description = "Add a unique integer id to a feature class."
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -415,11 +414,11 @@ class AddUniqueID(object):
 
 
 class AddIdMultiple(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to add a unique integer id to multiple feature classes."""
 
     def __init__(self):
         self.label = "Add Unique Id (Multiple)"
-        self.description = "Add an area attribute to multiple polygon feature Classes"
+        self.description = "Add a unique integer id to multiple feature classes."
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -466,11 +465,11 @@ class AddIdMultiple(object):
 
 
 class AddXYSingle(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to add X and Y attributes to a point feature class."""
 
     def __init__(self):
         self.label = "Add XY (Single)"
-        self.description = "Add an area attribute to multiple polygon feature Classes"
+        self.description = "Add X and Y attributes to a point feature class."
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -522,11 +521,11 @@ class AddXYSingle(object):
 
 
 class AddXYMultiple(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to add X and Y attributes to multiple point feature classes."""
 
     def __init__(self):
         self.label = "Add XY (Multiple)"
-        self.description = "Add an area attribute to multiple polygon feature Classes"
+        self.description = "Add X and Y attributes to multiple point feature classes."
         self.category = "Add Attributes"
         self.canRunInBackground = True
 
@@ -573,11 +572,11 @@ class AddXYMultiple(object):
 
 
 class Buildings(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to create rectangular building polygons from a single edge."""
 
     def __init__(self):
-        self.label = "Create Square Buildings"
-        self.description = "Add an area attribute to multiple polygon feature Classes"
+        self.label = "Create Rectangular Buildings"
+        self.description = "Create rectangular building polygons from a single edge."
         self.category = "Polygon Generation"
         self.canRunInBackground = True
 
@@ -626,11 +625,11 @@ class Buildings(object):
 
 
 class LineToRectangle(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to create rectangular polygons from a single line and offset."""
 
     def __init__(self):
         self.label = "Line to Rectangle"
-        self.description = "Create a Rectangle from one side (line) and offset"
+        self.description = "Create rectangular polygons from a single line and offset."
         self.category = "Polygon Generation"
         self.canRunInBackground = True
 
@@ -679,11 +678,11 @@ class LineToRectangle(object):
 
 
 class PointsToPolygon(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to create polygons from an ordered set of points."""
 
     def __init__(self):
         self.label = "Points to Polygon"
-        self.description = "Creates polygons from points on the perimeters"
+        self.description = "Create polygons from an ordered set of points."
         self.category = "Polygon Generation"
         self.canRunInBackground = True
 
@@ -733,11 +732,11 @@ class PointsToPolygon(object):
 
 
 class PolygonFromPoint(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to create polygons from a control point and a set of azimuths and distances."""
 
     def __init__(self):
         self.label = "Polygons from Control Point"
-        self.description = "Creates polygons from control point and a set of azimuths and distances"
+        self.description = "Create polygons from a control point and a set of azimuths and distances."
         self.category = "Polygon Generation"
         self.canRunInBackground = True
 
@@ -793,11 +792,11 @@ class PolygonFromPoint(object):
 
 
 class RandomizePoints(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to add a random offset to a point to protect sensitive data."""
 
     def __init__(self):
         self.label = "Randomize Points"
-        self.description = "Adds a random offset to a point to protect sensitive data"
+        self.description = "Add a random offset to a point to protect sensitive data."
         self.category = "Randomize"
         self.canRunInBackground = True
 
@@ -850,11 +849,11 @@ class RandomizePoints(object):
 
 
 class ObscurePoints(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to create random circles that contain sensitive points."""
 
     def __init__(self):
         self.label = "Obscure Points"
-        self.description = "Replaces a point within a random circle to protect sensitive data"
+        self.description = "Create random circles that contain sensitive points."
         self.category = "Randomize"
         self.canRunInBackground = True
 
@@ -906,11 +905,11 @@ class ObscurePoints(object):
 
 
 class RandomTransects(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to create random survey transects (lines) within a polygon boundary."""
 
     def __init__(self):
         self.label = "Random Transects"
-        self.description = "Creates random survey transects (lines) within a polygon boundary."
+        self.description = "Create random survey transects (lines) within a polygon boundary."
         self.category = "Randomize"
         self.canRunInBackground = True
 
@@ -964,11 +963,11 @@ class RandomTransects(object):
 
 
 class TableToShape(object):
-    """A tool to add a X and Y columns to multiple polygon feature classes."""
+    """A tool to create a feature class from a tabular shape description."""
 
     def __init__(self):
         self.label = "Table to Shape"
-        self.description = "Creates a feature from a point file and tabuar shape description"
+        self.description = "Create a feature class from a tabular shape description."
         self.canRunInBackground = True
 
     def getParameterInfo(self):
