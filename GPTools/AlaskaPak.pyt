@@ -113,7 +113,7 @@ class AddAreaMultiple(object):
             datatype="GPString",
             parameterType="Optional",
         )
-        units.filter.list = alaskapak.valid_units
+        units.filter.list = alaskapak.valid_area_units
 
         overwrite = arcpy.Parameter(
             name="overwrite",
@@ -195,7 +195,7 @@ class AddAreaSingle(object):
             datatype="GPString",
             parameterType="Optional",
         )
-        units.filter.list = alaskapak.valid_units
+        units.filter.list = alaskapak.valid_area_units
 
         overwrite = arcpy.Parameter(
             name="overwrite",
@@ -263,7 +263,7 @@ class AddLengthSingle(object):
 
     def getParameterInfo(self):
         """Define parameter definitions"""
-        features = arcpy.Parameter(
+        feature = arcpy.Parameter(
             name="features",
             displayName="Input Features",
             direction="Input",
@@ -271,12 +271,48 @@ class AddLengthSingle(object):
             parameterType="Required",
             multiValue=True,
         )
-        # Features (required) - polyline or polygon (perimeter)
-        # Field Name - required text - default = Miles
-        # Units - optional, default = Miles - Picklist
+        feature.filter.list = ["Polyline", "Polygon"]
 
+        field_name = arcpy.Parameter(
+            name="field_name",
+            displayName="Field name",
+            direction="Input",
+            datatype="Field",
+            parameterType="Optional",
+        )
+        # FIXME: the parameter dependency is preventing input of a _new_ field name.
+        field_name.value = "Length"
+        field_name.parameterDependencies = [feature.name]
+        field_name.filter.list = ["Double"]
 
-        parameters = [features]
+        units = arcpy.Parameter(
+            name="units",
+            displayName="Linear Units",
+            direction="Input",
+            datatype="GPString",
+            parameterType="Optional",
+        )
+        units.filter.list = alaskapak.valid_length_units
+
+        overwrite = arcpy.Parameter(
+            name="overwrite",
+            displayName="Overwrite Existing Values",
+            direction="Input",
+            datatype="GPBoolean",
+            parameterType="Optional",
+        )
+        # TODO: Support or drop the out feature parameter
+        out_feature = arcpy.Parameter(
+            name="out_feature",
+            displayName="Output Feature",
+            direction="Output",
+            datatype="GPFeatureLayer",
+            parameterType="Derived",
+        )
+        out_feature.parameterDependencies = [feature.name]
+        out_feature.schema.clone = True
+
+        parameters = [feature, field_name, units, overwrite, out_feature]
         return parameters
 
     def isLicensed(self):
@@ -325,9 +361,34 @@ class AddLengthMultiple(object):
             parameterType="Required",
             multiValue=True,
         )
+        features.filter.list = ["Polyline", "Polygon"]
 
+        field_name = arcpy.Parameter(
+            name="field_name",
+            displayName="Field name",
+            direction="Input",
+            datatype="Field",
+            parameterType="Optional",
+        )
 
-        parameters = [features]
+        units = arcpy.Parameter(
+            name="units",
+            displayName="Linear Units",
+            direction="Input",
+            datatype="GPString",
+            parameterType="Optional",
+        )
+        units.filter.list = alaskapak.valid_length_units
+
+        overwrite = arcpy.Parameter(
+            name="overwrite",
+            displayName="Overwrite Existing Values",
+            direction="Input",
+            datatype="GPBoolean",
+            parameterType="Optional",
+        )
+
+        parameters = [features, field_name, units, overwrite]
         return parameters
 
     def isLicensed(self):

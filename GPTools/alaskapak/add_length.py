@@ -76,7 +76,7 @@ import arcpy
 # wrong - it uses planar geometry with the spherical coordinates.)
 # * Feature may be locked or un-editable
 
-validUnits = [
+valid_units = [
     "CENTIMETERS",
     "DECIMALDEGREES",
     "DECIMETERS",
