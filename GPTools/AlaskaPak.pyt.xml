@@ -1,27 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <metadata xml:lang="en">
-	<Esri>
-		<CreaDate>20141114</CreaDate>
-		<CreaTime>10220300</CreaTime>
-		<ArcGISFormat>1.0</ArcGISFormat>
-		<SyncOnce>TRUE</SyncOnce>
-		<ModDate>20141119</ModDate>
-		<ModTime>153938</ModTime>
-	</Esri>
-	<toolbox name="AlaskaPak" alias="AlaskaPak">
-		<arcToolboxHelpPath>c:\program files (x86)\arcgis\desktop10.3\Help\gp</arcToolboxHelpPath>
-		<toolsets><toolset name="Add Attributes"/></toolsets>
-	</toolbox>
-	<dataIdInfo>
-		<idCitation>
-			<resTitle>AlaskaPak</resTitle>
-		</idCitation>
-	</dataIdInfo>
-	<distInfo>
-		<distributor>
-			<distorFormat>
-				<formatName>ArcToolbox Toolbox</formatName>
-			</distorFormat>
-		</distributor>
-	</distInfo>
+    <Esri>
+        <CreaDate>20141114</CreaDate>
+        <CreaTime>10220300</CreaTime>
+        <ArcGISFormat>1.0</ArcGISFormat>
+        <SyncOnce>TRUE</SyncOnce>
+        <ModDate>20210207</ModDate>
+        <ModTime>164449</ModTime>
+        <scaleRange>
+            <minScale>625000</minScale>
+            <maxScale>5000</maxScale>
+        </scaleRange>
+        <ArcGISProfile>ItemDescription</ArcGISProfile>
+    </Esri>
+    <toolbox name="AlaskaPak" alias="AlaskaPak">
+        <arcToolboxHelpPath>c:\program files (x86)\arcgis\desktop10.8\Help\gp</arcToolboxHelpPath>
+        <toolsets>
+            <toolset name="Add Attributes"/>
+        </toolsets>
+    </toolbox>
+    <dataIdInfo>
+        <idCitation>
+            <resTitle>AlaskaPak</resTitle>
+        </idCitation>
+        <idPurp>Write Simple Summary (Purpose)</idPurp>
+        <idAbs>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Write Description (Abstract)&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</idAbs>
+        <idCredit>Write Credits</idCredit>
+        <searchKeys>
+            <keyword>Write Simple Tags</keyword>
+        </searchKeys>
+        <resConst>
+            <Consts>
+                <useLimit>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Write Limitation&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;</useLimit>
+            </Consts>
+        </resConst>
+    </dataIdInfo>
+    <distInfo>
+        <distributor>
+            <distorFormat>
+                <formatName>ArcToolbox Toolbox</formatName>
+            </distorFormat>
+        </distributor>
+    </distInfo>
+    <mdHrLv>
+        <ScopeCd value="005"></ScopeCd>
+    </mdHrLv>
 </metadata>

@@ -1,2 +1,76 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<metadata xml:lang="en"><Esri><CreaDate>20141114</CreaDate><CreaTime>10583100</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce></Esri></metadata>
+<metadata xml:lang="en">
+    <Esri>
+        <CreaDate>20141114</CreaDate>
+        <CreaTime>10583100</CreaTime>
+        <ArcGISFormat>1.0</ArcGISFormat>
+        <SyncOnce>TRUE</SyncOnce>
+        <ModDate>20210207</ModDate>
+        <ModTime>16444200</ModTime>
+        <scaleRange>
+            <minScale>150000000</minScale>
+            <maxScale>5000</maxScale>
+        </scaleRange>
+        <ArcGISProfile>ItemDescription</ArcGISProfile>
+    </Esri>
+    <dataIdInfo>
+        <idCitation>
+            <resTitle>Write Simple Title</resTitle>
+        </idCitation>
+        <idAbs>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Write Simple Summary (Abstract)&lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;Note 1: Tool can have an embed thumbnail image and an embedded Tool sidebar help image.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</idAbs>
+        <idCredit>Write Simple Credits here</idCredit>
+        <searchKeys>
+            <keyword>Write Simple Tags</keyword>
+        </searchKeys>
+    </dataIdInfo>
+    <distInfo>
+        <distributor>
+            <distorFormat>
+                <formatName>ArcToolbox Tool</formatName>
+            </distorFormat>
+        </distributor>
+    </distInfo>
+    <tool name="AddAreaSingle" displayname="Add Area (Single)" toolboxalias="AlaskaPak"
+        xmlns="">
+        <parameters>
+            <param name="feature" displayname="Input Feature" type="Required" direction="Input" datatype="Feature Layer" expression="feature">
+                <dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;feature &lt;/SPAN&gt;&lt;SPAN&gt;parameter &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;dialog &lt;/SPAN&gt;&lt;SPAN&gt;explanation&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+                <pythonReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;feature &lt;/SPAN&gt;&lt;SPAN&gt;parameter &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;scripting &lt;/SPAN&gt;&lt;SPAN&gt;explanation&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</pythonReference>
+            </param>
+            <param name="field_name" displayname="Field name" type="Optional" direction="Input" datatype="Field" expression="{field_name}">
+                <dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;field_name &lt;/SPAN&gt;&lt;SPAN&gt;parameter &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;dialog &lt;/SPAN&gt;&lt;SPAN&gt;explanation&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+                <pythonReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;field_name &lt;/SPAN&gt;&lt;SPAN&gt;parameter &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;scripting &lt;/SPAN&gt;&lt;SPAN&gt;explanation&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</pythonReference>
+            </param>
+            <param name="units" displayname="Areal Units" type="Optional" direction="Input" datatype="String" expression="{Acres | Ares | Hectares | Square Centimeters | Square Decimeters | Square Inches | Square Feet | Square Kilometers | Square Meters | Square Miles | Square Millimeters | Square Yards}">
+                <dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;units &lt;/SPAN&gt;&lt;SPAN&gt;parameter &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;dialog &lt;/SPAN&gt;&lt;SPAN&gt;explanation&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+                <pythonReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;units &lt;/SPAN&gt;&lt;SPAN&gt;parameter &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;scripting &lt;/SPAN&gt;&lt;SPAN&gt;explanation&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</pythonReference>
+            </param>
+            <param name="overwrite" displayname="Overwrite Existing Values" type="Optional" direction="Input" datatype="Boolean" expression="{overwrite}">
+                <dialogReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;overwrite &lt;/SPAN&gt;&lt;SPAN&gt;parameter &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;dialog &lt;/SPAN&gt;&lt;SPAN&gt;explanation&lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;When checked data in the selected column name will be overwritten. Do not describe default (it is obvious)&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</dialogReference>
+                <pythonReference>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN STYLE="font-weight:bold;"&gt;overwrtie &lt;/SPAN&gt;&lt;SPAN&gt;parameter &lt;/SPAN&gt;&lt;SPAN STYLE="font-style:italic;"&gt;scripting &lt;/SPAN&gt;&lt;SPAN&gt;explanation&lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;When True any existing data in the selected column name will be overwritten. Default is False. (Name column includes the fact it is optional)&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</pythonReference>
+            </param>
+        </parameters>
+        <summary>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Write Simple Summary (Abstract)&lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;Note 1: Tool can have an embed thumbnail image and an embedded Tool sidebar help image.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</summary>
+        <usage>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Write Usage&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</usage>
+        <scriptExamples>
+            <scriptExample>
+                <title>Write Code Sample Title 1 of N</title>
+                <para>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Write Code Sample 1 description&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</para>
+                <code>Write Code Snippet (no formatting)</code>
+            </scriptExample>
+        </scriptExamples>
+        <scriptExamples>
+            <scriptExample>
+                <title>Write Code Sample Title 2 of N</title>
+                <para>&lt;DIV STYLE="text-align:Left;"&gt;&lt;DIV&gt;&lt;DIV&gt;&lt;P&gt;&lt;SPAN&gt;Write Code Sample 2 description&lt;/SPAN&gt;&lt;/P&gt;&lt;P&gt;&lt;SPAN&gt;Describes the example and privides relevant details about using the tool in a python script.&lt;/SPAN&gt;&lt;/P&gt;&lt;/DIV&gt;&lt;/DIV&gt;&lt;/DIV&gt;</para>
+                <code>Write Python Code Snippet
+
+no formatting; lines less than 80 characters
+
+The previous line was blank</code>
+            </scriptExample>
+        </scriptExamples>
+    </tool>
+    <mdHrLv>
+        <ScopeCd value="005"/>
+    </mdHrLv>
+</metadata>
