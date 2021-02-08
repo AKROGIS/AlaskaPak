@@ -120,6 +120,9 @@ valid_units = [
 
 
 def add_area_to_feature(feature, units, fieldname="Area", overwrite=False):
+    """Add an area attribute to a polygon feature class."""
+    # TODO Document parameters in the doc string
+
     # Check for a feature
     if not arcpy.Exists(feature):
         utils.warn("feature not found.  Skipping...")
@@ -201,6 +204,9 @@ def add_area_to_feature(feature, units, fieldname="Area", overwrite=False):
 
 
 def add_area_to_features(features, units, fieldname="Area", overwrite=False):
+    """Add an area attribute to multiple polygon feature classes."""
+    # TODO Document parameters in the doc string
+
     for feature in features:
         utils.info("Adding Area to {0}".format(feature))
         add_area_to_feature(feature, units, fieldname, overwrite)
