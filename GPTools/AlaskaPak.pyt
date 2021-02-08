@@ -46,16 +46,17 @@ class Toolbox(object):
 
     The name of the toolbox is the name of the .pyt file.
     The label is the display name for the toolbox as shown in the Geoprocessing pane.
-    The alias is ??
+    The alias is used as a command suffix for scripting in the python window
     The description is shown in the Geoprocessing pane.
     """
 
     def __init__(self):
         self.label = "AlaskaPak Toolbox"
-        self.alias = "AlaskaPak"
+        self.alias = "alaskapak"
         self.description = "A collection of GIS tools for the Alaska Region."
 
         # List of tool classes associated with this toolbox
+        # They will be shown in categories in sort order (not the order here)
         self.tools = [
             AddAreaMultiple,
             AddAreaSingle,
@@ -183,6 +184,7 @@ class AddAreaSingle(object):
             datatype="Field",
             parameterType="Optional",
         )
+        # FIXME: the parameter dependency is preventing input of a _new_ field name.
         field_name.value = "Area"
         field_name.parameterDependencies = [feature.name]
         field_name.filter.list = ["Double"]
@@ -203,7 +205,7 @@ class AddAreaSingle(object):
             datatype="GPBoolean",
             parameterType="Optional",
         )
-
+        # TODO: Support or drop the out feature parameter
         out_feature = arcpy.Parameter(
             name="out_feature",
             displayName="Output Feature",

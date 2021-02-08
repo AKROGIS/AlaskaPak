@@ -101,7 +101,7 @@ import os.path
 
 import arcpy
 
-import utils
+from . import utils
 
 valid_units = [
     "Acres",
@@ -207,8 +207,13 @@ def add_area_to_features(features, units, fieldname="Area", overwrite=False):
 
 
 if __name__ == "__main__":
+    # TODO: this is in a package now, so it can't be called as a script.
+    # TODO: if run as a script for testing, does the `from . import utils` work?
     feature_list = arcpy.GetParameterAsText(0).split(";")
     user_units = arcpy.GetParameterAsText(1)
+    # TODO: what if optional parameters are not provided on the command line
+    # TODO: support arcpy command line convention of "#" for None
     field_name = arcpy.GetParameterAsText(2)
     overwrite_field = arcpy.GetParameterAsText(3).lower() == "true"
+    # TODO: support parameter(4) output feature class for single or remove option
     add_area_to_features(feature_list, user_units, field_name, overwrite_field)
