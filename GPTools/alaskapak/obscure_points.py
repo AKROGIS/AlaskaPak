@@ -340,18 +340,16 @@ def CreateLimitedCircles(pts, min, max, nogo, mustgo):
 
 def CreatePoints(existing, min, max):
     """existing is a point or multipoint feature class
+    if a multipoint feature class, the centroid is used as the basis for the new point.
     min = minimum distance of random point from source point in (0,max)
     max = maximum distance of random point from source point in (min,..)
     returns a feature class called "in_memory\temp". The caller
     is responsible for deleting this feature class when they are done."""
     newpts = arcpy.FeatureClassToFeatureClass_conversion(existing, "in_memory", "temp")
-    pts = arcpy.UpdateCursor(newpts)
-    pt = pts.next()
-    while pt != None:
-        pt.shape = RandomizeGeom(pt.shape, min, max)
-        pts.updateRow(pt)
-        pt = pts.next()
-    del pt, pts
+    with arcpy.da.UpdateCursor(newpts, ["SHAPE@XY"]) as cursor:
+        x, y = row[0]
+        row[0] = RandomizePoint(x, y, min, max)
+        cursor.updateRow(row)
     return newpts
 
 

@@ -109,8 +109,14 @@ for feature in featureList.split(";"):
             feature, idFieldName, "Long", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
         )
     id = start
-    rows = arcpy.UpdateCursor(feature, "", "", idFieldName, sortFieldName)
-    for row in rows:
-        row.setValue(idFieldName, id)
-        rows.updateRow(row)
-        id = id + increment
+
+    # WARNING: shapefiles do not support ORDER BY
+    if sortFieldName:
+        order_by = "ORDER BY {0}".format(sortFieldName)
+    else:
+        order_by = None
+    with arcpy.da.UpdateCursor(feature, [idFieldName], sql_clause=(None, order_by) as cursor:
+        for row in cursor:
+            row[0] = id
+            id += increment
+            cursor.updateRow(row)
