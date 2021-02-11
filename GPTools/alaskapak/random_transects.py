@@ -346,42 +346,33 @@ def CreateFeatureClass(template, workspace, name):
 def CreateLines(
     polygons, lines, lineGoal, maxAttempts, minLength, maxLength, allowOverlap
 ):
-    description = arcpy.Describe(polygons)
-    spatialReference = description.SpatialReference
-    shapeFieldName = description.shapeFieldName
-    oidFieldName = description.OIDFieldName
+    spatial_reference = arcpy.Describe(polygons).SpatialReference
 
-    d = arcpy.Describe(lines)
-    polyCursor = arcpy.SearchCursor(polygons)
-    lineCursor = arcpy.InsertCursor(lines)
-    polygon = polyCursor.next()
-    newLine = None  # positive assignment so del at end will not fail
-    count = 1
-    while polygon:
-        oid = polygon.getValue(oidFieldName)
-        arcpy.SetProgressorLabel("Processing polygon {0}".format(count))
-        shape = polygon.getValue(shapeFieldName)
-        name = "{0} = {1}".format(oidFieldName, oid)
-        lines = GetLines(
-            name,
-            shape,
-            lineGoal,
-            maxAttempts,
-            minLength,
-            maxLength,
-            allowOverlap,
-            spatialReference,
-        )
-        for line in lines:
-            newLine = lineCursor.newRow()
-            newLine.setValue(d.shapeFieldName, line)
-            lineCursor.insertRow(newLine)
-        arcpy.SetProgressorPosition()
-        count = count + 1
-        polygon = polyCursor.next()
-
-    del polyCursor, lineCursor
-    del polygon, newLine
+    count = 0
+    line_fields = ["SHAPE@"]
+    poly_fields = ["OID@", "SHAPE@"]
+    line_cursor = arcpy.da.InsertCursor(lines, line_fields)
+    with arcpy.da.SearchCursor(polygons, poly_fields) as poly_cursor:
+        for row in poly_cursor:
+            count += 1
+            arcpy.SetProgressorLabel("Processing polygon {0}".format(count))
+            oid = row[0]
+            shape = row[1]
+            name = "OBJECTID = {1}".format(oid)
+            lines = GetLines(
+                name,
+                shape,
+                lineGoal,
+                maxAttempts,
+                minLength,
+                maxLength,
+                allowOverlap,
+                spatial_reference,
+            )
+            for line in lines:
+                line_cursor.insertRow([line])
+            arcpy.SetProgressorPosition() # Steps by 1 from 0 to feature count
+    del line_cursor
 
 
 def GetFeatureCount(data):
