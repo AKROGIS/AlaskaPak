@@ -112,32 +112,28 @@ def ParsePolygonData(
     the value is an ordered list of (azimuth/distance) tuples"""
     result = {}
     currentId = None
-    rows = arcpy.SearchCursor(polygonDataTable)
-    for row in rows:
-        id = row.getValue(polygonIdFieldName)
-        # We are done if we find a null id
-        if id == None:
-            break
-        # If we have seen this id before, then skip this row
-        if result.has_key(id):
-            msg = "Polygon {0} has already been closed, skipping."
-            utils.warn(msg.format(id))
-            continue
-        # we have a new id, and an old id
-        if id != currentId:
-            # save the old list
-            if currentId and currentList:
-                result[currentId] = currentList
-            # start a new list
-            currentList = []
-            currentId = id
-        # add the point to the current list
-        currentList.append(
-            (
-                row.getValue(polygonAzimuthFieldName),
-                row.getValue(polygonDistanceFieldName),
-            )
-        )
+    fields = [polygonIdFieldName, polygonAzimuthFieldName, polygonDistanceFieldName]
+    with arcpy.da.SearchCursor(polygonDataTable, fields) as cursor:
+        for row in cursor:
+            id = row[0]
+            # We are done if we find a null id
+            if id == None:
+                break
+            # If we have seen this id before, then skip this row
+            if id in result:
+                msg = "Polygon {0} has already been closed, skipping."
+                utils.warn(msg.format(id))
+                continue
+            # we have a new id, and an old id
+            if id != currentId:
+                # save the old list
+                if currentId and currentList:
+                    result[currentId] = currentList
+                # start a new list
+                currentList = []
+                currentId = id
+            # add the point to the current list
+            currentList.append((row[1],row[2]))
     # save any open lists
     if currentId and currentList:
         result[currentId] = currentList

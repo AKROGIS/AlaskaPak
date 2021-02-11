@@ -385,15 +385,7 @@ def CreateLines(
 
 
 def GetFeatureCount(data):
-    cursor = arcpy.SearchCursor(data)
-    row = cursor.next()
-    count = 0
-    while row:
-        count = count + 1
-        row = cursor.next()
-    del cursor, row
-    # print(count)
-    return count
+    return len(arcpy.da.SearchCursor(data, ["OID@"]))
 
 
 def GetLines(
