@@ -202,37 +202,29 @@ else:
         workspace = workspace[: workspace.rfind(".gdb") + 4]
 
 # create a simple field mapping from input to output
-fields = {}
-for field in lineDescription.fields:
+# Need to be a lists, dicts do not have a guaranteed ordering
+line_fields = ["SHAPE@", offsetFN]
+rect_fields = ["SHAPE@", arcpy.ValidateFieldName(offsetFN, workspace)]
+for field in arcpy.ListFields(lineFC):
     name = field.name
     if (
-        name != lineDescription.shapeFieldName
-        and name != lineDescription.OIDFieldName
-        and field.editable
-    ):  # skip un-editable fields like Shape_Length
-        fields[name] = arcpy.ValidateFieldName(name, workspace)
-        # print(workspace, name, "=>", fields[name])
+        field.type not in ["OID", "GlobalID", "Geometry", "Blob", "Raster"]
+        and name != offsetFN
+        and field.editable # skip un-editable fields like Shape_Length
+    ):
+        line_fields.append(name)
+        rect_fields.append(arcpy.ValidateFieldName(name, workspace))
 
-# create the cursors
-polys = arcpy.InsertCursor(rectFC)
-lines = arcpy.SearchCursor(lineFC)
-for line in lines:
-    # FIXME - only works if lineDescription.shapeFieldName = 'shape'
-    if line.shape:
-        poly = polys.newRow()
-        rect = MakeRectFromLine(line.shape, line.getValue(offsetFN))
-        if rect:
-            for field in fields:
-                poly.setValue(fields[field], line.getValue(field))
-            # FIXME - only works if polyDescription.shapeFieldName = 'shape'
-            poly.shape = rect
-            polys.insertRow(poly)
+rect_cursor = arcpy.da.InsertCursor(rectFC, rect_fields)
+with arcpy.da.SearchCursor(lineFC, line_fields) as line_cursor:
+    for row in line_cursor:
+        shape = row[0]
+        offset = row[1]
+        if shape:
+            rect = MakeRectFromLine(shape, offset)
+            if rect:
+                rect_row = [rect, offset] + row[2:]
+                rect_cursor.insertRow(rect_row)
+del rect_cursor
 
 arcpy.AddMessage("Output feature class has been populated")
-
-# When writing to a Personal GDB, you must delete the last row or it will not
-# get written to the database.
-if poly:
-    del poly
-# delete the insert cursor to close it and remove the exclusive lock
-del polys
