@@ -11,3 +11,5 @@ from .add_area import valid_units as valid_area_units
 from .add_length import add_length_to_feature, add_length_to_features
 from .add_length import valid_units as valid_length_units
 from .points_to_polygons import points_to_polygons
+from .table_to_shape import table_to_shape
+from .table_to_shape import table_to_shape_commandline
