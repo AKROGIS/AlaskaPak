@@ -371,7 +371,7 @@ def CreateLines(
             )
             for line in lines:
                 line_cursor.insertRow([line])
-            arcpy.SetProgressorPosition() # Steps by 1 from 0 to feature count
+            arcpy.SetProgressorPosition()  # Steps by 1 from 0 to feature count
     del line_cursor
 
 

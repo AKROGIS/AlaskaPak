@@ -408,7 +408,6 @@ def table_to_shape(
 
 
 def table_to_shape_commandline():
-    """Parse and validate command line arguments then build shape from table.
-    """
+    """Parse and validate command line arguments then build shape from table."""
     args = toolbox_validation()
     table_to_shape(*args, validate=True)

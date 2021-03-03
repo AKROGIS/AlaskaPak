@@ -210,7 +210,7 @@ for field in arcpy.ListFields(lineFC):
     if (
         field.type not in ["OID", "GlobalID", "Geometry", "Blob", "Raster"]
         and name != offsetFN
-        and field.editable # skip un-editable fields like Shape_Length
+        and field.editable  # skip un-editable fields like Shape_Length
     ):
         line_fields.append(name)
         rect_fields.append(arcpy.ValidateFieldName(name, workspace))

@@ -133,7 +133,7 @@ def ParsePolygonData(
                 currentList = []
                 currentId = id
             # add the point to the current list
-            currentList.append((row[1],row[2]))
+            currentList.append((row[1], row[2]))
     # save any open lists
     if currentId and currentList:
         result[currentId] = currentList

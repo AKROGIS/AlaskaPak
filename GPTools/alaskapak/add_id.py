@@ -115,7 +115,9 @@ for feature in featureList.split(";"):
         order_by = "ORDER BY {0}".format(sortFieldName)
     else:
         order_by = None
-    with arcpy.da.UpdateCursor(feature, [idFieldName], sql_clause=(None, order_by) as cursor:
+    with arcpy.da.UpdateCursor(
+        feature, [idFieldName], sql_clause=(None, order_by)
+    ) as cursor:
         for row in cursor:
             row[0] = id
             id += increment
