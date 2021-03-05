@@ -9,8 +9,13 @@ perimeter, miles, feet, meter, unit, calculate, attribute, column, field
 
 Summary:
 Add and/or update a length field for line and polygon features
+
  WARNING: Results will be incorrect if the features have geographic coordinates,
- or no projection specified.
+   or no projection specified.
+ WARNING: If coordinate system is unknown, units are assumed to be units requested.
+ WARNING: If coordinates are geographic, results are wrong. (the shape_length is also
+   wrong - it uses planar geometry with the spherical coordinates.)
+
 
 Usage:
 This tool will add and/or update a length field to Polyline or Polygon features.

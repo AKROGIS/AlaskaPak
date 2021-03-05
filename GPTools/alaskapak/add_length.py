@@ -5,6 +5,8 @@ Add a length attribute to one or more polyline or polygon feature classes.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import sys
+
 import arcpy
 
 from . import utils
@@ -27,13 +29,9 @@ valid_units = [
 ]
 
 
-def add_length_to_feature(feature, units, field_name="Length", overwrite=False):
+def add_length_to_feature(feature, units=None, field_name="Length", overwrite=False):
     """Add a length attribute to a single polyline or polygon feature class."""
     # TODO Document parameters in the doc string
-
-    # TODO: If coordinate system is unknown, units are assumed to be units requested.
-    # TODO: If coordinates are geographic, results are wrong. (the shape_length is also
-    # wrong - it uses planar geometry with the spherical coordinates.)
 
     utils.info("Adding length to {0}".format(feature))
 
@@ -58,11 +56,16 @@ def add_length_to_feature(feature, units, field_name="Length", overwrite=False):
             utils.warn(msg)
             return
 
-    length = "!shape.length@{0}!".format(units)
+    # TODO See add_area for handling geographic
+
+    if units is None:
+        length = "!shape.length!"
+    else:
+        length = "!shape.length@{0}!".format(units)
     arcpy.CalculateField_management(feature, field_name, length, "PYTHON_9.3", "")
 
 
-def add_length_to_features(features, units, field_name="Length", overwrite=False):
+def add_length_to_features(features, units=None, field_name="Length", overwrite=False):
     """Add a length attribute to multiple polyline or polygon feature classes."""
     # TODO Document parameters in the doc string
 
@@ -70,14 +73,73 @@ def add_length_to_features(features, units, field_name="Length", overwrite=False
         add_length_to_feature(feature, units, field_name, overwrite)
 
 
+def toolbox_validation():
+    """Exits with an error message if the command line arguments are not valid.
+
+    Provides the same default processing and validation for command line scripts
+    that the ArcGIS toolbox framework provides.  It does not do all possible
+    validation and error checking.
+
+    Returns:
+        A list of validated command line parameters.
+    """
+
+    # pylint: disable=too-many-branches
+
+    if len(sys.argv) < 2 or len(sys.argv) > 5:
+        usage = (
+            "Usage: {0} features [units] [field_name] [overwrite]"
+        )
+        utils.die(usage.format(sys.argv[0]))
+
+    if sys.argv < 5:
+        overwrite = "#"
+    else:
+        overwrite = arcpy.GetParameterAsText(3)
+    if sys.argv < 4:
+        field_name = "#"
+    else:
+        field_name = arcpy.GetParameterAsText(2)
+    if sys.argv < 3:
+        units = "#"
+    else:
+        units = arcpy.GetParameterAsText(1)
+    feature_list = arcpy.GetParameterAsText(0)
+
+    # validate features
+    features = []
+    for feature in feature_list.split(";"):
+        if feature == "'" and feature[-1] == "'":
+            feature = feature[1:-1]
+        if arcpy.Exists(feature):
+            features.append(feature)
+        else:
+            utils.warn("Feature class ({0}) not found. Skipping.".format(feature))
+    if not features:
+        utils.die("No features found.")
+
+    # validate units
+    if units == "#":
+        units = None
+
+    # validate field_name
+    if field_name == "#":
+        field_name = "Length"
+
+    # validate overwrite
+    if overwrite == "#":
+        overwrite = False
+
+    return [features, units, field_name, overwrite]
+
+
+def add_length_commandline():
+    """Parse and validate command line arguments then add length to features."""
+    args = toolbox_validation()
+    add_length_to_features(*args)
+
+
 if __name__ == "__main__":
-    # TODO: this is in a package now, so it can't be called as a script.
-    # TODO: if run as a script for testing, does the `from . import utils` work?
-    feature_list = arcpy.GetParameterAsText(0).split(";")
-    user_units = arcpy.GetParameterAsText(1)
-    # TODO: what if optional parameters are not provided on the command line
-    # TODO: support arcpy command line convention of "#" for None
-    field_name = arcpy.GetParameterAsText(2)
-    overwrite_field = arcpy.GetParameterAsText(3).lower() == "true"
-    # TODO: support parameter(4) output feature class for single or remove option
-    add_length_to_features(feature_list, user_units, field_name, overwrite_field)
+    # For testing
+    # Change `from . import utils` to `import utils` to run as a script
+    add_length_commandline()
