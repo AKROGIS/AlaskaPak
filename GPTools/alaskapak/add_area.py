@@ -119,7 +119,7 @@ valid_units = [
 ]
 
 
-def add_area_to_feature(feature, units, fieldname="Area", overwrite=False):
+def add_area_to_feature(feature, units="", fieldname="Area", overwrite=False):
     """Add an area attribute to a polygon feature class."""
     # TODO Document parameters in the doc string
 
@@ -203,7 +203,7 @@ def add_area_to_feature(feature, units, fieldname="Area", overwrite=False):
     arcpy.CalculateField_management(feature, new_fieldname, calculation, "PYTHON_9.3")
 
 
-def add_area_to_features(features, units, fieldname="Area", overwrite=False):
+def add_area_to_features(features, units="", fieldname="Area", overwrite=False):
     """Add an area attribute to multiple polygon feature classes."""
     # TODO Document parameters in the doc string
 
