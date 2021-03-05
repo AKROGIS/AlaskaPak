@@ -27,37 +27,47 @@ valid_units = [
 ]
 
 
-def add_length_to_feature(feature, units, fieldname="Length", overwrite=False):
+def add_length_to_feature(feature, units, field_name="Length", overwrite=False):
     """Add a length attribute to a single polyline or polygon feature class."""
     # TODO Document parameters in the doc string
 
-    # TODO: addfield may alter the name of the field, but the original name is
-    #       still used for calc field
     # TODO: If coordinate system is unknown, units are assumed to be units requested.
     # TODO: If coordinates are geographic, results are wrong. (the shape_length is also
     # wrong - it uses planar geometry with the spherical coordinates.)
-    # TODO: Feature may be locked or un-editable
-    field_names = arcpy.ListFields(feature)
-    if fieldname in field_names and not overwrite:
-        msg = "Aborting. Field {0} exists and overwrite is false."
-        utils.warn(msg.format(fieldname))
-        return
 
-    if fieldname not in field_names:
-        arcpy.AddField_management(
-            feature, fieldname, "Double", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
-        )
+    utils.info("Adding length to {0}".format(feature))
+
+    # Verify and/or create field name
+    field_name = utils.valid_field_name(field_name, feature)
+    if field_name in arcpy.ListFields(feature):
+        if overwrite:
+            if not field_name in arcpy.ListFields(feature, field_name, "Double"):
+                msg = "Field {0} exists, but is not the right type. Skipping..."
+                utils.warn(msg.format(field_name))
+                return
+        else:
+            msg = "Not allowed to overwrite existing field {0}. Skipping..."
+            utils.warn(msg.format(field_name))
+            return
+    else:
+        if arcpy.TestSchemaLock(feature):
+            utils.info("Creating new field {0}".format(field_name))
+            arcpy.AddField_management(feature, field_name, "Double",)
+        else:
+            msg = "Unable to acquire a schema lock to add the new field. Skipping..."
+            utils.warn(msg)
+            return
+
     length = "!shape.length@{0}!".format(units)
-    arcpy.CalculateField_management(feature, fieldname, length, "PYTHON_9.3", "")
+    arcpy.CalculateField_management(feature, field_name, length, "PYTHON_9.3", "")
 
 
-def add_length_to_features(features, units, fieldname="Length", overwrite=False):
+def add_length_to_features(features, units, field_name="Length", overwrite=False):
     """Add a length attribute to multiple polyline or polygon feature classes."""
     # TODO Document parameters in the doc string
 
     for feature in features:
-        utils.info("Adding Length to {0}".format(feature))
-        add_length_to_feature(feature, units, fieldname, overwrite)
+        add_length_to_feature(feature, units, field_name, overwrite)
 
 
 if __name__ == "__main__":

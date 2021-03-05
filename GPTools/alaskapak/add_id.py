@@ -107,8 +107,13 @@ def add_id_single(
     fields = arcpy.ListFields(feature_class)
     id_field_name = utils.valid_field_name(field_name, feature_class)
     if id_field_name not in fields:
-        utils.info("Creating new field {0}".format(id_field_name))
-        arcpy.AddField_management(feature_class, id_field_name)
+        if arcpy.TestSchemaLock(feature_class):
+            utils.info("Creating new field {0}".format(id_field_name))
+            arcpy.AddField_management(feature_class, id_field_name)
+        else:
+            msg = "Unable to acquire a schema lock to add the new field. Skipping..."
+            utils.warn(msg)
+            return
 
     order_by = None
     if sort_field_name:

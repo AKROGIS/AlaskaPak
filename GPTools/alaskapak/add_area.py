@@ -5,8 +5,6 @@ Add an area attribute to one or more polygon feature classes.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os.path
-
 import arcpy
 
 from . import utils
@@ -27,7 +25,7 @@ valid_units = [
 ]
 
 
-def add_area_to_feature(feature, units="", fieldname="Area", overwrite=False):
+def add_area_to_feature(feature, units="", field_name="Area", overwrite=False):
     """Add an area attribute to a polygon feature class."""
     # TODO Document parameters in the doc string
 
@@ -50,39 +48,26 @@ def add_area_to_feature(feature, units="", fieldname="Area", overwrite=False):
         utils.warn("feature is not a polygon.  Skipping...")
         return
 
-    # Validate or Sanitize Field Name
-    if fieldname in arcpy.ListFields(feature):
+    # Verify or create field name
+    if field_name in arcpy.ListFields(feature):
         if overwrite:
-            if not fieldname in arcpy.ListFields(feature, fieldname, "Double"):
-                utils.warn(
-                    "field {} exists, but is not the right type.  "
-                    "Skipping...".format(fieldname)
-                )
+            if not field_name in arcpy.ListFields(feature, field_name, "Double"):
+                msg = "Field {0} exists, but is not the right type. Skipping..."
+                utils.warn(msg.format(field_name))
                 return
         else:
-            utils.warn("field {} already exists.  " "Skipping...".format(fieldname))
+            msg = "Not allowed to overwrite existing field {0}. Skipping..."
+            utils.warn(msg.format(field_name))
             return
-        new_fieldname = fieldname
+        new_field_name = field_name
     else:
         if arcpy.TestSchemaLock(feature):
-            workspace = os.path.dirname(feature)
-            new_fieldname = arcpy.ValidateFieldName(field_name, workspace)
-            arcpy.AddField_management(
-                feature,
-                new_fieldname,
-                "Double",
-                "",
-                "",
-                "",
-                "",
-                "NULLABLE",
-                "NON_REQUIRED",
-                "",
-            )
+            new_field_name = utils.valid_field_name(field_name, feature)
+            utils.info("Creating new field {0}".format(new_field_name))
+            arcpy.AddField_management(feature, new_field_name, "Double",)
         else:
-            utils.warn(
-                "Unable to acquire a schema lock to add the new field. " "Skipping..."
-            )
+            msg = "Unable to acquire a schema lock to add the new field. Skipping..."
+            utils.warn(msg)
             return
 
     # Sanitize Units
@@ -108,16 +93,16 @@ def add_area_to_feature(feature, units="", fieldname="Area", overwrite=False):
 
     # Do Calculation
     calculation = "!{0}{1}{2}!".format(shape_name, area_method, out_units)
-    arcpy.CalculateField_management(feature, new_fieldname, calculation, "PYTHON_9.3")
+    arcpy.CalculateField_management(feature, new_field_name, calculation, "PYTHON_9.3")
 
 
-def add_area_to_features(features, units="", fieldname="Area", overwrite=False):
+def add_area_to_features(features, units="", field_name="Area", overwrite=False):
     """Add an area attribute to multiple polygon feature classes."""
     # TODO Document parameters in the doc string
 
     for feature in features:
         utils.info("Adding Area to {0}".format(feature))
-        add_area_to_feature(feature, units, fieldname, overwrite)
+        add_area_to_feature(feature, units, field_name, overwrite)
 
 
 if __name__ == "__main__":
