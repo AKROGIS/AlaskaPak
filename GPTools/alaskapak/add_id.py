@@ -142,3 +142,9 @@ def add_id_commandline():
     """Parse and validate command line arguments then add id to features."""
     args = toolbox_validation()
     add_id_to_features(*args)
+
+
+if __name__ == "__main__":
+    # For testing
+    # Change `from . import utils` to `import utils` to run as a script
+    add_id_commandline()

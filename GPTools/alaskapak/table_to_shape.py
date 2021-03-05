@@ -379,3 +379,9 @@ def table_to_shape_commandline():
     """Parse and validate command line arguments then build shape from table."""
     args = toolbox_validation()
     table_to_shape(*args, validate=True)
+
+
+if __name__ == "__main__":
+    # For testing
+    # Change `from . import utils` to `import utils` to run as a script
+    table_to_shape_commandline()
