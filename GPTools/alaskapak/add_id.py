@@ -108,7 +108,7 @@ for feature in featureList.split(";"):
         arcpy.AddField_management(
             feature, idFieldName, "Long", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
         )
-    id = start
+    feature_id = start
 
     # WARNING: shapefiles do not support ORDER BY
     if sortFieldName:
@@ -119,6 +119,6 @@ for feature in featureList.split(";"):
         feature, [idFieldName], sql_clause=(None, order_by)
     ) as cursor:
         for row in cursor:
-            row[0] = id
-            id += increment
+            row[0] = feature_id
+            feature_id += increment
             cursor.updateRow(row)

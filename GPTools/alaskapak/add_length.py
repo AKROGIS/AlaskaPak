@@ -11,10 +11,12 @@ perimeter, miles, feet, meter, unit, calculate, attribute, column, field
 
 Summary:
 Add and/or update a length field for line and polygon features
- WARNING: Results will be incorrect if the features have geographic coordinates, or no projection specified.
+ WARNING: Results will be incorrect if the features have geographic coordinates,
+ or no projection specified.
 
 Usage:
-This tool will add and/or update a length field to Polyline or Polygon features. The field name and units are defined by the user.
+This tool will add and/or update a length field to Polyline or Polygon features.
+The field name and units are defined by the user.
 
 Parameter 1:
 Features
@@ -22,24 +24,32 @@ A semicolon separated list of polygon or polyline feature classes.
 
 Parameter 2:
 Field_Name
-The name of the field to add or update. If the field does not exist, it will be added. If the field exists, it must be a numeric field. The field name must be a valid for the features workspace i.e. no spaces, no reserved words, and less than 10 characters for shapefiles.
+The name of the field to add or update. If the field does not exist, it will be added.
+If the field exists, it must be a numeric field. The field name must be a valid for
+the features workspace i.e. no spaces, no reserved words, and less than 10 characters
+for shapefiles.
 
 Parameter 3:
 Units
-The units for the line length or the polygon perimeter.  See the system "Calculate Field" tool for valid units
+The units for the line length or the polygon perimeter.  See the system
+"Calculate Field" tool for valid units
 
 Scripting Syntax:
 AddLength_AlaskaPak(Features, Field_Name, Units)
 
 Example1:
 Scripting Example
-The following example shows how this script can be used in another python script, or directly in the ArcGIS Python Window.  It assumes that the script has been loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.
+The following example shows how this script can be used in another python script,
+or directly in the ArcGIS Python Window.  It assumes that the script has been
+loaded into a toolbox, and the toolbox has been loaded into the active session of ArcGIS.
  features = r"C:\tmp\roads.shp"
  AddLength_AlaskaPak(features, "Miles", "MILES")
 
 Example2:
 Command Line Example
-The following example shows how the script can be used from the operating system command line.  It assumes that the current directory is the location of the script, and that the python interpreter is the path.
+The following example shows how the script can be used from the operating system
+command line.  It assumes that the current directory is the location of the script,
+and that the python interpreter is the path.
  C:\tmp> python AddLength.py "C:\tmp\roads.shp;C:\tmp\test.gdb\fences" Km KILOMETERS
 
 Credits:

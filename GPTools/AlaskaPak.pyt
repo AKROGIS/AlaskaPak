@@ -38,6 +38,9 @@ imp.reload(alaskapak)
 # pylint: disable=useless-object-inheritance
 # required for Python 2/3 compatibility
 
+# pylint: disable=too-many-lines
+# ArcGIS framework does not make it easy to break this into separate files.
+
 
 class Toolbox(object):
     """
@@ -889,7 +892,7 @@ class RandomizePoints(object):
             multiValue=True,
         )
         # Sensitive Points - input point feature layer
-        # Obsured Features - output feature class
+        # Obscured Features - output feature class
         # minimum offset - double default 0
         # maximum offset - double 500 feature class units
         # no go areas - multiple polygon feature classes
@@ -946,7 +949,7 @@ class ObscurePoints(object):
             multiValue=True,
         )
         # Sensitive Points - input point feature layer
-        # Obsured Features - output feature class
+        # Obscured Features - output feature class
         # minimum offset - double default 0
         # maximum offset - double 500 feature class units
         # no go areas - multiple polygon feature classes
