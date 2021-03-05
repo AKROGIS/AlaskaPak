@@ -369,10 +369,10 @@ def table_to_shape(
             in_field_names.append(name)
             out_field_names.append(new_name)
 
-    arcpy.AddMessage("Reading Points database")
+    utils.info("Reading Points database")
     points = get_points(point_feature_class, point_id_field)
 
-    arcpy.AddMessage("Reading table")
+    utils.info("Reading table")
     table_fields = vertex_names + in_field_names
     out_fields = ["SHAPE@"] + out_field_names
     vertex_count = len(vertex_names)
@@ -385,26 +385,26 @@ def table_to_shape(
                 geom_pts = [points[pt_id] for pt_id in vertex_ids]
                 geometry = make_shape(shape_type, geom_pts)
             except KeyError:
-                arcpy.AddWarning("Invalid point id, skipping")
+                utils.warn("Invalid point id, skipping")
                 geometry = None
             except arcpy.ExecuteError:
-                arcpy.AddWarning("Unable to create geometry, skipping")
+                utils.warn("Unable to create geometry, skipping")
                 geometry = None
             if geometry is None:
                 msg = "  Vertex info: {0} = {1}"
-                arcpy.AddWarning(msg.format(vertex_names, vertex_ids))
+                utils.warn(msg.format(vertex_names, vertex_ids))
             else:
                 new_row = [geometry] + attributes
                 out_cursor.insertRow(new_row)
 
     del out_cursor
 
-    arcpy.AddMessage("Saving in memory feature class to {0}".format(out_feature_class))
+    utils.info("Saving in memory feature class to {0}".format(out_feature_class))
     # feature_set = arcpy.FeatureSet(temp_fc)
     feature_set = arcpy.FeatureSet()
     feature_set.load(temp_fc)
     feature_set.save(out_feature_class)
-    arcpy.AddMessage("Done.")
+    utils.info("Done.")
 
 
 def table_to_shape_commandline():
