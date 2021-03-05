@@ -288,6 +288,8 @@ def table_to_shape(
         None
     """
 
+    #pylint: disable=too-many-arguments,too-many-locals,too-many-statements
+
     vertex_names = get_vertex_names(vertex_list, shape_type)
     if validate:
         verify_vertex_count(vertex_names, shape_type)
