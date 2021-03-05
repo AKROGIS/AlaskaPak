@@ -71,3 +71,20 @@ def get_points(point_feature, spatial_reference=None):
     ) as cursor:
         points = [row[0] for row in cursor]
     return points
+
+
+# Maps the string returned by Describe.Field.type and ListFields().type
+# to the string required by arcpy.AddField()
+# Field.type = SmallInteger, Integer, Single, Double, String, Date, OID, Geometry, BLOB.
+# AddField() types: TEXT, FLOAT, DOUBLE, SHORT, LONG, DATE, BLOB, RASTER, GUID
+type_map = {
+    "SmallInteger": "SHORT",
+    "Integer": "LONG",
+    "Single": "FLOAT",
+    "Double": "DOUBLE",
+    "String": "TEXT",
+    "Date": "DATE",
+    "OID": "LONG",  # Not creatable with AddField() - use caution
+    "Geometry": "BLOB",  # Not creatable with AddField() - use caution
+    "BLOB": "BLOB",
+}

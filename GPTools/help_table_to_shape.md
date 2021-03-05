@@ -1,5 +1,11 @@
-Table2Shape.py
+# Table2Shape.py
 Created: 2011-01-20
+
+* TODO: fix documentation on vertices (rings are no longer supported)
+* TODO: esri bug 1: featureset cannot initialize with in_memory feature class
+           (load does work)
+* TODO: esri bug 2: cannot save a feature set to a feature dataset in a FGDB or PGDB
+
 
 Title:
 Table to Shape

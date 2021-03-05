@@ -12,30 +12,6 @@ import arcpy
 
 from . import utils
 
-# TODO move file doc string to help file and or table_to_shape method
-# TODO move type_map to utils
-
-# TODO: fix documentation on vertices (rings are no longer supported)
-# TODO: esri bug 1: featureset cannot initialize with in_memory feature class
-#            (load does work)
-# TODO: esri bug 2: cannot save a feature set to a feature dataset in a FGDB or PGDB
-
-# Maps the string returned by Describe.Field.type and ListFields().type
-# to the string required by arcpy.AddField()
-# Field.type = SmallInteger, Integer, Single, Double, String, Date, OID, Geometry, BLOB.
-# AddField() types: TEXT, FLOAT, DOUBLE, SHORT, LONG, DATE, BLOB, RASTER, GUID
-type_map = {
-    "SmallInteger": "SHORT",
-    "Integer": "LONG",
-    "Single": "FLOAT",
-    "Double": "DOUBLE",
-    "String": "TEXT",
-    "Date": "DATE",
-    "OID": "LONG",  # Not creatable with AddField() - use caution
-    "Geometry": "BLOB",  # Not creatable with AddField() - use caution
-    "BLOB": "BLOB",
-}
-
 
 def get_points(featureclass, id_field):
     """Return the coordinate pairs of the points in `feature class`, keyed to
@@ -357,7 +333,7 @@ def table_to_shape(
             arcpy.AddField_management(
                 temp_fc,
                 new_name,
-                type_map[field.type],
+                utils.type_map[field.type],
                 field.precision,
                 field.scale,
                 field.length,
