@@ -91,14 +91,16 @@ def toolbox_validation():
     return [features, id_field_name, start, increment, sort_field_name]
 
 
-def add_id(features, field_name="UniqueID", start=1, increment=1, sort_field_name=None):
+def add_id_to_features(
+    feature_classes, field_name="UniqueID", start=1, increment=1, sort_field_name=None
+):
     """Add id to multiple feature classes."""
 
-    for feature in features:
-        add_id_single(feature, field_name, start, increment, sort_field_name)
+    for feature_class in feature_classes:
+        add_id_to_feature(feature_class, field_name, start, increment, sort_field_name)
 
 
-def add_id_single(
+def add_id_to_feature(
     feature_class, field_name="UniqueID", start=1, increment=1, sort_field_name=None
 ):
     """Add id to a feature class."""
@@ -139,4 +141,4 @@ def add_id_single(
 def add_id_commandline():
     """Parse and validate command line arguments then add id to features."""
     args = toolbox_validation()
-    add_id(*args)
+    add_id_to_features(*args)
