@@ -103,29 +103,27 @@ def add_id_single(
 ):
     """Add id to a feature class."""
 
-    arcpy.AddMessage("Adding Id to " + feature_class)
-    if field_name not in arcpy.ListFields(feature_class):
-        arcpy.AddField_management(
-            feature_class,
-            field_name,
-            "Long",
-            "",
-            "",
-            "",
-            "",
-            "NULLABLE",
-            "NON_REQUIRED",
-            "",
-        )
-    feature_id = start
+    utils.info("Adding Id to {0}".format(feature_class))
+    fields = arcpy.ListFields(feature_class)
+    id_field_name = utils.valid_field_name(field_name, feature_class)
+    if id_field_name not in fields:
+        utils.info("Creating new field {0}".format(id_field_name))
+        arcpy.AddField_management(feature_class, id_field_name)
 
-    # WARNING: shapefiles do not support ORDER BY
+    order_by = None
     if sort_field_name:
-        order_by = "ORDER BY {0}".format(sort_field_name)
-    else:
-        order_by = None
+        if sort_field_name not in fields:
+            msg = "Sort field `{0}` not in {1}. Ignoring"
+            utils.warn(msg.format(sort_field_name, feature_class))
+        else:
+            if arcpy.describe(feature_class).dataType == "ShapeFile":
+                utils.warn("Shapefiles do not support sort fields. Ignoring")
+            else:
+                order_by = "ORDER BY {0}".format(sort_field_name)
+
+    feature_id = start
     with arcpy.da.UpdateCursor(
-        feature_class, [field_name], sql_clause=(None, order_by)
+        feature_class, [id_field_name], sql_clause=(None, order_by)
     ) as cursor:
         for row in cursor:
             row[0] = feature_id

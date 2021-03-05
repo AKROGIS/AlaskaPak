@@ -41,6 +41,7 @@ Sort_Field
 The name of an existing field in all feature classes.  Data will be sorted in
 ascending order before the id is added.
 This field is optional.  Default value is None (i.e. no sorting)
+WARNING: shapefiles do not support ORDER BY
 
 Scripting Syntax:
 AddID_AlaskaPak (Data_set, Field_Name, Starting_Value, Increment, Sort_Field)
