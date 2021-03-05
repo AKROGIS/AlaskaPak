@@ -97,8 +97,13 @@ def add_length_to_feature(feature, units, fieldname="Length", overwrite=False):
     # TODO: If coordinates are geographic, results are wrong. (the shape_length is also
     # wrong - it uses planar geometry with the spherical coordinates.)
     # TODO: Feature may be locked or un-editable
+    field_names = arcpy.ListFields(feature)
+    if fieldname in field_names and not overwrite:
+        msg = "Aborting. Field {0} exists and overwrite is false."
+        utils.warn(msg.format(fieldname))
+        return
 
-    if fieldname not in arcpy.ListFields(feature):
+    if fieldname not in field_names:
         arcpy.AddField_management(
             feature, fieldname, "Double", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
         )
