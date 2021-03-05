@@ -6,6 +6,7 @@ Created: 2013-10-24
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
+import os
 import sys
 
 import arcpy
@@ -88,3 +89,40 @@ type_map = {
     "Geometry": "BLOB",  # Not creatable with AddField() - use caution
     "BLOB": "BLOB",
 }
+
+
+def get_database(data_set):
+    r"""Returns the database even if data_set is in a feature dataset.
+
+    Examples:
+      C:\data\access.mdb\table => C:\data\access.mdb
+      C:\data\db.gdb\network\junctions => C:\data\db.gdb
+      C:\data\conn.sde\roads  => C:\data\conn.sde
+      C:\data\lines.shp  => C:\data
+
+    Args:
+        data_set (text): A catalog path to a table or feature class
+
+    Returns:
+        text: the path to the database
+    """
+    workspace = os.path.dirname(arcpy.Describe(data_set).catalogPath)
+    desc = arcpy.Describe(workspace)
+    if hasattr(desc, "datasetType") and desc.datasetType == "FeatureDataset":
+        workspace = os.path.dirname(workspace)
+    return workspace
+
+
+def valid_field_name(field_name, data_set):
+    """Returns field_name or a slight modification suitable for the data_set.
+
+    Args:
+        field_name (text): The desired field name.
+        data_set (text): An ArcGIS dataset, i.e feature class or table.
+
+    Returns:
+        text: The new acceptable field name.
+    """
+    workspace = get_database(data_set)
+    new_field_name = arcpy.ValidateFieldName(field_name, workspace)
+    return new_field_name

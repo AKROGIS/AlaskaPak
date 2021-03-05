@@ -288,7 +288,7 @@ def table_to_shape(
         None
     """
 
-    #pylint: disable=too-many-arguments,too-many-locals,too-many-statements
+    # pylint: disable=too-many-arguments,too-many-locals,too-many-statements
 
     vertex_names = get_vertex_names(vertex_list, shape_type)
     if validate:
@@ -308,17 +308,7 @@ def table_to_shape(
         spatial_reference,
     )
 
-    workspace, _ = os.path.split(out_feature_class)
-    # TODO: test if this is still required; creating features in datasets is uncommon
-    # workaround for bug wherein ValidateFieldName(field,workspace\feature_dataset)
-    # returns incorrect results.  Fix is to remove the feature_dataset"
-    workspace = workspace.lower()
-    if workspace.rfind(".mdb") > 0:
-        workspace = workspace[: workspace.rfind(".mdb") + 4]
-    else:
-        if workspace.rfind(".gdb") > 0:
-            workspace = workspace[: workspace.rfind(".gdb") + 4]
-
+    database = utils.get_database(out_feature_class)
     # create matching lists of input and output field names.
     # need field lists for the search and insert cursors.
     in_field_names = []
@@ -331,7 +321,7 @@ def table_to_shape(
             and name not in vertex_names
             and field.editable  # skip un-editable fields like Shape_Length
         ):
-            new_name = arcpy.ValidateFieldName(name, workspace)
+            new_name = arcpy.ValidateFieldName(name, database)
             arcpy.AddField_management(
                 temp_fc,
                 new_name,
