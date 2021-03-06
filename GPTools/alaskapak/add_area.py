@@ -28,13 +28,21 @@ valid_units = [
 
 
 def add_area_to_feature(feature, units=None, field_name="Area", overwrite=False):
-    """Add an area attribute to a polygon feature class."""
-    # TODO Document parameters in the doc string
+    """Add an area attribute to a polygon feature class.
 
-    # Check for a feature
-    if not arcpy.Exists(feature):
-        utils.warn("feature not found.  Skipping...")
-        return
+    Args:
+        feature (text): A path to an ArcGIS polygon feature classes.
+        units (text, optional): The areal units for the calculated area.
+          must be one of `valid_units`. If None, the square units of the feature
+          class will be used. Defaults to None.
+        field_name (text, optional): The name of the field to store the
+          calculated area. Defaults to "Area".
+        overwrite (bool, optional): If True, then we are allowed to overwrite
+          any existing values in the field named `field_name`. Defaults to False.
+
+    Returns:
+        None
+    """
 
     # Get some info about the feature
     feature_description = arcpy.Describe(feature)
@@ -101,8 +109,21 @@ def add_area_to_feature(feature, units=None, field_name="Area", overwrite=False)
 
 
 def add_area_to_features(features, units=None, field_name="Area", overwrite=False):
-    """Add an area attribute to multiple polygon feature classes."""
-    # TODO Document parameters in the doc string
+    """Add an area attribute to a polygon feature class.
+
+    Args:
+        features (list[text]): A list of paths to ArcGIS polygon feature classes.
+        units (text, optional): The areal units for the calculated length.
+          must be one of `valid_units`. If None, the square units of the feature
+          class will be used. Defaults to None.
+        field_name (text, optional): The name of the field to store the
+          calculated area. Defaults to "Area".
+        overwrite (bool, optional): If True, then we are allowed to overwrite
+          any existing values in the field named `field_name`. Defaults to False.
+
+    Returns:
+        None
+    """
 
     for feature in features:
         utils.info("Adding Area to {0}".format(feature))

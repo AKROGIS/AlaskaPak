@@ -30,9 +30,21 @@ valid_units = [
 
 
 def add_length_to_feature(feature, units=None, field_name="Length", overwrite=False):
-    """Add a length attribute to a single polyline or polygon feature class."""
-    # TODO Document parameters in the doc string
+    """Add a length attribute to a single polyline or polygon feature class.
 
+    Args:
+        feature (text): The path to an ArcGIS feature class.
+        units (text, optional): The linear units for the calculated length.
+          must be one of `valid_units`. If None, the units of the feature
+          class will be used. Defaults to None.
+        field_name (text, optional): The name of the field to store the
+          calculated length. Defaults to "Length".
+        overwrite (bool, optional): If True, then we are allowed to overwrite
+          any existing values in the field named `field_name`. Defaults to False.
+
+    Returns:
+        None
+    """
     utils.info("Adding length to {0}".format(feature))
 
     # Verify and/or create field name
@@ -56,7 +68,7 @@ def add_length_to_feature(feature, units=None, field_name="Length", overwrite=Fa
             utils.warn(msg)
             return
 
-    # TODO See add_area for handling geographic
+    # TODO See add_area for handling geographic `shape.geodesicLength@`
 
     if units is None:
         length = "!shape.length!"
@@ -66,9 +78,21 @@ def add_length_to_feature(feature, units=None, field_name="Length", overwrite=Fa
 
 
 def add_length_to_features(features, units=None, field_name="Length", overwrite=False):
-    """Add a length attribute to multiple polyline or polygon feature classes."""
-    # TODO Document parameters in the doc string
+    """Add a length attribute to multiple polyline or polygon feature classes.
 
+    Args:
+        features (list[text]): A list of paths to ArcGIS feature classes.
+        units (text, optional): The linear units for the calculated length.
+          must be one of `valid_units`. If None, the units of the feature
+          class will be used. Defaults to None.
+        field_name (text, optional): The name of the field to store the
+          calculated length. Defaults to "Length".
+        overwrite (bool, optional): If True, then we are allowed to overwrite
+          any existing values in the field named `field_name`. Defaults to False.
+
+    Returns:
+        None
+    """
     for feature in features:
         add_length_to_feature(feature, units, field_name, overwrite)
 
