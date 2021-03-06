@@ -12,21 +12,22 @@ import arcpy
 from . import utils
 
 
-valid_units = [
-    "CENTIMETERS",
-    "DECIMALDEGREES",
-    "DECIMETERS",
-    "FEET",
-    "INCHES",
-    "KILOMETERS",
-    "METERS",
-    "MILES",
-    "MILLIMETERS",
-    "NAUTICALMILES",
-    "POINTS",
-    "UNKNOWN",
-    "YARDS",
+valid_units_pretty = [
+    "Centimeters",
+    "Decimal Degrees",
+    "Decimeters",
+    "Feet",
+    "Inches",
+    "Kilometers",
+    "Meters",
+    "Miles",
+    "Millimeters",
+    "Nautical Miles",
+    "Points",
+    "Yards",
 ]
+
+valid_units = [units.upper().replace(" ", "") for units in valid_units_pretty]
 
 
 def add_length_to_feature(feature, units=None, field_name="Length", overwrite=False):
@@ -62,19 +63,30 @@ def add_length_to_feature(feature, units=None, field_name="Length", overwrite=Fa
     else:
         if arcpy.TestSchemaLock(feature):
             utils.info("Creating new field {0}".format(field_name))
-            arcpy.AddField_management(feature, field_name, "Double",)
+            arcpy.AddField_management(feature, field_name, "Double")
         else:
             msg = "Unable to acquire a schema lock to add the new field. Skipping..."
             utils.warn(msg)
             return
 
-    # TODO See add_area for handling geographic `shape.geodesicLength@`
-
+    geometry_name = arcpy.Describe(feature).shapeFieldName
     if units is None:
-        length = "!shape.length!"
+        length = "!{0}.length!".format(geometry_name)
     else:
-        length = "!shape.length@{0}!".format(units)
-    arcpy.CalculateField_management(feature, field_name, length, "PYTHON_9.3", "")
+        spatial_reference = arcpy.Describe(feature).spatialReference
+        if spatial_reference.type == "Geographic":
+            length = "!{0}.geodesicLength@{1}!".format(geometry_name, units)
+        else:
+            length = "!{0}.length@{1}!".format(geometry_name, units)
+
+    # For the !shape! calculation, the expression type must be python.
+    # In Pro, the default is "PYTHON3" (ok), but in 10.x, the default is "VB"
+    # Need to explicitly use "PYTHON_9.3" in 10.x
+    expression_type = "PYTHON3"
+    if sys.version_info[0] < 3:
+        expression_type = "PYTHON_9.3"
+
+    arcpy.CalculateField_management(feature, field_name, length, expression_type)
 
 
 def add_length_to_features(features, units=None, field_name="Length", overwrite=False):
@@ -111,9 +123,7 @@ def toolbox_validation():
     # pylint: disable=too-many-branches
 
     if len(sys.argv) < 2 or len(sys.argv) > 5:
-        usage = (
-            "Usage: {0} features [units] [field_name] [overwrite]"
-        )
+        usage = "Usage: {0} features [units] [field_name] [overwrite]"
         utils.die(usage.format(sys.argv[0]))
 
     if sys.argv < 5:
@@ -136,7 +146,11 @@ def toolbox_validation():
         if feature == "'" and feature[-1] == "'":
             feature = feature[1:-1]
         if arcpy.Exists(feature):
-            features.append(feature)
+            if arcpy.Describe(feature).shapeType in ["Polygon", "Polyline"]:
+                features.append(feature)
+            else:
+                msg = "Feature class ({0}) is not polygon or polylines. Skipping."
+                utils.warn(msg.format(feature))
         else:
             utils.warn("Feature class ({0}) not found. Skipping.".format(feature))
     if not features:
@@ -144,6 +158,10 @@ def toolbox_validation():
 
     # validate units
     if units == "#":
+        units = None
+    if units and units.upper() not in valid_units:
+        msg = "Unknown units '{0}'. Length will be in the feature's units."
+        utils.warn(msg.format(units))
         units = None
 
     # validate field_name
@@ -153,6 +171,8 @@ def toolbox_validation():
     # validate overwrite
     if overwrite == "#":
         overwrite = False
+    else:
+        overwrite = overwrite.upper() in ["TRUE", "YES", "ON"]
 
     return [features, units, field_name, overwrite]
 

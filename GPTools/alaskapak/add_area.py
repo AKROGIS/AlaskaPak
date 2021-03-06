@@ -11,7 +11,7 @@ import arcpy
 
 from . import utils
 
-valid_units = [
+valid_units_pretty = [
     "Acres",
     "Ares",
     "Hectares",
@@ -25,6 +25,8 @@ valid_units = [
     "Square Millimeters",
     "Square Yards",
 ]
+
+valid_units = [units.upper().replace(" ", "") for units in valid_units_pretty]
 
 
 def add_area_to_feature(feature, units=None, field_name="Area", overwrite=False):
@@ -43,20 +45,7 @@ def add_area_to_feature(feature, units=None, field_name="Area", overwrite=False)
     Returns:
         None
     """
-
-    # Get some info about the feature
-    feature_description = arcpy.Describe(feature)
-    shape_name = feature_description.shapeFieldName
-    feature_sr = feature_description.spatialReference
-    feature_is_projected = (
-        feature_sr.type == "Projected" and feature_sr.name != "Unknown"
-    )
-    feature_is_polygon = feature_description.shapeType != "Polygon"
-
-    # Validate Feature - We only work on polygons
-    if not feature_is_polygon:
-        utils.warn("feature is not a polygon.  Skipping...")
-        return
+    utils.info("Adding Area to {0}".format(feature))
 
     # Verify or create field name
     if field_name in arcpy.ListFields(feature):
@@ -74,38 +63,34 @@ def add_area_to_feature(feature, units=None, field_name="Area", overwrite=False)
         if arcpy.TestSchemaLock(feature):
             new_field_name = utils.valid_field_name(field_name, feature)
             utils.info("Creating new field {0}".format(new_field_name))
-            arcpy.AddField_management(feature, new_field_name, "Double",)
+            arcpy.AddField_management(feature, new_field_name, "Double")
         else:
             msg = "Unable to acquire a schema lock to add the new field. Skipping..."
             utils.warn(msg)
             return
 
-    # TODO: Handle units = None
+    description = arcpy.Describe(feature)
+    geometry_name = description.shapeFieldName
+    spatial_reference = description.spatialReference
+    if spatial_reference.type == "Geographic":
+        utils.warn("Calculating area on Geographic data is usually meaningless.")
 
-    # Sanitize Units
-    if units.upper() in valid_units:
-        out_units = "@{0}".format(units.upper())
+    if units is None:
+        area = "!{0}.area!".format(geometry_name)
     else:
-        msg = "Unknown units {0}, area will be in the feature's units."
-        utils.warn(msg.format(units))
-        out_units = ""
-
-    # Determine Area Calculation Method
-    if feature_is_projected:
-        area_method = ".area"
-    else:
-        if out_units:
-            area_method = ".geodesicArea"
-            utils.info("Calculating geodesic area for {0}".format(feature))
+        if spatial_reference.type == "Geographic":
+            area = "!{0}.geodesicArea@{1}!".format(geometry_name, units)
         else:
-            area_method = ".area"
-            utils.warn(
-                "Calculating area in square degrees." "This is usually meaningless."
-            )
+            area = "!{0}.area@{1}!".format(geometry_name, units)
 
-    # Do Calculation
-    calculation = "!{0}{1}{2}!".format(shape_name, area_method, out_units)
-    arcpy.CalculateField_management(feature, new_field_name, calculation, "PYTHON_9.3")
+    # For the !shape! calculation, the expression type must be python.
+    # In Pro, the default is "PYTHON3" (ok), but in 10.x, the default is "VB"
+    # Need to explicitly use "PYTHON_9.3" in 10.x
+    expression_type = "PYTHON3"
+    if sys.version_info[0] < 3:
+        expression_type = "PYTHON_9.3"
+
+    arcpy.CalculateField_management(feature, new_field_name, area, expression_type)
 
 
 def add_area_to_features(features, units=None, field_name="Area", overwrite=False):
@@ -126,7 +111,6 @@ def add_area_to_features(features, units=None, field_name="Area", overwrite=Fals
     """
 
     for feature in features:
-        utils.info("Adding Area to {0}".format(feature))
         add_area_to_feature(feature, units, field_name, overwrite)
 
 
@@ -144,9 +128,7 @@ def toolbox_validation():
     # pylint: disable=too-many-branches
 
     if len(sys.argv) < 2 or len(sys.argv) > 5:
-        usage = (
-            "Usage: {0} features [units] [field_name] [overwrite]"
-        )
+        usage = "Usage: {0} features [units] [field_name] [overwrite]"
         utils.die(usage.format(sys.argv[0]))
 
     if sys.argv < 5:
@@ -169,7 +151,11 @@ def toolbox_validation():
         if feature == "'" and feature[-1] == "'":
             feature = feature[1:-1]
         if arcpy.Exists(feature):
-            features.append(feature)
+            if arcpy.Describe(feature).shapeType == "Polygon":
+                features.append(feature)
+            else:
+                msg = "Feature class ({0}) is not polygons. Skipping."
+                utils.warn(msg.format(feature))
         else:
             utils.warn("Feature class ({0}) not found. Skipping.".format(feature))
     if not features:
@@ -177,6 +163,10 @@ def toolbox_validation():
 
     # validate units
     if units == "#":
+        units = None
+    if units and units.upper() not in valid_units:
+        msg = "Unknown units '{0}'. Area will be in the feature's units."
+        utils.warn(msg.format(units))
         units = None
 
     # validate field_name
@@ -186,6 +176,8 @@ def toolbox_validation():
     # validate overwrite
     if overwrite == "#":
         overwrite = False
+    else:
+        overwrite = overwrite.upper() in ["TRUE", "YES", "ON"]
 
     return [features, units, field_name, overwrite]
 

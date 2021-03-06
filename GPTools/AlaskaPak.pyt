@@ -155,7 +155,7 @@ class AddAreaMultiple(object):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
         fieldname = parameters[1].valueAsText
-        units = parameters[2].valueAsText
+        units = parameters[2].valueAsText.upper().replace(" ", "")
         overwrite = parameters[3].value
         alaskapak.add_area_to_features(features, units, fieldname, overwrite)
 
@@ -251,7 +251,7 @@ class AddAreaSingle(object):
         """Get the parameters and execute the task of the tool."""
         feature = parameters[0].valueAsText
         field_name = parameters[1].valueAsText
-        units = parameters[2].valueAsText
+        units = parameters[2].valueAsText.upper().replace(" ", "")
         overwrite = parameters[3].value
         # TODO: Support or drop the out feature parameter (4)
         alaskapak.add_area_to_feature(feature, units, field_name, overwrite)
@@ -348,6 +348,7 @@ class AddLengthSingle(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
+        units = parameters[2].valueAsText.upper().replace(" ", "")
         alaskapak.add_area_to_features(features)
 
 
@@ -428,6 +429,7 @@ class AddLengthMultiple(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
+        units = parameters[2].valueAsText.upper().replace(" ", "")
         alaskapak.add_area_to_features(features)
 
 
