@@ -25,26 +25,27 @@ def toolbox_validation():
 
     # pylint: disable=too-many-branches
 
-    if len(sys.argv) < 2 or len(sys.argv) > 6:
+    arg_count = len(sys.argv)
+    if arg_count < 2 or arg_count > 6:
         usage = (
             "Usage: {0} features [id_field_name] [start] "
             "[increment] [sort_field_name]"
         )
         utils.die(usage.format(sys.argv[0]))
 
-    if sys.argv < 6:
+    if arg_count < 6:
         sort_field_name = "#"
     else:
         sort_field_name = arcpy.GetParameterAsText(4)
-    if sys.argv < 5:
+    if arg_count < 5:
         increment = "#"
     else:
         increment = arcpy.GetParameterAsText(3)
-    if sys.argv < 4:
+    if arg_count < 4:
         start = "#"
     else:
         start = arcpy.GetParameterAsText(2)
-    if sys.argv < 3:
+    if arg_count < 3:
         id_field_name = "#"
     else:
         id_field_name = arcpy.GetParameterAsText(1)
@@ -92,26 +93,23 @@ def toolbox_validation():
 
 
 def add_id_to_features(
-    feature_classes, field_name="UniqueID", start=1, increment=1, sort_field_name=None
 ):
     """Add id to multiple feature classes."""
 
     for feature_class in feature_classes:
-        add_id_to_feature(feature_class, field_name, start, increment, sort_field_name)
 
 
 def add_id_to_feature(
-    feature_class, field_name="UniqueID", start=1, increment=1, sort_field_name=None
 ):
     """Add id to a feature class."""
 
-    utils.info("Adding Id to {0}".format(feature_class))
-    fields = arcpy.ListFields(feature_class)
+    utils.info("Adding {0} to {2}".format(field_name, feature_class))
+    field_names = [field.name for field in arcpy.ListFields(feature_class)]
     id_field_name = utils.valid_field_name(field_name, feature_class)
-    if id_field_name not in fields:
+    if id_field_name not in field_names:
         if arcpy.TestSchemaLock(feature_class):
             utils.info("Creating new field {0}".format(id_field_name))
-            arcpy.AddField_management(feature_class, id_field_name)
+            arcpy.AddField_management(feature_class, id_field_name, "Long")
         else:
             msg = "Unable to acquire a schema lock to add the new field. Skipping..."
             utils.warn(msg)
@@ -119,7 +117,7 @@ def add_id_to_feature(
 
     order_by = None
     if sort_field_name:
-        if sort_field_name not in fields:
+        if sort_field_name not in field_names:
             msg = "Sort field `{0}` not in {1}. Ignoring"
             utils.warn(msg.format(sort_field_name, feature_class))
         else:

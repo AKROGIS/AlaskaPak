@@ -45,12 +45,13 @@ def add_area_to_feature(feature, units=None, field_name="Area", overwrite=False)
     Returns:
         None
     """
-    utils.info("Adding Area to {0}".format(feature))
+    utils.info("Adding {0} (in {1}) to {2}".format(field_name, units, feature))
 
     # Verify or create field name
-    if field_name in arcpy.ListFields(feature):
+    field_names = [field.name for field in arcpy.ListFields(feature)]
+    if field_name in field_names:
         if overwrite:
-            if not field_name in arcpy.ListFields(feature, field_name, "Double"):
+            if not arcpy.ListFields(feature, field_name, "Double"):
                 msg = "Field {0} exists, but is not the right type. Skipping..."
                 utils.warn(msg.format(field_name))
                 return
@@ -127,19 +128,20 @@ def toolbox_validation():
 
     # pylint: disable=too-many-branches
 
-    if len(sys.argv) < 2 or len(sys.argv) > 5:
+    arg_count = len(sys.argv)
+    if arg_count < 2 or arg_count > 5:
         usage = "Usage: {0} features [units] [field_name] [overwrite]"
         utils.die(usage.format(sys.argv[0]))
 
-    if sys.argv < 5:
+    if arg_count < 5:
         overwrite = "#"
     else:
         overwrite = arcpy.GetParameterAsText(3)
-    if sys.argv < 4:
+    if arg_count < 4:
         field_name = "#"
     else:
         field_name = arcpy.GetParameterAsText(2)
-    if sys.argv < 3:
+    if arg_count < 3:
         units = "#"
     else:
         units = arcpy.GetParameterAsText(1)
