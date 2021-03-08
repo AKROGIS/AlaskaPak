@@ -15,7 +15,7 @@ escalation.
 
 * license: **Advanced**
 * class file: `PointToPolygon.cs`
-* python tool: `Point2Poly.py`
+* python tool: `points_to_polygons.py`
 
 ### Conversions/Polygon To Point
 
@@ -33,7 +33,7 @@ escalation.
 
 * license: **Advanced** (only if using `No Go` or `Must Go` areas)
 * class file: `ObscurePoints.cs`
-* python tool: `ObscurePoints.py`
+* python tool: `obscure_points.py`
 
 ### Randomize/Random Points
 
@@ -43,33 +43,32 @@ escalation.
 
 ## Python Tools
 
-For each script/tool I have listed any builtin geo processing commands that it
+For each script/tool I have listed any builtin geo-processing commands that it
 calls and the license level for those builtin commands.
 
-
-### `AddArea.py`
-
-* license: **Basic**
-* builtin: `AddField_management`: **Basic**
-* builtin: `CalculateField_management`: **Basic**
-
-### `AddID.py`
-
-* license: **Basic**
-* builtin: `AddField_management`: **Basic**
-
-### `AddLength.py`
+### `add_area.py`
 
 * license: **Basic**
 * builtin: `AddField_management`: **Basic**
 * builtin: `CalculateField_management`: **Basic**
 
-### `Line2Rect.py`
+### `add_id.py`
+
+* license: **Basic**
+* builtin: `AddField_management`: **Basic**
+
+### `add_length.py`
+
+* license: **Basic**
+* builtin: `AddField_management`: **Basic**
+* builtin: `CalculateField_management`: **Basic**
+
+### `line_to_rectangle.py`
 
 * license: **Basic**
 * builtin: `CreateFeatureclass_management`: **Basic**
 
-### `ObscurePoints.py`
+### `obscure_points.py`
 
 * license: **Advanced** (only if using `No Go` or `Must Go` areas)
 * builtin: `FeatureClassToFeatureClass_conversion`: **Basic**
@@ -85,25 +84,25 @@ In the `CreateLimitedPoints` function:
 * builtin: `CreateRandomPoints_management`: **Advanced** or
   **Spatial Analyst**, or **3D Analyst**
 
-### `Point2Poly.py`
+### `points_to_polygons.py`
 
 * license: **Advanced**
 * builtin: `PointsToLine_management`: **Basic**
 * builtin: `FeatureToPolygon_management`: **Advanced**
 
-### `Point2Poly2.py` (and `Point2Poly3.py`)
+### `polygon_from_point.py` (and `polygon_from_point_alt.py`)
 
 * license: **Basic**
 * builtin: `CreateFeatureclass_management`: **Basic**
 * builtin: `AddField_management`: **Basic**
 * builtin: `Delete_management`: **Basic**
 
-### `RandomTransects.py`
+### `random_transects.py`
 
 * license: **Basic**
 * builtin: `CreateFeatureclass_management`: **Basic**
 
-### `SquareBuilding.py`
+### `square_building.py`
 
 * license: **Basic**
 * builtin: `CopyFeatures_management`: **Basic**
@@ -112,7 +111,7 @@ In the `CreateLimitedPoints` function:
 * builtin: `DeleteField_management`: **Basic**
 * python tool: `Line2Rect.py` **Basic**
 
-### `Table2Shape.py`
+### `table_to_shape.py`
 
 * license: **Basic**
 * builtin: `CreateFeatureclass_management`: **Basic**

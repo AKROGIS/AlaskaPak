@@ -35,6 +35,7 @@ def ObscurePoints():
 
     newFC = None
     if nogo or mustgo:
+        # TODO Check for Advanced Licence; required for both functions.
         if circles:
             newFC = CreateLimitedCircles(pts, min, max, nogo, mustgo)
         else:
@@ -198,6 +199,7 @@ def CreateLimitedPoints(pts, min, max, nogo, mustgo):
     allowed = arcpy.Buffer_analysis(pts, "in_memory\\allow", max)
     if min > 0:
         minbuf = arcpy.Buffer_analysis(pts, "in_memory\\minbuf", min)
+        # Requires advanced (ArcInfo) license
         erase1 = arcpy.Erase_analysis(allowed, minbuf, "in_memory\\erase1")
         arcpy.Delete_management(allowed)
         arcpy.Delete_management(minbuf)
@@ -219,6 +221,7 @@ def CreateLimitedPoints(pts, min, max, nogo, mustgo):
         arcpy.Delete_management(allowed)
         allowed = newAllowed
 
+    # requires Advanced (ArcInfo) license or Spatial Analyst or 3d Analyst
     newpts = arcpy.CreateRandomPoints_management(
         "in_memory", "pts", allowed, "", 1, "", "POINT", ""
     )

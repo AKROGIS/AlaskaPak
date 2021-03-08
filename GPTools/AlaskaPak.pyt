@@ -129,10 +129,6 @@ class AddAreaMultiple(object):
         parameters = [features, field_name, units, overwrite]
         return parameters
 
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
-
     def updateParameters(self, parameters):
         """
         Modify the values and properties of parameters before internal
@@ -221,10 +217,6 @@ class AddAreaSingle(object):
 
         parameters = [feature, field_name, units, overwrite, out_feature]
         return parameters
-
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
 
     def updateParameters(self, parameters):
         """
@@ -323,10 +315,6 @@ class AddLengthSingle(object):
         parameters = [feature, field_name, units, overwrite, out_feature]
         return parameters
 
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
-
     def updateParameters(self, parameters):
         """
         Modify the values and properties of parameters before internal
@@ -404,10 +392,6 @@ class AddLengthMultiple(object):
         parameters = [features, field_name, units, overwrite]
         return parameters
 
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
-
     def updateParameters(self, parameters):
         """
         Modify the values and properties of parameters before internal
@@ -461,10 +445,6 @@ class AddIdSingle(object):
 
         parameters = [features]
         return parameters
-
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
 
     def updateParameters(self, parameters):
         """
@@ -562,10 +542,6 @@ class Buildings(object):
         parameters = [features]
         return parameters
 
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
-
     def updateParameters(self, parameters):
         """
         Modify the values and properties of parameters before internal
@@ -615,10 +591,6 @@ class LineToRectangle(object):
 
         parameters = [features]
         return parameters
-
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
 
     def updateParameters(self, parameters):
         """
@@ -673,7 +645,7 @@ class PointsToPolygon(object):
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
-        return True
+        return arcpy.CheckProduct("ArcInfo") == "Available"
 
     def updateParameters(self, parameters):
         """
@@ -735,10 +707,6 @@ class PolygonFromPoint(object):
         parameters = [features]
         return parameters
 
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
-
     def updateParameters(self, parameters):
         """
         Modify the values and properties of parameters before internal
@@ -794,7 +762,8 @@ class RandomizePoints(object):
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
-        return True
+        # TODO: Return True and check in parameters and enable/disable Go/NoGo Option
+        return arcpy.CheckProduct("ArcInfo") == "Available"
 
     def updateParameters(self, parameters):
         """
@@ -851,7 +820,8 @@ class ObscurePoints(object):
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
-        return True
+        # TODO: Return True and check in parameters and enable/disable Go/NoGo Option
+        return arcpy.CheckProduct("ArcInfo") == "Available"
 
     def updateParameters(self, parameters):
         """
@@ -910,10 +880,6 @@ class RandomTransects(object):
         parameters = [features]
         return parameters
 
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
-
     def updateParameters(self, parameters):
         """
         Modify the values and properties of parameters before internal
@@ -965,10 +931,6 @@ class TableToShape(object):
 
         parameters = [features]
         return parameters
-
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
 
     def updateParameters(self, parameters):
         """

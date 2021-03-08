@@ -15,17 +15,18 @@ def points_to_polygons(
     # TODO Document parameters in the doc string
 
     lines = "in_memory\\lines"
-    # Points To Lines
+    # Points To Lines (Basic License)
     arcpy.PointsToLine_management(
         point_feature_class, lines, polygon_id_fieldname, sort_field_name, "CLOSE"
     )
-    # Lines To Polygon
+    # Lines To Polygon (Advanced License)
     arcpy.FeatureToPolygon_management(
         lines, polygon_feature_class, "", "ATTRIBUTES", ""
     )
 
 
 if __name__ == "__main__":
+    # TODO: Check for Advanced (ArcInfo) license
     points = arcpy.GetParameterAsText(0)
     polygons = arcpy.GetParameterAsText(1)
     id_fieldname = arcpy.GetParameterAsText(2)
