@@ -11,6 +11,7 @@ import arcpy
 
 from . import utils
 
+# pylint: disable=too-many-arguments,too-many-statements
 
 def toolbox_validation():
     """Exits with an error message if the command line arguments are not valid.
@@ -26,13 +27,17 @@ def toolbox_validation():
     # pylint: disable=too-many-branches
 
     arg_count = len(sys.argv)
-    if arg_count < 2 or arg_count > 6:
+    if arg_count < 2 or arg_count > 7:
         usage = (
             "Usage: {0} features [id_field_name] [start] "
-            "[increment] [sort_field_name]"
+            "[increment] [sort_field_name] [overwrite]"
         )
         utils.die(usage.format(sys.argv[0]))
 
+    if arg_count < 7:
+        overwrite = "#"
+    else:
+        overwrite = arcpy.GetParameterAsText(5)
     if arg_count < 6:
         sort_field_name = "#"
     else:
@@ -89,24 +94,55 @@ def toolbox_validation():
     if sort_field_name == "#":
         sort_field_name = None
 
-    return [features, id_field_name, start, increment, sort_field_name]
+    # validate overwrite
+    if overwrite == "#":
+        overwrite = False
+    else:
+        overwrite = overwrite.upper() in ["TRUE", "YES", "ON"]
+
+    return [features, id_field_name, start, increment, sort_field_name, overwrite]
 
 
 def add_id_to_features(
+    feature_classes,
+    field_name="UniqueID",
+    start=1,
+    increment=1,
+    sort_field_name=None,
+    overwrite=False,
 ):
     """Add id to multiple feature classes."""
 
     for feature_class in feature_classes:
+        add_id_to_feature(
+            feature_class, field_name, start, increment, sort_field_name, overwrite
+        )
 
 
 def add_id_to_feature(
+    feature_class,
+    field_name="UniqueID",
+    start=1,
+    increment=1,
+    sort_field_name=None,
+    overwrite=False,
 ):
     """Add id to a feature class."""
 
     utils.info("Adding {0} to {2}".format(field_name, feature_class))
     field_names = [field.name for field in arcpy.ListFields(feature_class)]
     id_field_name = utils.valid_field_name(field_name, feature_class)
-    if id_field_name not in field_names:
+    if id_field_name in field_names:
+        if overwrite:
+            if not arcpy.ListFields(feature_class, id_field_name, "Long"):
+                msg = "Field {0} exists, but is not the right type. Skipping..."
+                utils.warn(msg.format(id_field_name))
+                return
+        else:
+            msg = "Not allowed to overwrite existing field {0}. Skipping..."
+            utils.warn(msg.format(id_field_name))
+            return
+    else:
         if arcpy.TestSchemaLock(feature_class):
             utils.info("Creating new field {0}".format(id_field_name))
             arcpy.AddField_management(feature_class, id_field_name, "Long")
