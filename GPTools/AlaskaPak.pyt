@@ -66,8 +66,6 @@ class Toolbox(object):
             AddLengthMultiple,
             AddIdSingle,
             AddIdMultiple,
-            AddXYSingle,
-            AddXYMultiple,
             Buildings,
             LineToRectangle,
             PointsToPolygon,
@@ -113,10 +111,10 @@ class AddAreaMultiple(object):
             name="units",
             displayName="Areal Units",
             direction="Input",
-            datatype="GPString",
+            datatype="GPArealUnit",
             parameterType="Optional",
         )
-        units.filter.list = alaskapak.valid_area_units
+        # units.filter.list = alaskapak.valid_area_units
 
         overwrite = arcpy.Parameter(
             name="overwrite",
@@ -126,7 +124,7 @@ class AddAreaMultiple(object):
             parameterType="Optional",
         )
 
-        parameters = [features, field_name, units, overwrite]
+        parameters = [features, units, field_name, overwrite]
         return parameters
 
     def updateParameters(self, parameters):
@@ -150,8 +148,8 @@ class AddAreaMultiple(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
-        fieldname = parameters[1].valueAsText
-        units = parameters[2].valueAsText.upper().replace(" ", "")
+        units = parameters[1].valueAsText.upper().replace(" ", "")
+        fieldname = parameters[2].valueAsText
         overwrite = parameters[3].value
         alaskapak.add_area_to_features(features, units, fieldname, overwrite)
 
@@ -204,18 +202,8 @@ class AddAreaSingle(object):
             datatype="GPBoolean",
             parameterType="Optional",
         )
-        # TODO: Support or drop the out feature parameter
-        out_feature = arcpy.Parameter(
-            name="out_feature",
-            displayName="Output Feature",
-            direction="Output",
-            datatype="GPFeatureLayer",
-            parameterType="Derived",
-        )
-        out_feature.parameterDependencies = [feature.name]
-        out_feature.schema.clone = True
 
-        parameters = [feature, field_name, units, overwrite, out_feature]
+        parameters = [feature, units, field_name, overwrite]
         return parameters
 
     def updateParameters(self, parameters):
@@ -226,6 +214,7 @@ class AddAreaSingle(object):
         This method is called whenever a parameter has been changed.
         """
         if parameters[0].altered:
+            # FIXME: 2nd parameter must be a workspace, not a feature class
             parameters[1].value = arcpy.ValidateFieldName(
                 parameters[1].value, parameters[0].value
             )
@@ -242,10 +231,9 @@ class AddAreaSingle(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         feature = parameters[0].valueAsText
-        field_name = parameters[1].valueAsText
-        units = parameters[2].valueAsText.upper().replace(" ", "")
+        units = parameters[1].valueAsText.upper().replace(" ", "")
+        field_name = parameters[2].valueAsText
         overwrite = parameters[3].value
-        # TODO: Support or drop the out feature parameter (4)
         alaskapak.add_area_to_feature(feature, units, field_name, overwrite)
 
 
@@ -264,12 +252,11 @@ class AddLengthSingle(object):
     def getParameterInfo(self):
         """Define parameter definitions"""
         feature = arcpy.Parameter(
-            name="features",
-            displayName="Input Features",
+            name="feature",
+            displayName="Feature Class",
             direction="Input",
             datatype="GPFeatureLayer",
             parameterType="Required",
-            multiValue=True,
         )
         feature.filter.list = ["Polyline", "Polygon"]
 
@@ -289,10 +276,10 @@ class AddLengthSingle(object):
             name="units",
             displayName="Linear Units",
             direction="Input",
-            datatype="GPString",
+            datatype="GPLinearUnit",
             parameterType="Optional",
         )
-        units.filter.list = alaskapak.valid_length_units
+        #units.filter.list = alaskapak.valid_length_units
 
         overwrite = arcpy.Parameter(
             name="overwrite",
@@ -301,18 +288,8 @@ class AddLengthSingle(object):
             datatype="GPBoolean",
             parameterType="Optional",
         )
-        # TODO: Support or drop the out feature parameter
-        out_feature = arcpy.Parameter(
-            name="out_feature",
-            displayName="Output Feature",
-            direction="Output",
-            datatype="GPFeatureLayer",
-            parameterType="Derived",
-        )
-        out_feature.parameterDependencies = [feature.name]
-        out_feature.schema.clone = True
 
-        parameters = [feature, field_name, units, overwrite, out_feature]
+        parameters = [feature, units, field_name, overwrite]
         return parameters
 
     def updateParameters(self, parameters):
@@ -335,9 +312,11 @@ class AddLengthSingle(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
-        units = parameters[2].valueAsText.upper().replace(" ", "")
-        alaskapak.add_area_to_features(features)
+        feature = parameters[0].valueAsText
+        units = parameters[1].valueAsText.upper().replace(" ", "")
+        field_name = parameters[2].valueAsText
+        overwrite = parameters[3].value
+        alaskapak.add_length_to_feature(feature, units, field_name, overwrite)
 
 
 class AddLengthMultiple(object):
@@ -389,7 +368,7 @@ class AddLengthMultiple(object):
             parameterType="Optional",
         )
 
-        parameters = [features, field_name, units, overwrite]
+        parameters = [features, units, field_name, overwrite]
         return parameters
 
     def updateParameters(self, parameters):
@@ -413,8 +392,10 @@ class AddLengthMultiple(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
-        units = parameters[2].valueAsText.upper().replace(" ", "")
-        alaskapak.add_area_to_features(features)
+        units = parameters[1].valueAsText.upper().replace(" ", "")
+        field_name = parameters[2].valueAsText
+        overwrite = parameters[3].value
+        alaskapak.add_length_to_features(features, units, field_name, overwrite)
 
 
 class AddIdSingle(object):
@@ -428,22 +409,61 @@ class AddIdSingle(object):
 
     def getParameterInfo(self):
         """Define parameter definitions"""
-        features = arcpy.Parameter(
-            name="features",
-            displayName="Input Features",
+        feature = arcpy.Parameter(
+            name="feature",
+            displayName="Feature Class",
             direction="Input",
             datatype="GPFeatureLayer",
             parameterType="Required",
-            multiValue=True,
         )
-        # Data Sets (required)
-        # (the rest are optional)
-        # Field Name - Default "UniqueID"
-        # Starting Value - default 1 (int)
-        # Increment - default 1 (int)
-        # Sort Field - no default
 
-        parameters = [features]
+        field_name = arcpy.Parameter(
+            name="field_name",
+            displayName="Field name",
+            direction="Input",
+            datatype="Field",
+            parameterType="Optional",
+        )
+        # FIXME: this dependency is preventing input of a _new_ field name.
+        field_name.value = "UniqueID"
+        field_name.parameterDependencies = [feature.name]
+
+        start = arcpy.Parameter(
+            name="start",
+            displayName="Starting ID",
+            direction="Input",
+            datatype="GPLong",
+            parameterType="Optional",
+        )
+        start.value = 1
+
+        increment = arcpy.Parameter(
+            name="start",
+            displayName="ID Increment",
+            direction="Input",
+            datatype="GPLong",
+            parameterType="Optional",
+        )
+        increment.value = 1
+
+        sort_field_name = arcpy.Parameter(
+            name="sort_field_name",
+            displayName="Sort field name",
+            direction="Input",
+            datatype="Field",
+            parameterType="Optional",
+        )
+        sort_field_name.parameterDependencies = [feature.name]
+
+        overwrite = arcpy.Parameter(
+            name="overwrite",
+            displayName="Overwrite Existing Values",
+            direction="Input",
+            datatype="GPBoolean",
+            parameterType="Optional",
+        )
+
+        parameters = [feature, field_name, start, increment, sort_field_name, overwrite]
         return parameters
 
     def updateParameters(self, parameters):
@@ -466,8 +486,13 @@ class AddIdSingle(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
-        alaskapak.add_area_to_features(features)
+        feature = parameters[0].valueAsText
+        field_name = parameters[1].valueAsText
+        start = parameters[2].value
+        increment = parameters[3].value
+        sort_field_name = parameters[4].valueAsText
+        overwrite = parameters[5].value
+        alaskapak.add_id_to_feature(feature, field_name, start, increment, sort_field_name, overwrite)
 
 
 class AddIdMultiple(object):
@@ -490,7 +515,50 @@ class AddIdMultiple(object):
             multiValue=True,
         )
 
-        parameters = [features]
+        field_name = arcpy.Parameter(
+            name="field_name",
+            displayName="Field name",
+            direction="Input",
+            datatype="Field",
+            parameterType="Optional",
+        )
+        field_name.value = "UniqueID"
+
+        start = arcpy.Parameter(
+            name="start",
+            displayName="Starting ID",
+            direction="Input",
+            datatype="GPLong",
+            parameterType="Optional",
+        )
+        start.value = 1
+
+        increment = arcpy.Parameter(
+            name="start",
+            displayName="ID Increment",
+            direction="Input",
+            datatype="GPLong",
+            parameterType="Optional",
+        )
+        increment.value = 1
+
+        sort_field_name = arcpy.Parameter(
+            name="sort_field_name",
+            displayName="Sort field name",
+            direction="Input",
+            datatype="GPString",
+            parameterType="Optional",
+        )
+
+        overwrite = arcpy.Parameter(
+            name="overwrite",
+            displayName="Overwrite Existing Values",
+            direction="Input",
+            datatype="GPBoolean",
+            parameterType="Optional",
+        )
+
+        parameters = [features, field_name, start, increment, sort_field_name, overwrite]
         return parameters
 
     def updateParameters(self, parameters):
@@ -514,7 +582,12 @@ class AddIdMultiple(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
-        alaskapak.add_area_to_features(features)
+        field_name = parameters[1].valueAsText
+        start = parameters[2].value
+        increment = parameters[3].value
+        sort_field_name = parameters[4].valueAsText
+        overwrite = parameters[5].value
+        alaskapak.add_id_to_features(features, field_name, start, increment, sort_field_name, overwrite)
 
 
 class Buildings(object):
@@ -668,6 +741,7 @@ class PointsToPolygon(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
+        #alaskapak.points_to_polygons(features)
         alaskapak.add_area_to_features(features)
 
 
