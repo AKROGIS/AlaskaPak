@@ -110,12 +110,17 @@ def add_length_to_features(features, units=None, field_name="Length", overwrite=
         add_length_to_feature(feature, units, field_name, overwrite)
 
 
-def toolbox_validation():
+def toolbox_validation(args):
     """Exits with an error message if the command line arguments are not valid.
 
     Provides the same default processing and validation for command line scripts
     that the ArcGIS toolbox framework provides.  It does not do all possible
     validation and error checking.
+
+    Args:
+        args (list[text]): A list of commands arguments, Usually obtained
+        from the sys.argv or arcpy.GetParameterAsText().  Provide "#" as
+        placeholder for an unspecified intermediate argument.
 
     Returns:
         A list of validated command line parameters.
@@ -123,24 +128,24 @@ def toolbox_validation():
 
     # pylint: disable=too-many-branches
 
-    arg_count = len(sys.argv)
-    if arg_count < 2 or arg_count > 5:
+    arg_count = len(args)
+    if arg_count < 1 or arg_count > 4:
         usage = "Usage: {0} features [units] [field_name] [overwrite]"
         utils.die(usage.format(sys.argv[0]))
 
-    if arg_count < 5:
+    if arg_count < 4:
         overwrite = "#"
     else:
-        overwrite = arcpy.GetParameterAsText(3)
-    if arg_count < 4:
+        overwrite = args[3]
+    if arg_count < 3:
         field_name = "#"
     else:
-        field_name = arcpy.GetParameterAsText(2)
-    if arg_count < 3:
+        field_name = args[2]
+    if arg_count < 2:
         units = "#"
     else:
-        units = arcpy.GetParameterAsText(1)
-    feature_list = arcpy.GetParameterAsText(0)
+        units = args[1]
+    feature_list = args[0]
 
     # validate features
     features = []
@@ -181,7 +186,15 @@ def toolbox_validation():
 
 def add_length_commandline():
     """Parse and validate command line arguments then add length to features."""
-    args = toolbox_validation()
+    args = [arcpy.GetParameterAsText(i) for i in range(arcpy.GetParameterCount())]
+    args = toolbox_validation(args)
+    add_length_to_features(*args)
+
+
+def add_length_testing(args):
+    """Specify command line arguments for testing."""
+    args = toolbox_validation(args)
+    print(args)
     add_length_to_features(*args)
 
 
@@ -189,3 +202,5 @@ if __name__ == "__main__":
     # For testing
     # Change `from . import utils` to `import utils` to run as a script
     add_length_commandline()
+    # args = ["C:/tmp/akr_facility.gdb/roads_ln", "Feet", "#", "Yes"]
+    # add_length_testing(args)
