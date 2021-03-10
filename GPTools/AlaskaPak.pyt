@@ -111,10 +111,11 @@ class AddAreaMultiple(object):
             name="units",
             displayName="Areal Units",
             direction="Input",
-            datatype="GPArealUnit",
+            # datatype="GPArealUnit", # This adds a numerical entry field I do not want
+            datatype="GPString",
             parameterType="Optional",
         )
-        # units.filter.list = alaskapak.valid_area_units
+        units.filter.list = alaskapak.valid_area_units
 
         overwrite = arcpy.Parameter(
             name="overwrite",
@@ -181,9 +182,9 @@ class AddAreaSingle(object):
             datatype="Field",
             parameterType="Optional",
         )
-        # FIXME: this dependency is preventing input of a _new_ field name.
         field_name.value = "Area"
         field_name.parameterDependencies = [feature.name]
+        # TODO: list should not include non editable fields like shape_area
         field_name.filter.list = ["Double"]
 
         units = arcpy.Parameter(
@@ -202,8 +203,17 @@ class AddAreaSingle(object):
             datatype="GPBoolean",
             parameterType="Optional",
         )
+        # Derived output for using in a model builder process
+        out_features = arcpy.Parameter(
+            displayName="Output Features",
+            name="out_features",
+            datatype="GPFeatureLayer",
+            parameterType="Derived",
+            direction="Output")
+        out_features.parameterDependencies = [feature.name]
+        out_features.schema.clone = True
 
-        parameters = [feature, units, field_name, overwrite]
+        parameters = [feature, units, field_name, overwrite, out_features]
         return parameters
 
     def updateParameters(self, parameters):
@@ -213,11 +223,15 @@ class AddAreaSingle(object):
 
         This method is called whenever a parameter has been changed.
         """
-        if parameters[0].altered:
-            # FIXME: 2nd parameter must be a workspace, not a feature class
-            parameters[1].value = arcpy.ValidateFieldName(
-                parameters[1].value, parameters[0].value
-            )
+        # TODO: maybe add new field to schema of last parameter
+        #parameters[4].schema.additionalFields = new Field Object with validated param[1].value
+
+        # TODO: turn on/off overwrite if column name is new or existing
+        # if parameters[0].altered:
+        #     # FIXME: 2nd parameter must be a workspace, not a feature class
+        #     parameters[2].value = arcpy.ValidateFieldName(
+        #         parameters[2].value, parameters[0].value
+        #     )
 
     def updateMessages(self, parameters):
         """
@@ -226,6 +240,7 @@ class AddAreaSingle(object):
 
         This method is called after internal validation.
         """
+        parameters[2].clearMessage()
         return
 
     def execute(self, parameters, messages):
@@ -267,7 +282,6 @@ class AddLengthSingle(object):
             datatype="Field",
             parameterType="Optional",
         )
-        # FIXME: this dependency is preventing input of a _new_ field name.
         field_name.value = "Length"
         field_name.parameterDependencies = [feature.name]
         field_name.filter.list = ["Double"]
@@ -276,10 +290,10 @@ class AddLengthSingle(object):
             name="units",
             displayName="Linear Units",
             direction="Input",
-            datatype="GPLinearUnit",
+            datatype="GPString",
             parameterType="Optional",
         )
-        #units.filter.list = alaskapak.valid_length_units
+        units.filter.list = alaskapak.valid_length_units
 
         overwrite = arcpy.Parameter(
             name="overwrite",
@@ -288,8 +302,17 @@ class AddLengthSingle(object):
             datatype="GPBoolean",
             parameterType="Optional",
         )
+        # Derived output for using in a model builder process
+        out_features = arcpy.Parameter(
+            displayName="Output Features",
+            name="out_features",
+            datatype="GPFeatureLayer",
+            parameterType="Derived",
+            direction="Output")
+        out_features.parameterDependencies = [feature.name]
+        out_features.schema.clone = True
 
-        parameters = [feature, units, field_name, overwrite]
+        parameters = [feature, units, field_name, overwrite, out_features]
         return parameters
 
     def updateParameters(self, parameters):
@@ -299,6 +322,8 @@ class AddLengthSingle(object):
 
         This method is called whenever a parameter has been changed.
         """
+        # TODO: maybe add new field to schema of last parameter
+        #parameters[4].schema.additionalFields = new Field Object with validated param[1].value
         return
 
     def updateMessages(self, parameters):
@@ -308,6 +333,7 @@ class AddLengthSingle(object):
 
         This method is called after internal validation.
         """
+        parameters[2].clearMessage()
         return
 
     def execute(self, parameters, messages):
@@ -424,9 +450,9 @@ class AddIdSingle(object):
             datatype="Field",
             parameterType="Optional",
         )
-        # FIXME: this dependency is preventing input of a _new_ field name.
         field_name.value = "UniqueID"
         field_name.parameterDependencies = [feature.name]
+        field_name.filter.list = ["Long"]
 
         start = arcpy.Parameter(
             name="start",
@@ -438,7 +464,7 @@ class AddIdSingle(object):
         start.value = 1
 
         increment = arcpy.Parameter(
-            name="start",
+            name="increment",
             displayName="ID Increment",
             direction="Input",
             datatype="GPLong",
@@ -463,7 +489,17 @@ class AddIdSingle(object):
             parameterType="Optional",
         )
 
-        parameters = [feature, field_name, start, increment, sort_field_name, overwrite]
+        # Derived output for using in a model builder process
+        out_features = arcpy.Parameter(
+            displayName="Output Features",
+            name="out_features",
+            datatype="GPFeatureLayer",
+            parameterType="Derived",
+            direction="Output")
+        out_features.parameterDependencies = [feature.name]
+        out_features.schema.clone = True
+
+        parameters = [feature, field_name, start, increment, sort_field_name, overwrite, out_features]
         return parameters
 
     def updateParameters(self, parameters):
@@ -473,6 +509,8 @@ class AddIdSingle(object):
 
         This method is called whenever a parameter has been changed.
         """
+        # TODO: maybe add new field to schema of last parameter
+        #parameters[6].schema.additionalFields = new Field Object with validated param[1].value
         return
 
     def updateMessages(self, parameters):
@@ -482,6 +520,8 @@ class AddIdSingle(object):
 
         This method is called after internal validation.
         """
+        # TODO: Remove message that field is not in existing list.
+        parameters[1].clearMessage()
         return
 
     def execute(self, parameters, messages):
@@ -499,7 +539,7 @@ class AddIdMultiple(object):
     """A tool to add a unique integer id to multiple feature classes."""
 
     def __init__(self):
-        self.label = "Add Unique Id (Multiple)"
+        self.label = "Add Unique ID (Multiple)"
         self.description = "Add a unique integer id to multiple feature classes."
         self.category = "Add Attributes"
         self.canRunInBackground = True
@@ -534,7 +574,7 @@ class AddIdMultiple(object):
         start.value = 1
 
         increment = arcpy.Parameter(
-            name="start",
+            name="increment",
             displayName="ID Increment",
             direction="Input",
             datatype="GPLong",
