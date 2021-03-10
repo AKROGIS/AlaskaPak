@@ -76,6 +76,11 @@ class Toolbox(object):
             TableToShape,
         ]
 
+# Consider AddXY Tool:
+# parma1: single (or multiple) Point Feature Layers (required)
+# p2: Output coordinate system (optional, default, data coords)
+# p3: "Field Name (X, Longitude)" (optional, default: "Lon")
+# p4: "Field Name (Y, Latitude)" (optional, default: "Lon")
 
 class AddAreaMultiple(object):
     """A tool to add an area attribute to multiple polygon feature classes."""
@@ -809,14 +814,14 @@ class PolygonFromPoint(object):
             multiValue=True,
         )
         # control point features layer
-        # control point id field
+        # control point id field from control points
         # azimuth distance tableview
         # polygon id field
-        # group field optional
-        # sort field optional
-        # azimuth field optional
-        # distance field optional
-        # polygon features - output
+        # group field  from azimuth table optional 
+        # sort field from azimuth table
+        # azimuth field  from azimuth table
+        # distance field  from azimuth table
+        # polygon features - output (derive from input)
 
         parameters = [features]
         return parameters
@@ -842,6 +847,7 @@ class PolygonFromPoint(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
+        # Existing toolbox points to point2poly3.py (not _alt.py); delete old version
         alaskapak.add_area_to_features(features)
 
 
@@ -865,7 +871,7 @@ class RandomizePoints(object):
             multiValue=True,
         )
         # Sensitive Points - input point feature layer
-        # Obscured Features - output feature class
+        # Obscured Features - output point feature class
         # minimum offset - double default 0
         # maximum offset - double 500 feature class units
         # no go areas - multiple polygon feature classes
@@ -923,7 +929,7 @@ class ObscurePoints(object):
             multiValue=True,
         )
         # Sensitive Points - input point feature layer
-        # Obscured Features - output feature class
+        # Obscured Features - output polygon feature class
         # minimum offset - double default 0
         # maximum offset - double 500 feature class units
         # no go areas - multiple polygon feature classes
