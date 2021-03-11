@@ -76,11 +76,13 @@ class Toolbox(object):
             TableToShape,
         ]
 
+
 # Consider AddXY Tool:
 # parma1: single (or multiple) Point Feature Layers (required)
 # p2: Output coordinate system (optional, default, data coords)
 # p3: "Field Name (X, Longitude)" (optional, default: "Lon")
 # p4: "Field Name (Y, Latitude)" (optional, default: "Lon")
+
 
 class AddAreaMultiple(object):
     """A tool to add an area attribute to multiple polygon feature classes."""
@@ -189,7 +191,7 @@ class AddAreaSingle(object):
         )
         field_name.value = "Area"
         field_name.parameterDependencies = [feature.name]
-        # TODO: list should not include non editable fields like shape_area
+        # TODO: list should not include non-editable fields like shape_area
         field_name.filter.list = ["Double"]
 
         units = arcpy.Parameter(
@@ -214,7 +216,8 @@ class AddAreaSingle(object):
             name="out_features",
             datatype="GPFeatureLayer",
             parameterType="Derived",
-            direction="Output")
+            direction="Output",
+        )
         out_features.parameterDependencies = [feature.name]
         out_features.schema.clone = True
 
@@ -228,15 +231,18 @@ class AddAreaSingle(object):
 
         This method is called whenever a parameter has been changed.
         """
-        # TODO: maybe add new field to schema of last parameter
-        #parameters[4].schema.additionalFields = new Field Object with validated param[1].value
+        # TODO: add field to out_features schema if not in feature
+        # if parameters[2] not in parameters[0] field names
+        # parameters[4].schema.additionalFields = arcpy.Field() with validated param[1].value
 
-        # TODO: turn on/off overwrite if column name is new or existing
-        # if parameters[0].altered:
-        #     # FIXME: 2nd parameter must be a workspace, not a feature class
-        #     parameters[2].value = arcpy.ValidateFieldName(
+        # TODO: disable/hide overwrite if parameters[2] in parameters[0] field names
+
+        # TODO: check how AddFields handles bad field name (this code will fix it)
+        # if parameters[0].altered or parameters[2].altered:
+        #     parameters[2].value = alaskapak.valid_field_name(
         #         parameters[2].value, parameters[0].value
         #     )
+        return
 
     def updateMessages(self, parameters):
         """
@@ -245,8 +251,8 @@ class AddAreaSingle(object):
 
         This method is called after internal validation.
         """
+        # It is OK if the field name is not in the pick list of existing fields
         parameters[2].clearMessage()
-        return
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
@@ -313,7 +319,8 @@ class AddLengthSingle(object):
             name="out_features",
             datatype="GPFeatureLayer",
             parameterType="Derived",
-            direction="Output")
+            direction="Output",
+        )
         out_features.parameterDependencies = [feature.name]
         out_features.schema.clone = True
 
@@ -327,8 +334,7 @@ class AddLengthSingle(object):
 
         This method is called whenever a parameter has been changed.
         """
-        # TODO: maybe add new field to schema of last parameter
-        #parameters[4].schema.additionalFields = new Field Object with validated param[1].value
+        # TODO: See AddAreaSingle.updateParameters()
         return
 
     def updateMessages(self, parameters):
@@ -338,8 +344,8 @@ class AddLengthSingle(object):
 
         This method is called after internal validation.
         """
+        # It is OK if the field name is not in the pick list of existing fields
         parameters[2].clearMessage()
-        return
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
@@ -500,11 +506,20 @@ class AddIdSingle(object):
             name="out_features",
             datatype="GPFeatureLayer",
             parameterType="Derived",
-            direction="Output")
+            direction="Output",
+        )
         out_features.parameterDependencies = [feature.name]
         out_features.schema.clone = True
 
-        parameters = [feature, field_name, start, increment, sort_field_name, overwrite, out_features]
+        parameters = [
+            feature,
+            field_name,
+            start,
+            increment,
+            sort_field_name,
+            overwrite,
+            out_features,
+        ]
         return parameters
 
     def updateParameters(self, parameters):
@@ -514,8 +529,7 @@ class AddIdSingle(object):
 
         This method is called whenever a parameter has been changed.
         """
-        # TODO: maybe add new field to schema of last parameter
-        #parameters[6].schema.additionalFields = new Field Object with validated param[1].value
+        # TODO: See AddAreaSingle.updateParameters()
         return
 
     def updateMessages(self, parameters):
@@ -525,9 +539,8 @@ class AddIdSingle(object):
 
         This method is called after internal validation.
         """
-        # TODO: Remove message that field is not in existing list.
+        # It is OK if the field name is not in the pick list of existing fields
         parameters[1].clearMessage()
-        return
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
@@ -537,7 +550,9 @@ class AddIdSingle(object):
         increment = parameters[3].value
         sort_field_name = parameters[4].valueAsText
         overwrite = parameters[5].value
-        alaskapak.add_id_to_feature(feature, field_name, start, increment, sort_field_name, overwrite)
+        alaskapak.add_id_to_feature(
+            feature, field_name, start, increment, sort_field_name, overwrite
+        )
 
 
 class AddIdMultiple(object):
@@ -603,7 +618,14 @@ class AddIdMultiple(object):
             parameterType="Optional",
         )
 
-        parameters = [features, field_name, start, increment, sort_field_name, overwrite]
+        parameters = [
+            features,
+            field_name,
+            start,
+            increment,
+            sort_field_name,
+            overwrite,
+        ]
         return parameters
 
     def updateParameters(self, parameters):
@@ -632,7 +654,9 @@ class AddIdMultiple(object):
         increment = parameters[3].value
         sort_field_name = parameters[4].valueAsText
         overwrite = parameters[5].value
-        alaskapak.add_id_to_features(features, field_name, start, increment, sort_field_name, overwrite)
+        alaskapak.add_id_to_features(
+            features, field_name, start, increment, sort_field_name, overwrite
+        )
 
 
 class Buildings(object):
@@ -786,7 +810,7 @@ class PointsToPolygon(object):
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
         features = parameters[0].value
-        #alaskapak.points_to_polygons(features)
+        # alaskapak.points_to_polygons(features)
         alaskapak.add_area_to_features(features)
 
 
@@ -817,7 +841,7 @@ class PolygonFromPoint(object):
         # control point id field from control points
         # azimuth distance tableview
         # polygon id field
-        # group field  from azimuth table optional 
+        # group field  from azimuth table optional
         # sort field from azimuth table
         # azimuth field  from azimuth table
         # distance field  from azimuth table
