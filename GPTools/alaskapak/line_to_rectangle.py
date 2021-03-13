@@ -11,6 +11,8 @@ import sys
 
 import arcpy
 
+from . import utils
+
 
 def make_rect(pt1, pt2, width):
     """Assumes pt1 and pt2 are arcpy.Points, and width is numeric.
@@ -62,13 +64,13 @@ def make_rect_from_line(line, width):
         if len(parray) == 0:
             return None
         return arcpy.Polygon(parray)
-    else:
-        pt1 = line.firstPoint
-        pt2 = line.lastPoint
-        if pt1.equals(pt2):  # this equals is an arcpy method
-            return None
-        pt3, pt4 = make_rect(pt1, pt2, width)
-        return arcpy.Polygon(arcpy.Array([pt1, pt2, pt3, pt4, pt1]))
+    # Line is not a multi-part
+    pt1 = line.firstPoint
+    pt2 = line.lastPoint
+    if pt1.equals(pt2):  # this equals is an arcpy method
+        return None
+    pt3, pt4 = make_rect(pt1, pt2, width)
+    return arcpy.Polygon(arcpy.Array([pt1, pt2, pt3, pt4, pt1]))
 
 
 def toolbox_validation(args):
@@ -124,12 +126,7 @@ def toolbox_validation(args):
         arcpy.AddError(msg.format(offset_field_name, line_feature))
         sys.exit(1)
 
-    if (
-        offset_field_type != "SmallInteger"
-        and offset_field_type != "Integer"
-        and offset_field_type != "Single"
-        and offset_field_type != "Double"
-    ):
+    if offset_field_type not in ["SmallInteger", "Integer", "Single", "Double"]:
         msg = "{0}({1}) is not a numeric data type."
         arcpy.AddError(msg.format(offset_field_name, offset_field_type))
         sys.exit(1)
@@ -169,29 +166,18 @@ def line_to_rectangle(line_feature, rect_feature, offset_field_name):
 
     arcpy.AddMessage("Empty feature class has been created")
 
-    # workaround for bug (#NIM064306)
-    # wherein ValidateFieldName(field,workspace\feature_dataset)
-    # returns incorrect results.  Workaround: remove the feature_dataset
-    workspace = workspace.lower()
-    if workspace.rfind(".mdb") > 0:
-        workspace = workspace[: workspace.rfind(".mdb") + 4]
-    else:
-        if workspace.rfind(".gdb") > 0:
-            workspace = workspace[: workspace.rfind(".gdb") + 4]
-
     # create a simple field mapping from input to output
     # Need to be a lists, dicts do not have a guaranteed ordering
     line_fields = ["SHAPE@", offset_field_name]
-    rect_fields = ["SHAPE@", arcpy.ValidateFieldName(offset_field_name, workspace)]
+    rect_fields = ["SHAPE@", utils.valid_field_name(offset_field_name, rect_feature)]
     for field in arcpy.ListFields(line_feature):
-        name = field.name
         if (
             field.type not in ["OID", "GlobalID", "Geometry", "Blob", "Raster"]
-            and name != offset_field_name
+            and field.name != offset_field_name
             and field.editable  # skip un-editable fields like Shape_Length
         ):
-            line_fields.append(name)
-            rect_fields.append(arcpy.ValidateFieldName(name, workspace))
+            line_fields.append(field.name)
+            rect_fields.append(utils.valid_field_name(field.name, rect_feature))
 
     rect_cursor = arcpy.da.InsertCursor(rect_feature, rect_fields)
     with arcpy.da.SearchCursor(line_feature, line_fields) as line_cursor:
