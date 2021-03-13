@@ -68,103 +68,145 @@ def make_rect_from_line(line, width):
         return arcpy.Polygon(arcpy.Array([pt1, pt2, pt3, pt4, pt1]))
 
 
-# Get and check input
-if len(sys.argv) != 4:
-    arcpy.AddError("This tool requires exactly 3 parameters.")
-    usage = "Usage: {0} path_to_lineFC Offset_Field_Name path_to_outputFC"
-    print(usage.format(sys.argv[0]))
-    sys.exit(1)
+def toolbox_validation(args):
+    """Exits with an error message if the command line arguments are not valid.
 
-lineFC = arcpy.GetParameterAsText(0)
-offsetFN = arcpy.GetParameterAsText(1)
-rectFC = arcpy.GetParameterAsText(2)
+    Provides the same default processing and validation for command line scripts
+    that the ArcGIS toolbox framework provides.  It does not do all possible
+    validation and error checking.
 
-lineDescription = arcpy.Describe(lineFC)
+    Args:
+        args (list[text]): A list of commands arguments, Usually obtained
+        from the sys.argv or arcpy.GetParameterAsText().  Provide "#" as
+        placeholder for an unspecified intermediate argument.
 
-if lineDescription.shapeType != "Polyline":
-    msg = "{0} is a {1} not Polyline feature class."
-    arcpy.AddError(msg.format(lineFC, lineDescription.shapeType))
-    sys.exit(1)
+    Returns:
+        A list of validated command line parameters.
+    """
 
-offsetFieldType = ""
-# check for offsetFN in the field names
-for field in lineDescription.fields:
-    if field.name == offsetFN:
-        offsetFieldType = field.type
-        break
+    # Get and check input
+    if len(sys.argv) != 4:
+        arcpy.AddError("This tool requires exactly 3 parameters.")
+        usage = "Usage: {0} path_to_lineFC Offset_Field_Name path_to_outputFC"
+        print(usage.format(sys.argv[0]))
+        sys.exit(1)
 
-# check for offsetFN in the field alias names
-if offsetFieldType == "":
+    lineFC = arcpy.GetParameterAsText(0)
+    offsetFN = arcpy.GetParameterAsText(1)
+    rectFC = arcpy.GetParameterAsText(2)
+
+    lineDescription = arcpy.Describe(lineFC)
+
+    if lineDescription.shapeType != "Polyline":
+        msg = "{0} is a {1} not Polyline feature class."
+        arcpy.AddError(msg.format(lineFC, lineDescription.shapeType))
+        sys.exit(1)
+
+    offsetFieldType = ""
+    # check for offsetFN in the field names
     for field in lineDescription.fields:
-        if field.aliasName == offsetFN:
+        if field.name == offsetFN:
             offsetFieldType = field.type
             break
 
-if offsetFieldType == "":
-    msg = "{0} was not found as a field in {1}."
-    arcpy.AddError(msg.format(offsetFN, lineFC))
-    sys.exit(1)
+    # check for offsetFN in the field alias names
+    if offsetFieldType == "":
+        for field in lineDescription.fields:
+            if field.aliasName == offsetFN:
+                offsetFieldType = field.type
+                break
 
-if (
-    offsetFieldType != "SmallInteger"
-    and offsetFieldType != "Integer"
-    and offsetFieldType != "Single"
-    and offsetFieldType != "Double"
-):
-    msg = "{0}({1}) is not a numeric data type."
-    arcpy.AddError(msg.format(offsetFN, offsetFieldType))
-    sys.exit(1)
+    if offsetFieldType == "":
+        msg = "{0} was not found as a field in {1}."
+        arcpy.AddError(msg.format(offsetFN, lineFC))
+        sys.exit(1)
 
-arcpy.AddMessage("Input has been validated")
-
-# start the real work
-workspace, featureClass = os.path.split(rectFC)
-arcpy.CreateFeatureclass_management(
-    workspace,
-    featureClass,
-    "Polygon",
-    lineFC,
-    "SAME_AS_TEMPLATE",
-    "SAME_AS_TEMPLATE",
-    lineFC,
-)
-
-arcpy.AddMessage("Empty feature class has been created")
-
-# workaround for bug (#NIM064306)
-# wherein ValidateFieldName(field,workspace\feature_dataset)
-# returns incorrect results.  Workaround: remove the feature_dataset
-workspace = workspace.lower()
-if workspace.rfind(".mdb") > 0:
-    workspace = workspace[: workspace.rfind(".mdb") + 4]
-else:
-    if workspace.rfind(".gdb") > 0:
-        workspace = workspace[: workspace.rfind(".gdb") + 4]
-
-# create a simple field mapping from input to output
-# Need to be a lists, dicts do not have a guaranteed ordering
-line_fields = ["SHAPE@", offsetFN]
-rect_fields = ["SHAPE@", arcpy.ValidateFieldName(offsetFN, workspace)]
-for field in arcpy.ListFields(lineFC):
-    name = field.name
     if (
-        field.type not in ["OID", "GlobalID", "Geometry", "Blob", "Raster"]
-        and name != offsetFN
-        and field.editable  # skip un-editable fields like Shape_Length
+        offsetFieldType != "SmallInteger"
+        and offsetFieldType != "Integer"
+        and offsetFieldType != "Single"
+        and offsetFieldType != "Double"
     ):
-        line_fields.append(name)
-        rect_fields.append(arcpy.ValidateFieldName(name, workspace))
+        msg = "{0}({1}) is not a numeric data type."
+        arcpy.AddError(msg.format(offsetFN, offsetFieldType))
+        sys.exit(1)
 
-rect_cursor = arcpy.da.InsertCursor(rectFC, rect_fields)
-with arcpy.da.SearchCursor(lineFC, line_fields) as line_cursor:
-    for row in line_cursor:
-        shape = row[0]
-        offset = row[1]
-        if shape:
-            rect = make_rect_from_line(shape, offset)
-            if rect:
-                rect_row = [rect, offset] + row[2:]
-                rect_cursor.insertRow(rect_row)
-del rect_cursor
+    arcpy.AddMessage("Input has been validated")
+    return [lineFC, rectFC, offsetFN]
 
-arcpy.AddMessage("Output feature class has been populated")
+
+def line_to_rectangle(lineFC, rectFC, offsetFN):
+
+    # start the real work
+    workspace, featureClass = os.path.split(rectFC)
+    arcpy.CreateFeatureclass_management(
+        workspace,
+        featureClass,
+        "Polygon",
+        lineFC,
+        "SAME_AS_TEMPLATE",
+        "SAME_AS_TEMPLATE",
+        lineFC,
+    )
+
+    arcpy.AddMessage("Empty feature class has been created")
+
+    # workaround for bug (#NIM064306)
+    # wherein ValidateFieldName(field,workspace\feature_dataset)
+    # returns incorrect results.  Workaround: remove the feature_dataset
+    workspace = workspace.lower()
+    if workspace.rfind(".mdb") > 0:
+        workspace = workspace[: workspace.rfind(".mdb") + 4]
+    else:
+        if workspace.rfind(".gdb") > 0:
+            workspace = workspace[: workspace.rfind(".gdb") + 4]
+
+    # create a simple field mapping from input to output
+    # Need to be a lists, dicts do not have a guaranteed ordering
+    line_fields = ["SHAPE@", offsetFN]
+    rect_fields = ["SHAPE@", arcpy.ValidateFieldName(offsetFN, workspace)]
+    for field in arcpy.ListFields(lineFC):
+        name = field.name
+        if (
+            field.type not in ["OID", "GlobalID", "Geometry", "Blob", "Raster"]
+            and name != offsetFN
+            and field.editable  # skip un-editable fields like Shape_Length
+        ):
+            line_fields.append(name)
+            rect_fields.append(arcpy.ValidateFieldName(name, workspace))
+
+    rect_cursor = arcpy.da.InsertCursor(rectFC, rect_fields)
+    with arcpy.da.SearchCursor(lineFC, line_fields) as line_cursor:
+        for row in line_cursor:
+            shape = row[0]
+            offset = row[1]
+            if shape:
+                rect = make_rect_from_line(shape, offset)
+                if rect:
+                    rect_row = [rect, offset] + row[2:]
+                    rect_cursor.insertRow(rect_row)
+    del rect_cursor
+
+    arcpy.AddMessage("Output feature class has been populated")
+
+
+def line_to_rectangle_commandline():
+    """Parse and validate command line arguments then add area to features."""
+    args = [arcpy.GetParameterAsText(i) for i in range(arcpy.GetParameterCount())]
+    args = toolbox_validation(args)
+    line_to_rectangle(*args)
+
+
+def line_to_rectangle_testing(args):
+    """Specify command line arguments for testing."""
+    args = toolbox_validation(args)
+    print(args)
+    line_to_rectangle(*args)
+
+
+if __name__ == "__main__":
+    # For testing
+    # Change `from . import utils` to `import utils` to run as a script
+    line_to_rectangle_commandline()
+    # args = ["C:/tmp/building.gdb/edges", "C:/tmp/building.gdb/footprint", "offset"]
+    # line_to_rectangle_testing(args)
