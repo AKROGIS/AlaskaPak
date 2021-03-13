@@ -15,11 +15,20 @@ from . import utils
 
 
 def make_rect(pt1, pt2, width):
-    """Assumes pt1 and pt2 are arcpy.Points, and width is numeric.
-    Returns a tuple of the next two points in the rectangle.
-    Points proceed clockwise for a positive width and
-    counterclockwise for a negative width."""
+    """Return the two points that complete the rectangle.
 
+    Points proceed clockwise for a positive width and counterclockwise for a
+    negative width.
+
+    Args:
+        pt1 (arcpy.Point): The first corner of a rectangle
+        pt2 (arcpy.Point): The second corner of the rectangle.
+        width (Number): The width of the rectangle perpendicular to the
+            segment pt1-pt2.
+
+    Returns:
+        (arcpy.Point, arcpy.Point): points 3 and 4 in the rectangle.
+    """
     # pylint: disable=invalid-name
 
     # Find the angle of the line between the points
@@ -38,10 +47,23 @@ def make_rect(pt1, pt2, width):
 
 
 def make_rect_from_line(line, width):
-    """Assumes an arcpy.Polyline for input, and returns an
-    arcpy.Polygon or None.  If the input is multipart, so is output.
-    Any degenerate parts (single vertex, or first == last) are
-    ignored.  If all parts are degenerate, None is returned."""
+    """Builds a rectangle from `line` that is `width` wide.
+
+    If the input is multipart, so is output. Any degenerate parts (single
+    vertex, or first == last) are ignored.  If all parts are degenerate, None
+    is returned.
+
+    Args:
+        line (arcpy.Polyline): A line defining one side of the rectangle.
+            This line is nominally a single part with only two vertices, but
+            the more general case is also supported.
+        width (Number): The length of the edges connected to the first the last
+            vertices and perpendicular to the segment connecting them.
+
+    Returns:
+        arcpy.Polygon|None: The rectangle defined by the input or None if the
+        input is invalid.
+    """
     # skip bad shapes
     if line.partCount == 0:
         return None
@@ -89,12 +111,10 @@ def toolbox_validation(args):
         A list of validated command line parameters.
     """
 
-    # Get and check input
-    if len(sys.argv) != 4:
-        arcpy.AddError("This tool requires exactly 3 parameters.")
-        usage = "Usage: {0} path_to_line_feature Offset_Field_Name path_to_outputFC"
-        print(usage.format(sys.argv[0]))
-        sys.exit(1)
+    arg_count = len(args)
+    if arg_count < 3 or arg_count > 3:
+        usage = "Usage: {0} line_feature rect_feature offset_field_name"
+        utils.die(usage.format(sys.argv[0]))
 
     line_feature = args[0]
     offset_field_name = args[1]
@@ -104,10 +124,9 @@ def toolbox_validation(args):
 
     if line_description.shapeType != "Polyline":
         msg = "{0} is a {1} not Polyline feature class."
-        arcpy.AddError(msg.format(line_feature, line_description.shapeType))
-        sys.exit(1)
+        utils.die(msg.format(line_feature, line_description.shapeType))
 
-    offset_field_type = ""
+    offset_field_type = None
     # check for offset_field_name in the field names
     for field in line_description.fields:
         if field.name == offset_field_name:
@@ -115,23 +134,22 @@ def toolbox_validation(args):
             break
 
     # check for offset_field_name in the field alias names
-    if offset_field_type == "":
+    if offset_field_type is None:
         for field in line_description.fields:
             if field.aliasName == offset_field_name:
+                offset_field_name = field.name
                 offset_field_type = field.type
                 break
 
-    if offset_field_type == "":
+    if offset_field_type is None:
         msg = "{0} was not found as a field in {1}."
-        arcpy.AddError(msg.format(offset_field_name, line_feature))
+        utils.die(msg.format(offset_field_name, line_feature))
         sys.exit(1)
 
     if offset_field_type not in ["SmallInteger", "Integer", "Single", "Double"]:
         msg = "{0}({1}) is not a numeric data type."
-        arcpy.AddError(msg.format(offset_field_name, offset_field_type))
-        sys.exit(1)
+        utils.die(msg.format(offset_field_name, offset_field_type))
 
-    arcpy.AddMessage("Input has been validated")
     return [line_feature, rect_feature, offset_field_name]
 
 
@@ -152,7 +170,10 @@ def line_to_rectangle(line_feature, rect_feature, offset_field_name):
             units of the feature class.  A positive number is offset to the
             to the right (looking from first vertex to last).
     """
-    # start the real work
+
+    utils.info("Building {0} from {1}.".format(rect_feature, line_feature))
+
+    # workspace may be a feature dataset, that's ok
     workspace, feature_class = os.path.split(rect_feature)
     arcpy.CreateFeatureclass_management(
         workspace,
@@ -163,8 +184,6 @@ def line_to_rectangle(line_feature, rect_feature, offset_field_name):
         "SAME_AS_TEMPLATE",
         line_feature,
     )
-
-    arcpy.AddMessage("Empty feature class has been created")
 
     # create a simple field mapping from input to output
     # Need to be a lists, dicts do not have a guaranteed ordering
@@ -190,8 +209,6 @@ def line_to_rectangle(line_feature, rect_feature, offset_field_name):
                     rect_row = [rect, offset] + row[2:]
                     rect_cursor.insertRow(rect_row)
     del rect_cursor
-
-    arcpy.AddMessage("Output feature class has been populated")
 
 
 def line_to_rectangle_commandline():
