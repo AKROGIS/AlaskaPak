@@ -19,6 +19,9 @@ if sys.version_info[0] < 3:
     range = xrange
 
 # FIXME: Source data cannot have a CID field
+# TODO: Remove/replace ObscurePoints() and SanitizeInput()
+# use *_commandline() , *_testing() and toolbox_validation()
+# TODO: import utils and use message functions.
 
 
 def ObscurePoints():

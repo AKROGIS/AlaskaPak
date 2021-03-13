@@ -156,20 +156,10 @@ def polygon_from_control_point(
 
     utils.info("Empty polygon feature class has been created")
 
-    # Workaround for bug (still in 10.2) wherein
-    #   ValidateFieldName(field,workspace\feature_data_set) returns incorrect results.
-    # Fix is to remove the feature_data_set"
-    workspace = workspace.lower()
-    if workspace.rfind(".mdb") > 0:
-        workspace = workspace[: workspace.rfind(".mdb") + 4]
-    else:
-        if workspace.rfind(".gdb") > 0:
-            workspace = workspace[: workspace.rfind(".gdb") + 4]
-
     polygon_fields = arcpy.ListFields(polygon_data_table)
     # Add the polygon_id_field_name to the polygon FC
-    polygon_id_new_field_name = arcpy.ValidateFieldName(
-        polygon_id_field_name, workspace
+    polygon_id_new_field_name = utils.valid_field_name(
+        polygon_id_field_name, polygon_feature_class
     )
     field_type = None
     for field in polygon_fields:
@@ -186,8 +176,8 @@ def polygon_from_control_point(
     # Add the polygon_group_field_name to the polygon FC
     polygon_group_new_field_name = None
     if polygon_group_field_name:
-        polygon_group_new_field_name = arcpy.ValidateFieldName(
-            polygon_group_field_name, workspace
+        polygon_group_new_field_name = utils.valid_field_name(
+            polygon_group_field_name, polygon_feature_class
         )
         field_type = None
         for field in polygon_fields:

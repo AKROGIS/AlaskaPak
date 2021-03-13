@@ -13,6 +13,8 @@ import sys
 import arcpy
 
 # FIXME - use environment SR, Z, M, when creating feature class
+# TODO: Remove/replace random_transects() and sanitize_input()
+# use *_commandline() , *_testing() and toolbox_validation()
 
 
 def random_transects():
