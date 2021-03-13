@@ -95,64 +95,6 @@ def make_rect_from_line(line, width):
     return arcpy.Polygon(arcpy.Array([pt1, pt2, pt3, pt4, pt1]))
 
 
-def toolbox_validation(args):
-    """Exits with an error message if the command line arguments are not valid.
-
-    Provides the same default processing and validation for command line scripts
-    that the ArcGIS toolbox framework provides.  It does not do all possible
-    validation and error checking.
-
-    Args:
-        args (list[text]): A list of commands arguments, Usually obtained
-        from the sys.argv or arcpy.GetParameterAsText().  Provide "#" as
-        placeholder for an unspecified intermediate argument.
-
-    Returns:
-        A list of validated command line parameters.
-    """
-
-    arg_count = len(args)
-    if arg_count < 3 or arg_count > 3:
-        usage = "Usage: {0} line_feature rect_feature offset_field_name"
-        utils.die(usage.format(sys.argv[0]))
-
-    line_feature = args[0]
-    offset_field_name = args[1]
-    rect_feature = args[2]
-
-    line_description = arcpy.Describe(line_feature)
-
-    if line_description.shapeType != "Polyline":
-        msg = "{0} is a {1} not Polyline feature class."
-        utils.die(msg.format(line_feature, line_description.shapeType))
-
-    offset_field_type = None
-    # check for offset_field_name in the field names
-    for field in line_description.fields:
-        if field.name == offset_field_name:
-            offset_field_type = field.type
-            break
-
-    # check for offset_field_name in the field alias names
-    if offset_field_type is None:
-        for field in line_description.fields:
-            if field.aliasName == offset_field_name:
-                offset_field_name = field.name
-                offset_field_type = field.type
-                break
-
-    if offset_field_type is None:
-        msg = "{0} was not found as a field in {1}."
-        utils.die(msg.format(offset_field_name, line_feature))
-        sys.exit(1)
-
-    if offset_field_type not in ["SmallInteger", "Integer", "Single", "Double"]:
-        msg = "{0}({1}) is not a numeric data type."
-        utils.die(msg.format(offset_field_name, offset_field_type))
-
-    return [line_feature, rect_feature, offset_field_name]
-
-
 def line_to_rectangle(line_feature, rect_feature, offset_field_name):
     """Creates rect_features by adding offset to line_features.
 
@@ -209,6 +151,64 @@ def line_to_rectangle(line_feature, rect_feature, offset_field_name):
                     rect_row = [rect, offset] + row[2:]
                     rect_cursor.insertRow(rect_row)
     del rect_cursor
+
+
+def toolbox_validation(args):
+    """Exits with an error message if the command line arguments are not valid.
+
+    Provides the same default processing and validation for command line scripts
+    that the ArcGIS toolbox framework provides.  It does not do all possible
+    validation and error checking.
+
+    Args:
+        args (list[text]): A list of commands arguments, Usually obtained
+        from the sys.argv or arcpy.GetParameterAsText().  Provide "#" as
+        placeholder for an unspecified intermediate argument.
+
+    Returns:
+        A list of validated command line parameters.
+    """
+
+    arg_count = len(args)
+    if arg_count < 3 or arg_count > 3:
+        usage = "Usage: {0} line_feature rect_feature offset_field_name"
+        utils.die(usage.format(sys.argv[0]))
+
+    line_feature = args[0]
+    offset_field_name = args[1]
+    rect_feature = args[2]
+
+    line_description = arcpy.Describe(line_feature)
+
+    if line_description.shapeType != "Polyline":
+        msg = "{0} is a {1} not Polyline feature class."
+        utils.die(msg.format(line_feature, line_description.shapeType))
+
+    offset_field_type = None
+    # check for offset_field_name in the field names
+    for field in line_description.fields:
+        if field.name == offset_field_name:
+            offset_field_type = field.type
+            break
+
+    # check for offset_field_name in the field alias names
+    if offset_field_type is None:
+        for field in line_description.fields:
+            if field.aliasName == offset_field_name:
+                offset_field_name = field.name
+                offset_field_type = field.type
+                break
+
+    if offset_field_type is None:
+        msg = "{0} was not found as a field in {1}."
+        utils.die(msg.format(offset_field_name, line_feature))
+        sys.exit(1)
+
+    if offset_field_type not in ["SmallInteger", "Integer", "Single", "Double"]:
+        msg = "{0}({1}) is not a numeric data type."
+        utils.die(msg.format(offset_field_name, offset_field_type))
+
+    return [line_feature, rect_feature, offset_field_name]
 
 
 def line_to_rectangle_commandline():

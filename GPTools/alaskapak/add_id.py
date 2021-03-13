@@ -14,6 +14,75 @@ from . import utils
 # pylint: disable=too-many-arguments,too-many-statements
 
 
+def add_id_to_features(
+    feature_classes,
+    field_name="UniqueID",
+    start=1,
+    increment=1,
+    sort_field_name=None,
+    overwrite=False,
+):
+    """Add id to multiple feature classes."""
+
+    for feature_class in feature_classes:
+        add_id_to_feature(
+            feature_class, field_name, start, increment, sort_field_name, overwrite
+        )
+
+
+def add_id_to_feature(
+    feature_class,
+    field_name="UniqueID",
+    start=1,
+    increment=1,
+    sort_field_name=None,
+    overwrite=False,
+):
+    """Add id to a feature class."""
+
+    utils.info("Adding {0} to {2}".format(field_name, feature_class))
+    field_names = [field.name for field in arcpy.ListFields(feature_class)]
+    id_field_name = utils.valid_field_name(field_name, feature_class)
+    if id_field_name in field_names:
+        if overwrite:
+            if not arcpy.ListFields(feature_class, id_field_name, "Long"):
+                msg = "Field {0} exists, but is not the right type. Skipping..."
+                utils.warn(msg.format(id_field_name))
+                return
+        else:
+            msg = "Not allowed to overwrite existing field {0}. Skipping..."
+            utils.warn(msg.format(id_field_name))
+            return
+    else:
+        if arcpy.TestSchemaLock(feature_class):
+            utils.info("Creating new field {0}".format(id_field_name))
+            arcpy.AddField_management(feature_class, id_field_name, "Long")
+        else:
+            msg = "Unable to acquire a schema lock to add the new field. Skipping..."
+            utils.warn(msg)
+            return
+
+    order_by = None
+    if sort_field_name:
+        if sort_field_name not in field_names:
+            msg = "Sort field `{0}` not in {1}. Ignoring"
+            utils.warn(msg.format(sort_field_name, feature_class))
+        else:
+            if arcpy.describe(feature_class).dataType == "ShapeFile":
+                utils.warn("Shapefiles do not support sort fields. Ignoring")
+            else:
+                order_by = "ORDER BY {0}".format(sort_field_name)
+
+    feature_id = start
+    with arcpy.da.UpdateCursor(
+        feature_class, [id_field_name], sql_clause=(None, order_by)
+    ) as cursor:
+        for row in cursor:
+            row[0] = feature_id
+            feature_id += increment
+            cursor.updateRow(row)
+
+
 def toolbox_validation(args):
     """Exits with an error message if the command line arguments are not valid.
 
@@ -107,75 +176,6 @@ def toolbox_validation(args):
         overwrite = overwrite.upper() in ["TRUE", "YES", "ON"]
 
     return [features, id_field_name, start, increment, sort_field_name, overwrite]
-
-
-def add_id_to_features(
-    feature_classes,
-    field_name="UniqueID",
-    start=1,
-    increment=1,
-    sort_field_name=None,
-    overwrite=False,
-):
-    """Add id to multiple feature classes."""
-
-    for feature_class in feature_classes:
-        add_id_to_feature(
-            feature_class, field_name, start, increment, sort_field_name, overwrite
-        )
-
-
-def add_id_to_feature(
-    feature_class,
-    field_name="UniqueID",
-    start=1,
-    increment=1,
-    sort_field_name=None,
-    overwrite=False,
-):
-    """Add id to a feature class."""
-
-    utils.info("Adding {0} to {2}".format(field_name, feature_class))
-    field_names = [field.name for field in arcpy.ListFields(feature_class)]
-    id_field_name = utils.valid_field_name(field_name, feature_class)
-    if id_field_name in field_names:
-        if overwrite:
-            if not arcpy.ListFields(feature_class, id_field_name, "Long"):
-                msg = "Field {0} exists, but is not the right type. Skipping..."
-                utils.warn(msg.format(id_field_name))
-                return
-        else:
-            msg = "Not allowed to overwrite existing field {0}. Skipping..."
-            utils.warn(msg.format(id_field_name))
-            return
-    else:
-        if arcpy.TestSchemaLock(feature_class):
-            utils.info("Creating new field {0}".format(id_field_name))
-            arcpy.AddField_management(feature_class, id_field_name, "Long")
-        else:
-            msg = "Unable to acquire a schema lock to add the new field. Skipping..."
-            utils.warn(msg)
-            return
-
-    order_by = None
-    if sort_field_name:
-        if sort_field_name not in field_names:
-            msg = "Sort field `{0}` not in {1}. Ignoring"
-            utils.warn(msg.format(sort_field_name, feature_class))
-        else:
-            if arcpy.describe(feature_class).dataType == "ShapeFile":
-                utils.warn("Shapefiles do not support sort fields. Ignoring")
-            else:
-                order_by = "ORDER BY {0}".format(sort_field_name)
-
-    feature_id = start
-    with arcpy.da.UpdateCursor(
-        feature_class, [id_field_name], sql_clause=(None, order_by)
-    ) as cursor:
-        for row in cursor:
-            row[0] = feature_id
-            feature_id += increment
-            cursor.updateRow(row)
 
 
 def add_id_commandline():
