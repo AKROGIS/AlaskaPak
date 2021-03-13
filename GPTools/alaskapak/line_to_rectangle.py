@@ -17,6 +17,9 @@ def make_rect(pt1, pt2, width):
     Returns a tuple of the next two points in the rectangle.
     Points proceed clockwise for a positive width and
     counterclockwise for a negative width."""
+
+    # pylint: disable=invalid-name
+
     # Find the angle of the line between the points
     dx = pt2.X - pt1.X
     dy = pt2.Y - pt1.Y
@@ -87,66 +90,81 @@ def toolbox_validation(args):
     # Get and check input
     if len(sys.argv) != 4:
         arcpy.AddError("This tool requires exactly 3 parameters.")
-        usage = "Usage: {0} path_to_lineFC Offset_Field_Name path_to_outputFC"
+        usage = "Usage: {0} path_to_line_feature Offset_Field_Name path_to_outputFC"
         print(usage.format(sys.argv[0]))
         sys.exit(1)
 
-    lineFC = arcpy.GetParameterAsText(0)
-    offsetFN = arcpy.GetParameterAsText(1)
-    rectFC = arcpy.GetParameterAsText(2)
+    line_feature = args[0]
+    offset_field_name = args[1]
+    rect_feature = args[2]
 
-    lineDescription = arcpy.Describe(lineFC)
+    line_description = arcpy.Describe(line_feature)
 
-    if lineDescription.shapeType != "Polyline":
+    if line_description.shapeType != "Polyline":
         msg = "{0} is a {1} not Polyline feature class."
-        arcpy.AddError(msg.format(lineFC, lineDescription.shapeType))
+        arcpy.AddError(msg.format(line_feature, line_description.shapeType))
         sys.exit(1)
 
-    offsetFieldType = ""
-    # check for offsetFN in the field names
-    for field in lineDescription.fields:
-        if field.name == offsetFN:
-            offsetFieldType = field.type
+    offset_field_type = ""
+    # check for offset_field_name in the field names
+    for field in line_description.fields:
+        if field.name == offset_field_name:
+            offset_field_type = field.type
             break
 
-    # check for offsetFN in the field alias names
-    if offsetFieldType == "":
-        for field in lineDescription.fields:
-            if field.aliasName == offsetFN:
-                offsetFieldType = field.type
+    # check for offset_field_name in the field alias names
+    if offset_field_type == "":
+        for field in line_description.fields:
+            if field.aliasName == offset_field_name:
+                offset_field_type = field.type
                 break
 
-    if offsetFieldType == "":
+    if offset_field_type == "":
         msg = "{0} was not found as a field in {1}."
-        arcpy.AddError(msg.format(offsetFN, lineFC))
+        arcpy.AddError(msg.format(offset_field_name, line_feature))
         sys.exit(1)
 
     if (
-        offsetFieldType != "SmallInteger"
-        and offsetFieldType != "Integer"
-        and offsetFieldType != "Single"
-        and offsetFieldType != "Double"
+        offset_field_type != "SmallInteger"
+        and offset_field_type != "Integer"
+        and offset_field_type != "Single"
+        and offset_field_type != "Double"
     ):
         msg = "{0}({1}) is not a numeric data type."
-        arcpy.AddError(msg.format(offsetFN, offsetFieldType))
+        arcpy.AddError(msg.format(offset_field_name, offset_field_type))
         sys.exit(1)
 
     arcpy.AddMessage("Input has been validated")
-    return [lineFC, rectFC, offsetFN]
+    return [line_feature, rect_feature, offset_field_name]
 
 
-def line_to_rectangle(lineFC, rectFC, offsetFN):
+def line_to_rectangle(line_feature, rect_feature, offset_field_name):
+    """Creates rect_features by adding offset to line_features.
 
+    `rect_feature` will inherit all the attributes of the line it is based on.
+
+    Args:
+        line_feature (text): An ArcGIS path to a polyline feature class. The
+            shape should be a simple (two vertex) line that will be one side
+            of the generated rectangles shape.
+        rect_feature (text): An ArcGIS path where the new polygon feature class
+            will be saved.
+        offset_field_name (text): The name of a numerical field in
+            `line_rectangle` that contains the offset for the line opposite
+            the shape in `line_rectangle`.  The offset is assumed to be in
+            units of the feature class.  A positive number is offset to the
+            to the right (looking from first vertex to last).
+    """
     # start the real work
-    workspace, featureClass = os.path.split(rectFC)
+    workspace, feature_class = os.path.split(rect_feature)
     arcpy.CreateFeatureclass_management(
         workspace,
-        featureClass,
+        feature_class,
         "Polygon",
-        lineFC,
+        line_feature,
         "SAME_AS_TEMPLATE",
         "SAME_AS_TEMPLATE",
-        lineFC,
+        line_feature,
     )
 
     arcpy.AddMessage("Empty feature class has been created")
@@ -163,20 +181,20 @@ def line_to_rectangle(lineFC, rectFC, offsetFN):
 
     # create a simple field mapping from input to output
     # Need to be a lists, dicts do not have a guaranteed ordering
-    line_fields = ["SHAPE@", offsetFN]
-    rect_fields = ["SHAPE@", arcpy.ValidateFieldName(offsetFN, workspace)]
-    for field in arcpy.ListFields(lineFC):
+    line_fields = ["SHAPE@", offset_field_name]
+    rect_fields = ["SHAPE@", arcpy.ValidateFieldName(offset_field_name, workspace)]
+    for field in arcpy.ListFields(line_feature):
         name = field.name
         if (
             field.type not in ["OID", "GlobalID", "Geometry", "Blob", "Raster"]
-            and name != offsetFN
+            and name != offset_field_name
             and field.editable  # skip un-editable fields like Shape_Length
         ):
             line_fields.append(name)
             rect_fields.append(arcpy.ValidateFieldName(name, workspace))
 
-    rect_cursor = arcpy.da.InsertCursor(rectFC, rect_fields)
-    with arcpy.da.SearchCursor(lineFC, line_fields) as line_cursor:
+    rect_cursor = arcpy.da.InsertCursor(rect_feature, rect_fields)
+    with arcpy.da.SearchCursor(line_feature, line_fields) as line_cursor:
         for row in line_cursor:
             shape = row[0]
             offset = row[1]
