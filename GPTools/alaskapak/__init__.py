@@ -12,6 +12,7 @@ from .add_area import valid_units_pretty as valid_area_units
 from .add_id import add_id_to_feature, add_id_to_features, add_id_commandline
 from .add_length import add_length_to_feature, add_length_to_features
 from .add_length import valid_units_pretty as valid_length_units
+from .line_to_rectangle import line_to_rectangle
 from .points_to_polygons import points_to_polygons
 from .square_building import square_buildings
 from .table_to_shape import table_to_shape, table_to_shape_commandline

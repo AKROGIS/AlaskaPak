@@ -710,43 +710,46 @@ class LineToRectangle(object):
 
     def getParameterInfo(self):
         """Define parameter definitions"""
-        features = arcpy.Parameter(
-            name="features",
-            displayName="Input Features",
+        lines = arcpy.Parameter(
+            name="lines",
+            displayName="Input Line (Edge) Features",
             direction="Input",
             datatype="GPFeatureLayer",
             parameterType="Required",
             multiValue=True,
         )
-        # Line features - layer
-        # rectangle width field
-        # rectangle features - output feature class
+        lines.filter.list = ["Polyline"]
 
-        parameters = [features]
+        width_field_name = arcpy.Parameter(
+            name="width_field_name",
+            displayName="Width field name",
+            direction="Input",
+            datatype="Field",
+            parameterType="Required",
+        )
+        width_field_name.parameterDependencies = [lines.name]
+        width_field_name.filter.list = ["Short", "Long", "Float", "Single", "Double"]
+
+        polygons = arcpy.Parameter(
+            name="polygons",
+            displayName="Output Polygon (Building) Features",
+            direction="Output",
+            datatype="GPFeatureLayer",
+            parameterType="Required",
+        )
+        polygons.parameterDependencies = [lines.name]
+        polygons.schema.clone = True
+
+        parameters = [lines, width_field_name, polygons]
         return parameters
 
-    def updateParameters(self, parameters):
-        """
-        Modify the values and properties of parameters before internal
-        validation is performed.
-
-        This method is called whenever a parameter has been changed.
-        """
-        return
-
-    def updateMessages(self, parameters):
-        """
-        Modify the messages created by internal validation for each tool
-        parameter.
-
-        This method is called after internal validation.
-        """
-        return
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
-        alaskapak.add_area_to_features(features)
+        lines = parameters[0].value
+        width = parameters[1].value
+        polygons = parameters[2].value
+        alaskapak.line_to_rectangle(lines, polygons, width)
 
 
 class PointsToPolygon(object):
