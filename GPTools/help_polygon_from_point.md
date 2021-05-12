@@ -58,6 +58,7 @@ Sort_Field
 The name of a field in the Azimuth_Distance_Table that sorts the azimuth & distance records in clockwise
 order around the perimeter of the polygon.
 If the vertices are not sorted properly, you will get some very bizarre looking polygons.
+If not provided, then the data will be used in database order (which may not be consistent)
 
 Parameter 7:
 Azimuth_Field
@@ -65,6 +66,7 @@ The name of a field in the Azimuth_Distance_Table that contains the azimuth meas
 Azimuth values are assumed to be in degrees and referenced from the control point to true north.
 True north is zero degrees and azimuth values increase clockwise up to 360 degrees.
 A value less than zero or greater than 360 is considered invalid and is ignored with a warning.
+Optional, defaults to "Azimuth"
 
 Parameter 8:
 Distance_Field
@@ -72,6 +74,7 @@ The name of a field in the Azimuth_Distance_Table that contains the distance mea
 Distances are distance measures from the control point to a vertex in the perimeter of the polygon.  Distances are
 assumed to be in the same linear units as the spatial reference of the Control_Point_Features.
 A value less than or equal to zero is ignored with a warning.
+Optional, defaults to "Distance"
 
 Parameter 9:
 Polygon_Features
