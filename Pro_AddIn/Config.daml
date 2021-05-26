@@ -27,14 +27,10 @@
           <button refID="AlaskaPak_Copy_Raster_Symbology" size="large" />
           <button refID="AlaskaPak_Set_All_Extents" size="large" />
         </group>
-        <group id="AlaskaPak_Add_Attributes_Group" caption="Add Attributes" appearsOnAddInTab="false" keytip="A">
-          <button refID="AlaskaPak_AddGUID" size="large" />
-          <button refID="AlaskaPak_AddID" size="large" />
-          <button refID="AlaskaPak_AddXY" size="large" />
-          <button refID="AlaskaPak_AddLength" size="large" />
-          <button refID="AlaskaPak_AddArea" size="large" />
+        <group id="AlaskaPak_Add_Attributes_Group" caption="Add" appearsOnAddInTab="false" keytip="A">
+          <toolPalette refID="addAttributesButtonPalette" size="large" />
         </group>
-        <group id="AlaskaPak_Conversions_Group" caption="Conversions" appearsOnAddInTab="false" keytip="C">
+        <group id="AlaskaPak_Conversions_Group" caption="Convert" appearsOnAddInTab="false" keytip="C">
           <button refID="AlaskaPak_Table_to_Shape" size="large" />
           <button refID="AlaskaPak_Line_to_Rectangle" size="large" />
           <button refID="AlaskaPak_Points_to_Polyline" size="large" />
@@ -45,22 +41,48 @@
           <button refID="esriArcMapUI.GraphicsToFeaturesCommand" size="large" />
         </group>
         <group id="AlaskaPak_Grids_Group" caption="Grids" appearsOnAddInTab="false" keytip="G">
-          <button refID="AlaskaPak_Generate_Grid" size="large" />
-          <button refID="AlaskaPak_Generate_Grid_Points" size="large" />
-          <button refID="AlaskaPak_Resize_Grid" size="large" />
+          <tool refID="AlaskaPak_Generate_Grid" size="middle" />
+          <button refID="AlaskaPak_Generate_Grid_Points" size="middle" />
+          <button refID="AlaskaPak_Resize_Grid" size="middle" />
         </group>
-        <group id="AlaskaPak__Randomize_Group" caption="Randomize" appearsOnAddInTab="false" keytip="R">
-          <button refID="AlaskaPak_Obscure_Points" size="large" />
-          <button refID="AlaskaPak_Random_Points" size="large" />
-          <button refID="AlaskaPak_Random_Select" size="large" />
-          <button refID="AlaskaPak_Transects" size="large" />
+
+        <group id="AlaskaPak__Randomize_Group" caption="Random" appearsOnAddInTab="false" keytip="R">
+          <splitButton refID="randomizeSplitButton" size="large" />
         </group>
+
         <group id="AlaskaPak_Help_Group" caption="Help" appearsOnAddInTab="false" keytip="H">
-          <button refID="AlaskaPak_About" separator="true" size="large" />
-          <button refID="AlaskaPak_GISTeam_Website" size="large" />
-          <button refID="AlaskaPak_Help" size="large" />
+          <button refID="AlaskaPak_About" separator="true" size="middle" />
+          <button refID="AlaskaPak_GISTeam_Website" size="middle" />
+          <button refID="AlaskaPak_Help" size="middle" />
         </group>
       </groups>
+      
+      <palettes>
+        <buttonPalette id="addAttributesButtonPalette" caption="Attributes" extendedCaption="Add Attributes" keytip="A" dropDown="false" menuStyle="false" itemsInRow="1" showItemCaption="true">
+          <button refID="AlaskaPak_AddGUID" />
+          <button refID="AlaskaPak_AddID" />
+          <button refID="AlaskaPak_AddXY" />
+          <button refID="AlaskaPak_AddLength" />
+          <button refID="AlaskaPak_AddArea" />
+        </buttonPalette>
+        <buttonPalette id="randomizeButtonPalette" caption="Choose" extendedCaption="Randomize Data" keytip="R" dropDown="true" menuStyle="false" itemsInRow="1" showItemCaption="true">
+          <button refID="AlaskaPak_Obscure_Points" />
+          <button refID="AlaskaPak_Random_Points" />
+          <button refID="AlaskaPak_Random_Select" />
+          <button refID="AlaskaPak_Transects" />
+        </buttonPalette>
+      </palettes> 
+
+      <splitButtons>
+        <splitButton id ="randomizeSplitButton">
+          <button refID="AlaskaPak_Obscure_Points" />
+          <button refID="AlaskaPak_Random_Points" />
+          <button refID="AlaskaPak_Random_Select" />
+          <button refID="AlaskaPak_Transects" />
+        </splitButton>
+      </splitButtons>
+      
+
       <controls>
         
         <!-- Group 1 General -->
@@ -154,13 +176,13 @@
 
         <!-- Group 4 Grids-->
 
-        <button id="AlaskaPak_Generate_Grid" caption="Create"
+        <tool id="AlaskaPak_Generate_Grid" caption="Create"
                 className="AlaskaPak.Buttons.GenerateGrid" loadOnClick="true" keytip="G"
                 smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
           <tooltip heading="Generate Grid">
             Generate a rectangular grid from a user defined extents.<disabledText />
           </tooltip>
-        </button>
+        </tool>
         <button id="AlaskaPak_Generate_Grid_Points" caption="Centroids" className="Buttons.GenerateGridPoints" 
                 loadOnClick="true" keytip="P" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
           <tooltip heading="Generate Grid Points">
