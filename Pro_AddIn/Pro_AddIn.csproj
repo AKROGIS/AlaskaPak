@@ -126,9 +126,17 @@
     <Compile Include="AlaskaPakModule.cs" />
     <Compile Include="Buttons\AddArea.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\AddXYWindow.xaml.cs">
+      <DependentUpon>AddXYWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Buttons\AddXY.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="UI\" />
+    <Page Include="UI\AddXYWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--

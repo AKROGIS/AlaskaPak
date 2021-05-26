@@ -11,7 +11,7 @@
   <modules>
     <insertModule id="AlaskaPak_Module" className="AlaskaPak_Module" autoLoad="false" caption="AlaskaPak">
       <tabs>
-        <tab id="AlaskaPak_Tab1" caption="AlaskaPak">
+        <tab id="AlaskaPak_Tab1" caption="AlaskaPak" keytip="P">
           <group refID="AlaskaPak_Group" />
           <group refID="AlaskaPak_Add_Attributes_Group" />
           <group refID="AlaskaPak_Conversions_Group" />
@@ -23,7 +23,12 @@
       <groups>
         <group id="AlaskaPak_Group" caption="AlaskaPak" appearsOnAddInTab="true" keytip="AP">
           <button refID="AlaskaPak_ThemeManager" size="large" />
-          <button refID="esriControls.ControlsMapGoToCommand" size="large" />
+          <button refID="esri_mapping_gotoXYControl" size="large" />
+          <button refID="AlaskaPak_UI_AddXYWindows" size="large" />
+          <button refID="AlaskaPak_UI_AboutAlaskaPakWindow" size="large" />
+          <button refID="AlaskaPak_UI_CopyRasterSymbologyWindow" size="large" />
+          <button refID="AlaskaPak_UI_GenerateGridWindow" size="large" />
+          <button refID="AlaskaPak_UI_RandomFeatureSelctionWindow" size="large" />
         </group>
         <group id="AlaskaPak_Add_Attributes_Group" caption="Add Attributes" appearsOnAddInTab="false" keytip="AA">
           <button refID="AlaskaPak_AddGUID" size="large" />
@@ -61,9 +66,41 @@
         </group>
       </groups>
       <controls>
-        <button id="AlaskaPak_AddArea" caption="Add Area" className="Buttons.AddArea" loadOnClick="true"
-                keytip="AA" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
-          <tooltip heading="Add Area Attribute">Tooltip text<disabledText /></tooltip>
+        <button id="AlaskaPak_ThemeManager" caption="Theme Manager" className="Buttons.AddArea" loadOnClick="true" keytip="T" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Launch Theme Manager">
+            Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="AlaskaPak_AddGUID" caption="Guid" className="Buttons.AddArea" loadOnClick="true" keytip="G" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Add GUID Attribute">
+            Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="AlaskaPak_AddID" caption="ID" className="Buttons.AddArea" loadOnClick="true" keytip="I" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Add ID Attribute">
+            Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="AlaskaPak_AddXY" caption="X,Y" className="Buttons.AddXY" loadOnClick="true" keytip="X" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Add X and Y Attributes">
+            Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="AlaskaPak_AddArea" caption="Area" className="Buttons.AddArea" loadOnClick="true" keytip="A" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Add Area Attribute">
+            Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="AlaskaPak_AddLength" caption="Length" className="Buttons.AddArea" loadOnClick="true" keytip="L" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Add Length Attribute">
+            Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="AlaskaPak_UI_AboutAlaskaPakWindow" caption="AboutAlaskaPakWindow" className="AlaskaPak.UI.ShowAboutAlaskaPakWindow" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="AlaskaPak_UI_CopyRasterSymbologyWindow" caption="CopyRasterSymbologyWindow" className="AlaskaPak.UI.ShowCopyRasterSymbologyWindow" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="AlaskaPak_UI_GenerateGridWindow" caption="GenerateGridWindow" className="AlaskaPak.UI.ShowGenerateGridWindow" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+        <button id="AlaskaPak_UI_RandomFeatureSelctionWindow" caption="RandomFeatureSelctionWindow" className="AlaskaPak.UI.ShowRandomFeatureSelctionWindow" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>
