@@ -1,43 +1,71 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ArcGIS defaultAssembly="AlaskaPak.dll"
-        defaultNamespace="AlaskaPak"
-        xmlns="http://schemas.esri.com/DADF/Registry"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
-
-  <AddInInfo id="{0afde991-a7f4-44cb-aab7-9ef46403a7eb}" version="1.0" desktopVersion="2.7.26828">
-    <Name>AlaskaPak</Name>   
-    <Description>AlaskaPak description</Description>
-    <Image>Images\AddinDesktop32.png</Image>
-    <Author>RESarwas</Author>
-    <Company>Acme</Company>
+﻿<ArcGIS defaultAssembly="AlaskaPak.dll" defaultNamespace="AlaskaPak" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
+  <AddInInfo id="{0afde991-a7f4-44cb-aab7-9ef46403a7eb}" version="3.1" desktopVersion="2.5">
+    <Name>AlaskaPak</Name>
+    <Description>A tool kit for increasing GIS productivity.</Description>
+    <Image>Images\NPS_Logo32.png</Image>
+    <Author>Alaska Region GIS Team</Author>
+    <Company>National Park Service</Company>
     <Date>5/25/2021 5:16:08 PM</Date>
-    <Subject>Framework</Subject>
-    <!-- Note subject can be one or more of these topics:
-                    Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
+    <Subject>Geoprocessing</Subject>
   </AddInInfo>
-
   <modules>
-    <insertModule id="AlaskaPak_Module" className="Module1" autoLoad="false" caption="Module1">
-      <!-- uncomment to have the control hosted on a separate tab-->
+    <insertModule id="AlaskaPak_Module" className="AlaskaPak_Module" autoLoad="false" caption="AlaskaPak">
       <tabs>
-        <!--<tab id="AlaskaPak_Tab1" caption="New Tab">
-          <group refID="AlaskaPak_Group1"/>
-        </tab>-->
+        <tab id="AlaskaPak_Tab1" caption="AlaskaPak">
+          <group refID="AlaskaPak_Group" />
+          <group refID="AlaskaPak_Add_Attributes_Group" />
+          <group refID="AlaskaPak_Conversions_Group" />
+          <group refID="AlaskaPak_Grids_Group" />
+          <group refID="AlaskaPak__Randomize_Group" />
+          <group refID="AlaskaPak_Help_Group" />
+        </tab>
       </tabs>
-              
       <groups>
-        <!-- comment this out if you have no controls on the Addin tab to avoid
-              an empty group-->
-        <group id="AlaskaPak_Group1" caption="Group 1" appearsOnAddInTab="true">
-          <!-- host controls within groups -->
+        <group id="AlaskaPak_Group" caption="AlaskaPak" appearsOnAddInTab="true" keytip="AP">
+          <button refID="AlaskaPak_ThemeManager" size="large" />
+          <button refID="esriControls.ControlsMapGoToCommand" size="large" />
+        </group>
+        <group id="AlaskaPak_Add_Attributes_Group" caption="Add Attributes" appearsOnAddInTab="false" keytip="AA">
+          <button refID="AlaskaPak_AddGUID" size="large" />
+          <button refID="AlaskaPak_AddID" size="large" />
+          <button refID="AlaskaPak_AddXY" size="large" />
+          <button refID="AlaskaPak_AddLength" size="large" />
+          <button refID="AlaskaPak_AddArea" size="large" />
+        </group>
+        <group id="AlaskaPak_Conversions_Group" caption="Conversions" appearsOnAddInTab="false" keytip="C">
+          <button refID="AlaskaPak_Table_to_Shape" size="large" />
+          <button refID="AlaskaPak_Point_to_Polyline" size="large" />
+          <button refID="AlaskaPak_Point_to_Polygon" size="large" />
+          <button refID="AlaskaPak_Line_to_Rectangle" size="large" />
+          <button refID="AlaskaPak_Square_Building" size="large" />
+          <button refID="AlaskaPak_Polygon_to_Point" size="large" />
+          <button refID="AlaskaPak_Point_Distance_Azimuth_to_Polygon" size="large" />
+          <button refID="esriArcMapUI.GraphicsToFeaturesCommand" size="large" />
+        </group>
+        <group id="AlaskaPak_Grids_Group" caption="Grids" appearsOnAddInTab="false" keytip="G">
+          <button refID="AlaskaPak_Generate_Grid" size="large" />
+          <button refID="AlaskaPak_Generate_Grid_Points" size="large" />
+          <button refID="AlaskaPak_Resize_Grid" size="large" />
+        </group>
+        <group id="AlaskaPak__Randomize_Group" caption="Randomize" appearsOnAddInTab="false" keytip="R">
+          <button refID="AlaskaPak_Obscure_Points" size="large" />
+          <button refID="AlaskaPak_Random_Points" size="large" />
+          <button refID="AlaskaPak_Random_Select" size="large" />
+          <button refID="AlaskaPak_Transects" size="large" />
+        </group>
+        <group id="AlaskaPak_Help_Group" caption="Help" appearsOnAddInTab="false" keytip="H">
+          <button refID="AlaskaPak_About" separator="true" size="large" />
+          <button refID="AlaskaPak_Link_Internal" size="large" />
+          <button refID="AlaskaPak_Link_External" size="large" />
+          <button refID="AlaskaPak_Help" size="large" />
         </group>
       </groups>
-      
       <controls>
-        <!-- add your controls here -->
-      </controls> 
-      
+        <button id="AlaskaPak_AddArea" caption="Add Area" className="Buttons.AddArea" loadOnClick="true"
+                keytip="AA" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Add Area Attribute">Tooltip text<disabledText /></tooltip>
+        </button>
+      </controls>
     </insertModule>
   </modules>
 </ArcGIS>
