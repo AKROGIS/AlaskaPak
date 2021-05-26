@@ -24,11 +24,8 @@
         <group id="AlaskaPak_Group" caption="AlaskaPak" appearsOnAddInTab="true" keytip="AP">
           <button refID="AlaskaPak_ThemeManager" size="large" />
           <button refID="esri_mapping_gotoXYControl" size="large" />
-          <button refID="AlaskaPak_UI_AddXYWindows" size="large" />
-          <button refID="AlaskaPak_UI_AboutAlaskaPakWindow" size="large" />
-          <button refID="AlaskaPak_UI_CopyRasterSymbologyWindow" size="large" />
-          <button refID="AlaskaPak_UI_GenerateGridWindow" size="large" />
-          <button refID="AlaskaPak_UI_RandomFeatureSelctionWindow" size="large" />
+          <button refID="AlaskaPak_Copy_Raster_Symbology" size="large" />
+          <button refID="AlaskaPak_Set_All_Extents" size="large" />
         </group>
         <group id="AlaskaPak_Add_Attributes_Group" caption="Add Attributes" appearsOnAddInTab="false" keytip="AA">
           <button refID="AlaskaPak_AddGUID" size="large" />
@@ -39,11 +36,11 @@
         </group>
         <group id="AlaskaPak_Conversions_Group" caption="Conversions" appearsOnAddInTab="false" keytip="C">
           <button refID="AlaskaPak_Table_to_Shape" size="large" />
-          <button refID="AlaskaPak_Point_to_Polyline" size="large" />
-          <button refID="AlaskaPak_Point_to_Polygon" size="large" />
           <button refID="AlaskaPak_Line_to_Rectangle" size="large" />
-          <button refID="AlaskaPak_Square_Building" size="large" />
+          <button refID="AlaskaPak_Points_to_Polyline" size="large" />
+          <button refID="AlaskaPak_Points_to_Polygon" size="large" />
           <button refID="AlaskaPak_Polygon_to_Point" size="large" />
+          <button refID="AlaskaPak_Square_Building" size="large" />
           <button refID="AlaskaPak_Point_Distance_Azimuth_to_Polygon" size="large" />
           <button refID="esriArcMapUI.GraphicsToFeaturesCommand" size="large" />
         </group>
@@ -60,48 +57,172 @@
         </group>
         <group id="AlaskaPak_Help_Group" caption="Help" appearsOnAddInTab="false" keytip="H">
           <button refID="AlaskaPak_About" separator="true" size="large" />
-          <button refID="AlaskaPak_Link_Internal" size="large" />
-          <button refID="AlaskaPak_Link_External" size="large" />
+          <button refID="AlaskaPak_GISTeam_Website" size="large" />
           <button refID="AlaskaPak_Help" size="large" />
         </group>
       </groups>
       <controls>
-        <button id="AlaskaPak_ThemeManager" caption="Theme Manager" className="Buttons.AddArea" loadOnClick="true" keytip="T" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+        
+        <!-- Group 1 General -->
+        <button id="AlaskaPak_ThemeManager" caption="Theme Manager" className="Buttons.ThemeManager" loadOnClick="true" keytip="T" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
           <tooltip heading="Launch Theme Manager">
-            Tooltip text<disabledText /></tooltip>
+            Tooltip text<disabledText />
+          </tooltip>
         </button>
-        <button id="AlaskaPak_AddGUID" caption="Guid" className="Buttons.AddArea" loadOnClick="true" keytip="G" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+        <button id="AlaskaPak_Copy_Raster_Symbology" caption="Copy Raster Symbology" className="Buttons.CopyRasterSymbology" loadOnClick="true" keytip="T" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Copy Raster Symbology">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+        <button id="AlaskaPak_Set_All_Extents" caption="Set Extents" className="Buttons.SetExtents" loadOnClick="true" keytip="T" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Set All Extents">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+
+        <!-- Group 2 Add Attributes-->
+
+        <button id="AlaskaPak_AddGUID" caption="Guid" className="Buttons.AddGuid" loadOnClick="true" keytip="G" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
           <tooltip heading="Add GUID Attribute">
-            Tooltip text<disabledText /></tooltip>
+            Tooltip text<disabledText />
+          </tooltip>
         </button>
-        <button id="AlaskaPak_AddID" caption="ID" className="Buttons.AddArea" loadOnClick="true" keytip="I" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+        <button id="AlaskaPak_AddID" caption="ID" className="Buttons.AddId" loadOnClick="true" keytip="I" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
           <tooltip heading="Add ID Attribute">
-            Tooltip text<disabledText /></tooltip>
+            Tooltip text<disabledText />
+          </tooltip>
         </button>
         <button id="AlaskaPak_AddXY" caption="X,Y" className="Buttons.AddXY" loadOnClick="true" keytip="X" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
           <tooltip heading="Add X and Y Attributes">
-            Tooltip text<disabledText /></tooltip>
+            Tooltip text<disabledText />
+          </tooltip>
         </button>
         <button id="AlaskaPak_AddArea" caption="Area" className="Buttons.AddArea" loadOnClick="true" keytip="A" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
           <tooltip heading="Add Area Attribute">
-            Tooltip text<disabledText /></tooltip>
+            Tooltip text<disabledText />
+          </tooltip>
         </button>
-        <button id="AlaskaPak_AddLength" caption="Length" className="Buttons.AddArea" loadOnClick="true" keytip="L" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+        <button id="AlaskaPak_AddLength" caption="Length" className="Buttons.AddLength" loadOnClick="true" keytip="L"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
           <tooltip heading="Add Length Attribute">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+
+        <!-- Group 3 Conversions -->
+        
+        <button id="AlaskaPak_Table_to_Shape" caption="Table To Shape" className="Buttons.TableToShape" loadOnClick="true" keytip="G" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Table to Shape">
             Tooltip text<disabledText /></tooltip>
         </button>
-        <button id="AlaskaPak_UI_AboutAlaskaPakWindow" caption="AboutAlaskaPakWindow" className="AlaskaPak.UI.ShowAboutAlaskaPakWindow" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        <button id="AlaskaPak_Line_to_Rectangle" caption="Line to Rectangle" className="Buttons.LineToRectangle" loadOnClick="true" keytip="A" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Line to Rectangle">
+            Tooltip text<disabledText />
+          </tooltip>
         </button>
-        <button id="AlaskaPak_UI_CopyRasterSymbologyWindow" caption="CopyRasterSymbologyWindow" className="AlaskaPak.UI.ShowCopyRasterSymbologyWindow" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        <button id="AlaskaPak_Points_to_Polyline" caption="Points to Polyline" className="Buttons.PointsToPolyline" loadOnClick="true" keytip="I" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Points to Polyline">
+            Tooltip text<disabledText /></tooltip>
         </button>
-        <button id="AlaskaPak_UI_GenerateGridWindow" caption="GenerateGridWindow" className="AlaskaPak.UI.ShowGenerateGridWindow" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        <button id="AlaskaPak_Points_to_Polygon" caption="Points to Polygon" className="Buttons.PointsToPolygon" loadOnClick="true" keytip="X" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Points to Polygon">
+            Tooltip text<disabledText /></tooltip>
         </button>
-        <button id="AlaskaPak_UI_RandomFeatureSelctionWindow" caption="RandomFeatureSelctionWindow" className="AlaskaPak.UI.ShowRandomFeatureSelctionWindow" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        <button id="AlaskaPak_Polygon_to_Point" caption="Polygon to Points" className="Buttons.PolygonToPoints" loadOnClick="true" keytip="L"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Polygon to Points">
+            Tooltip text<disabledText />
+          </tooltip>
         </button>
+        <button id="AlaskaPak_Square_Building" caption="Square Buildings" className="Buttons.Buildings" loadOnClick="true" keytip="L"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Building from Line">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+        <button id="AlaskaPak_Point_Distance_Azimuth_to_Polygon" caption="Campsites" className="Buttons.PolygonFromPoint" loadOnClick="true" keytip="L"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Polygon From Point">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+
+        <!-- Group 4 Grids-->
+
+        <button id="AlaskaPak_Generate_Grid" caption="Create"
+                className="AlaskaPak.Buttons.GenerateGrid" loadOnClick="true" keytip="X"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Generate Grid">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+        <button id="AlaskaPak_Generate_Grid_Points" caption="Centroids" className="Buttons.GenerateGridPoints" 
+                loadOnClick="true" keytip="I" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Generate Grid Points">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+        <button id="AlaskaPak_Resize_Grid" caption="Resize" className="Buttons.ResizeGrid" loadOnClick="true" 
+                keytip="X" smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Resize Grid">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+
+        <!-- Group 5 Randomize -->
+
+        <button id="AlaskaPak_Obscure_Points" caption="Obsure" className="Buttons.ObscurePoints" loadOnClick="true" keytip="O"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Obscure Points">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+        <button id="AlaskaPak_Random_Points" caption="Points" className="Buttons.RandomPoints" loadOnClick="true" keytip="P"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Create Random Points">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+        <button id="AlaskaPak_Random_Select" caption="Selection"
+                className="AlaskaPak.Buttons.RandomFeatureSelction" loadOnClick="true" keytip="S"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Select Random Features">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+        <button id="AlaskaPak_Transects" caption="Transects" className="Buttons.RandomTransects" loadOnClick="true" keytip="T"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="Create Random Transects">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+
+        
+
+        <!-- Group 6 Help -->
+
+        <button id="AlaskaPak_About" caption="About"
+                className="AlaskaPak.Buttons.AboutAlaskaPak" loadOnClick="true" keytip="A"
+                smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="About AlaskaPak">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+        <button id="AlaskaPak_Help" caption="Help"
+                className="AlaskaPak.Buttons.AlaskaPakHelp" loadOnClick="true" keytip="H"
+          smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="AlaskaPak Help">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+        <button id="AlaskaPak_GISTeam_Website" caption="AKRO GIS" keytip="W"
+                className="AlaskaPak.Buttons.WebSite" loadOnClick="true"
+          smallImage="Images\NPS_Logo16.png" largeImage="Images\NPS_Logo32.png">
+          <tooltip heading="AKRO GIS Team">
+            Tooltip text<disabledText />
+          </tooltip>
+        </button>
+
       </controls>
     </insertModule>
   </modules>

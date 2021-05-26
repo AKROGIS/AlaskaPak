@@ -35,6 +35,10 @@ namespace AlaskaPak
             }
         }
 
+        public static string ToolboxPath => @"C:\Users\RESarwas\Documents\GitHub\AlaskaPak\GPTools\AlaskaPak.pyt";
+
+        public static string ThemeManagerPath => @"X:\GIS\ThemeMgrApp\Pro\ThemeManager.exe";
+
         #region Overrides
         /// <summary>
         /// Called by Framework when ArcGIS Pro is closing

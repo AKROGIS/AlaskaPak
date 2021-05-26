@@ -4,12 +4,11 @@ using System.IO;
 
 namespace AlaskaPak.Buttons
 {
-    internal class AddArea : Button
+    internal class AddGuid : Button
     {
         protected override void OnClick()
         {
-            string toolpath = Path.Combine(AlaskaPakModule.ToolboxPath, "AddAreaSingle");
-            Geoprocessing.OpenToolDialog(toolpath, null);
+            Geoprocessing.OpenToolDialog("management.AddGlobalIDs", null);
         }
     }
 }

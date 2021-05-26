@@ -4,11 +4,11 @@ using System.IO;
 
 namespace AlaskaPak.Buttons
 {
-    internal class AddArea : Button
+    internal class RandomTransects : Button
     {
         protected override void OnClick()
         {
-            string toolpath = Path.Combine(AlaskaPakModule.ToolboxPath, "AddAreaSingle");
+            string toolpath = Path.Combine(AlaskaPakModule.ToolboxPath, "RandomTransects");
             Geoprocessing.OpenToolDialog(toolpath, null);
         }
     }

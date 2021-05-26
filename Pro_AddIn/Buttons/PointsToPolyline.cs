@@ -4,12 +4,11 @@ using System.IO;
 
 namespace AlaskaPak.Buttons
 {
-    internal class AddArea : Button
+    internal class PointsToPolyline : Button
     {
         protected override void OnClick()
         {
-            string toolpath = Path.Combine(AlaskaPakModule.ToolboxPath, "AddAreaSingle");
-            Geoprocessing.OpenToolDialog(toolpath, null);
+            Geoprocessing.OpenToolDialog("management.PointsToLine", null);
         }
     }
 }

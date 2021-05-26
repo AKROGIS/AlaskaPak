@@ -124,16 +124,71 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlaskaPakModule.cs" />
+    <Compile Include="Buttons\AlaskaPakHelp.cs" />
+    <Compile Include="Buttons\LineToRectangle.cs" />
+    <Compile Include="Buttons\SetExtents.cs" />
+    <Compile Include="Buttons\ThemeManager.cs" />
+    <Compile Include="Buttons\WebSite.cs" />
+    <Compile Include="Buttons\GenerateGridPoints.cs" />
+    <Compile Include="Buttons\Buildings.cs" />
+    <Compile Include="Buttons\TableToShape.cs" />
+    <Compile Include="Buttons\ResizeGrid.cs" />
+    <Compile Include="Buttons\PointsToPolyline.cs" />
+    <Compile Include="Buttons\PolygonToPoints.cs" />
+    <Compile Include="Buttons\RandomPoints.cs" />
+    <Compile Include="Buttons\ObscurePoints.cs" />
+    <Compile Include="Buttons\PointsToPolygon.cs" />
+    <Compile Include="Buttons\RandomTransects.cs" />
+    <Compile Include="Buttons\PolygonFromPoint.cs" />
+    <Compile Include="Buttons\AddId.cs" />
+    <Compile Include="Buttons\AddLength.cs" />
+    <Compile Include="Buttons\AddGuid.cs" />
     <Compile Include="Buttons\AddArea.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\AboutAlaskaPakWindow.xaml.cs">
+      <DependentUpon>AboutAlaskaPakWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\AddXYWindow.xaml.cs">
       <DependentUpon>AddXYWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Buttons\AddXY.cs" />
+    <Compile Include="UI\CopyRasterSymbologyWindow.xaml.cs">
+      <DependentUpon>CopyRasterSymbologyWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\GenerateGridWindow.xaml.cs">
+      <DependentUpon>GenerateGridWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\RandomFeatureSelctionWindow.xaml.cs">
+      <DependentUpon>RandomFeatureSelctionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Buttons\AboutAlaskaPak.cs" />
+    <Compile Include="Buttons\CopyRasterSymbology.cs" />
+    <Compile Include="Buttons\GenerateGrid.cs" />
+    <Compile Include="Buttons\RandomFeatureSelction.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <Content Include="Help\help.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="UI\AboutAlaskaPakWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\AddXYWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\CopyRasterSymbologyWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\GenerateGridWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\RandomFeatureSelctionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
