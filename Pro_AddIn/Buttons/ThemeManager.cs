@@ -1,5 +1,6 @@
 ﻿using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
+using System.Diagnostics;
 
 namespace AlaskaPak.Buttons
 {
@@ -7,7 +8,8 @@ namespace AlaskaPak.Buttons
     {
         protected override void OnClick()
         {
-            MessageBox.Show("Sorry, the Theme Manager is not yet available.","Not Implemented");
+            //TODO: protect from file not found, etc
+            Process.Start(AlaskaPakModule.ThemeManagerPath);
         }
     }
 }
