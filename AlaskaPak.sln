@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlaskaPak", "AlaskaPak\AlaskaPak.csproj", "{86818D39-DE46-4491-ACEF-4340389F22EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Map_AddIn", "Map_AddIn\Map_AddIn.csproj", "{86818D39-DE46-4491-ACEF-4340389F22EA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationEditor", "ConfigurationEditor\ConfigurationEditor.csproj", "{4F68E96F-E054-4DEE-B1CA-91B6D01397AB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E57509C1-5AC7-46DC-83D6-53449AAFAB8F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{E57509C1-5AC7-46DC-83D6-53449AAFAB8F}"
 	ProjectSection(SolutionItems) = preProject
 		Docs\LicenseRequirements.md = Docs\LicenseRequirements.md
 		Docs\ToDo.md = Docs\ToDo.md
@@ -40,5 +40,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0BB0C7EE-AA06-474C-BD53-AF29B01301B4}
 	EndGlobalSection
 EndGlobal
