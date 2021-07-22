@@ -75,7 +75,7 @@ def add_area_to_feature(feature, units=None, field_name="Area", overwrite=False)
     geometry_name = description.shapeFieldName
     spatial_reference = description.spatialReference
     if spatial_reference.type == "Geographic":
-        utils.warn("Calculating area on Geographic data is usually meaningless.")
+        utils.warn("Calculating area on geographic data is usually suspect.")
 
     if units is None:
         area = "!{0}.area!".format(geometry_name)
@@ -122,6 +122,9 @@ def toolbox_validation(args):
     Provides the same default processing and validation for command line scripts
     that the ArcGIS toolbox framework provides.  It does not do all possible
     validation and error checking.
+
+    Python toolboxes will skip this step, old style toolboxes call the script
+    as a command line task, so validation isn't needed, but it doesn't hurt
 
     Args:
         args (list[text]): A list of commands arguments, Usually obtained
@@ -192,9 +195,17 @@ def toolbox_validation(args):
 
 def add_area_commandline():
     """Parse and validate command line arguments then add area to features."""
-    args = [arcpy.GetParameterAsText(i) for i in range(arcpy.GetParameterCount())]
     args = toolbox_validation(args)
     add_area_to_features(*args)
+    args = []
+    try:
+        # Collect arcpy parameters until they throw an exception
+        i = 0
+        while True:
+            args.append(arcpy.GetParameterAsText(i))
+            i += 1
+    except RuntimeError as ex:
+        pass
 
 
 def add_area_testing(args):
