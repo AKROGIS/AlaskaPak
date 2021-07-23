@@ -35,6 +35,9 @@ def get_polygon_data(
     polygon_group_field_name) which is wrapped in a dictionary keyed on the
     polygon ids (values in the polygon_id_field_name).
     """
+
+    # pylint: disable=too-many-arguments,too-many-locals,too-many-branches
+
     if polygon_group_field_name:
         fields = [
             polygon_id_field_name,
@@ -157,6 +160,8 @@ def polygon_from_control_point(
     polygon_azimuth_field_name="Azimuth",
     polygon_distance_field_name="Distance",
 ):
+    """Build the polygon_feature_class"""
+    # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
 
     workspace, feature_class = os.path.split(polygon_feature_class)
     arcpy.CreateFeatureclass_management(
@@ -357,7 +362,7 @@ def parameter_fixer(args):
     ]
 
 
-def set_test_command_line(args):
+def set_test_command_line():
     """Set command line or simple testing."""
     sys.argv[1:] = [
         r"c:\tmp\test.gdb\campsite",
@@ -374,5 +379,5 @@ def set_test_command_line(args):
 
 if __name__ == "__main__":
     # Set command line or simple testing
-    # sys.argv[1:] = ["C:/tmp/test.gdb/bldg_edge", "C:/tmp/test.gdb/bldg_footprint"]
+    # set_test_command_line()
     utils.execute(polygon_from_control_point, parameter_fixer)

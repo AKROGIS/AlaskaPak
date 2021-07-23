@@ -35,6 +35,7 @@ def make_rect(pt1, pt2, width):
         (arcpy.Point, arcpy.Point): points 3 and 4 in the rectangle.
     """
     # pylint: disable=invalid-name
+    # I like x, y, dx, and dy even if they are too short
 
     # Find the angle of the line between the points
     dx = pt2.X - pt1.X

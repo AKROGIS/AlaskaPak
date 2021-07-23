@@ -16,8 +16,6 @@ else:
     # for use as a module and Python toolboxes (*.pyt)
     from . import utils
 
-# pylint: disable=too-many-arguments,too-many-statements
-
 
 def add_id_to_features(
     feature_classes,
@@ -28,6 +26,8 @@ def add_id_to_features(
     overwrite=False,
 ):
     """Add id to multiple feature classes."""
+
+    # pylint: disable=too-many-arguments
 
     for feature_class in feature_classes:
         add_id_to_feature(
@@ -44,6 +44,8 @@ def add_id_to_feature(
     overwrite=False,
 ):
     """Add id to a feature class."""
+
+    # pylint: disable=too-many-arguments
 
     utils.info("Adding {0} to {2}".format(field_name, feature_class))
     field_names = [field.name for field in arcpy.ListFields(feature_class)]
@@ -112,7 +114,7 @@ def parameter_fixer(args):
         Exits with an error message if the args cannot be transformed.
     """
 
-    # pylint: disable=too-many-branches
+    # pylint: disable=too-many-branches,too-many-statements
 
     arg_count = len(args)
     if arg_count < 1 or arg_count > 6:

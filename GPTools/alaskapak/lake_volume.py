@@ -4,7 +4,8 @@ Calculates the volume of lakes
 
 Created by Regan Sarwas on 2010-12-14
 
-Calculates the volume of a set of lakes based on depth samples (points) within the polygon defined by the shoreline..
+Calculates the volume of a set of lakes based on depth samples (points) within
+the polygon defined by the shoreline.
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
@@ -21,40 +22,45 @@ else:
     from . import utils
 
 
-def lake_volume(Input_Shorelines, Input_Depth_Points, Output_Lakes, Output_Surface):
+def lake_volume(shoreline, depth_points, lakes, surface):
+    """Creates lakes and surface from shoreline and depth_points"""
 
     # Check out any necessary licenses
     arcpy.CheckOutExtension("3D")
 
     # Local variables:
-    Output_Lakes__temp_ = Output_Surface
-    Output_Lakes__temp2_ = Output_Lakes__temp_
-    Output_Layer = Input_Shorelines
-    Output_Layer_Name = Output_Layer
-    Output_with_depth = Output_Layer_Name
-    Output_with_depth_2 = Output_with_depth
-    Output_Dataset = Input_Depth_Points
+    lakes_temp = surface
+    lakes_temp2 = lakes_temp
+    output_layer = shoreline
+    output_layer_name = output_layer
+    output_with_depth = output_layer_name
+    output_with_depth2 = output_with_depth
+    output_dataset = depth_points
 
     # Process: Merge
-    arcpy.Merge_management(Input_Depth_Points, Output_Dataset, "")
+    arcpy.Merge_management(depth_points, output_dataset, "")
 
     # Process: Make Feature Layer
     arcpy.MakeFeatureLayer_management(
-        Input_Shorelines,
-        Output_Layer,
+        shoreline,
+        output_layer,
         "",
         "",
-        "FID FID VISIBLE NONE;Shape Shape VISIBLE NONE;OBJECTID OBJECTID VISIBLE NONE;SHAPE_Leng SHAPE_Leng VISIBLE NONE;SHAPE_Area SHAPE_Area VISIBLE NONE;PONDNAME PONDNAME VISIBLE NONE",
+        (
+            "FID FID VISIBLE NONE;Shape Shape VISIBLE NONE;OBJECTID OBJECTID VISIBLE NONE;"
+            "SHAPE_Leng SHAPE_Leng VISIBLE NONE;SHAPE_Area SHAPE_Area VISIBLE NONE;"
+            "PONDNAME PONDNAME VISIBLE NONE"
+        ),
     )
 
     # Process: Select Layer By Location
     arcpy.SelectLayerByLocation_management(
-        Output_Layer, "INTERSECT", Output_Dataset, "", "NEW_SELECTION"
+        output_layer, "INTERSECT", output_dataset, "", "NEW_SELECTION"
     )
 
     # Process: Add Field
     arcpy.AddField_management(
-        Output_Layer_Name,
+        output_layer_name,
         "xx_depth",
         "DOUBLE",
         "",
@@ -67,11 +73,11 @@ def lake_volume(Input_Shorelines, Input_Depth_Points, Output_Lakes, Output_Surfa
     )
 
     # Process: Calculate Field
-    arcpy.CalculateField_management(Output_with_depth, "xx_depth", "0", "VB", "")
+    arcpy.CalculateField_management(output_with_depth, "xx_depth", "0", "VB", "")
 
     # Process: Create TIN
     arcpy.CreateTin_3d(
-        Output_Surface,
+        surface,
         "",
         "# Depth masspoints <None>;DENA_SamplingLakes_Digitized xx_depth hardclip <None>",
         "DELAUNAY",
@@ -79,14 +85,14 @@ def lake_volume(Input_Shorelines, Input_Depth_Points, Output_Lakes, Output_Surfa
 
     # Process: Polygon Volume (2)
     arcpy.PolygonVolume_3d(
-        Output_Surface, Output_with_depth_2, "xx_depth", "ABOVE", "Volume", "SArea", "0"
+        surface, output_with_depth2, "xx_depth", "ABOVE", "Volume", "SArea", "0"
     )
 
     # Process: Delete Field
-    arcpy.DeleteField_management(Output_Lakes__temp_, "xx_depth")
+    arcpy.DeleteField_management(lakes_temp, "xx_depth")
 
     # Process: Copy Features
-    arcpy.CopyFeatures_management(Output_Lakes__temp2_, Output_Lakes, "", "0", "0", "0")
+    arcpy.CopyFeatures_management(lakes_temp2, lakes, "", "0", "0", "0")
 
 
 def parameter_fixer(args):

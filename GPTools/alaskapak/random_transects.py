@@ -19,7 +19,7 @@ else:
     # for use as a module and Python toolboxes (*.pyt)
     from . import utils
 
-# FIXME - use environment SR, Z, M, when creating feature class
+# TODO: Use environment SR, Z, M, when creating feature class
 # TODO: Remove/replace random_transects() and sanitize_input()
 # use *_commandline() , *_testing() and toolbox_validation()
 
@@ -34,6 +34,19 @@ def random_transects(
     max_tries,
     allow_overlap,
 ):
+    """Creates a feature class of random transect lines within polygons
+
+    Args:
+        polygons (text): ArcGIS polygon feature class path
+        workspace (text): ArcGIS workspace path in which to create `name`
+        name (text): The name of the lines feature class to create
+        lines_per_poly (int): Number of lines to create in each polygon
+        min_length (double): Minimum length of the lines to create
+        max_length (double): Minimum length of the lines to create
+        max_tries (int): Number of times to try and create a line
+        allow_overlap (bool): Are lines allowed to overlap each other?
+    """
+    # pylint: disable=too-many-arguments
 
     lines = create_feature_class(polygons, workspace, name)
     feature_count = get_feature_count(polygons)
@@ -73,6 +86,8 @@ def parameter_fixer(args):
         A list of validated arguments expected by the task being called.
         Exits with an error message if the args cannot be transformed.
     """
+
+    # pylint: disable=too-many-locals,too-many-branches,too-many-statements
 
     # TODO: handle optional command line arguments
     if len(args) != 7:
@@ -194,10 +209,7 @@ def parameter_fixer(args):
     if allow_overlap in ["", "#"]:
         allow_overlap = "True"
         arcpy.AddMessage("Allowing overlaping transects (by default)")
-    if allow_overlap.lower() == "true":
-        allow_overlap = True
-    else:
-        allow_overlap = False
+    allow_overlap = allow_overlap.lower() == "true"
 
     arcpy.AddMessage("Input has been validated.")
     # print(in_feature_class, workspace, name, lines_per_poly, min_length,
@@ -219,6 +231,9 @@ def linear_units_to_meters(distance):
     number and a pick UOM pick box to a string like '10.3 Meters'.  This
     function will convert the known units to meters.
     Return -1 if there is an error."""
+
+    # pylint: disable=too-many-return-statements,too-many-branches
+
     parts = distance.split()
     # Too many or two few parts
     if len(parts) < 1 or len(parts) > 2:
@@ -236,35 +251,35 @@ def linear_units_to_meters(distance):
     units = units.lower()
     if units == "centimeters":
         return val / 100.0
-    elif units == "decimaldegrees":
+    if units == "decimaldegrees":
         return -1
-    elif units == "decimeters":
+    if units == "decimeters":
         return val / 10.0
-    elif units == "feet":  # international
+    if units == "feet":  # international
         return val * 12 * 2.54 / 100.0
-    elif units == "inches":  # international: 2.54 cm == 1 in
+    if units == "inches":  # international: 2.54 cm == 1 in
         return val * 2.54 / 100.0
-    elif units == "kilometers":
+    if units == "kilometers":
         return val * 1000
-    elif units == "meters":
+    if units == "meters":
         return val
-    elif units == "miles":
+    if units == "miles":
         return val * 5280 * 12 * 2.54 / 100.0
-    elif units == "millimeters":
+    if units == "millimeters":
         return val / 1000.0
-    elif units == "nauticalmiles":
+    if units == "nauticalmiles":
         return val * 1852
-    elif units == "points":  # 72 points per inch
+    if units == "points":  # 72 points per inch
         return val * 2.54 / 100.0 / 72
-    elif units == "unknown":  # assume meters
+    if units == "unknown":  # assume meters
         return val
-    elif units == "yards":  # international
+    if units == "yards":  # international
         return val * 3 * 12 * 2.54 / 100.0
-    else:
-        return -1
+    return -1
 
 
 def create_feature_class(template, workspace, name):
+    """Create a new feature class `name` based on the template"""
     shape = "Polyline"
     description = arcpy.Describe(template)
     spatial_reference = description.SpatialReference
@@ -281,16 +296,30 @@ def create_feature_class(template, workspace, name):
 def create_lines(
     polygons, lines, line_goal, max_attempts, min_length, max_length, allow_overlap
 ):
+    """Create lines in the polygons
+
+    Args:
+        polygons (text): ArcGIS polygon feature class path
+        lines (text): ArcGIS polyline feature class path
+        line_goal (int): Number of lines to create in each polygon
+        max_attempts (int): Number of times to try and create a line
+        min_length (double): Minimum length of the lines to create
+        max_length (double): Minimum length of the lines to create
+        allow_overlap (bool): Are lines allowed to overlap each other?
+    """
+
+    # pylint: disable=too-many-arguments,too-many-locals
+
     spatial_reference = arcpy.Describe(polygons).SpatialReference
 
-    count = 0
+    step_num = 0
     line_fields = ["SHAPE@"]
     poly_fields = ["OID@", "SHAPE@"]
     line_cursor = arcpy.da.InsertCursor(lines, line_fields)
     with arcpy.da.SearchCursor(polygons, poly_fields) as poly_cursor:
         for row in poly_cursor:
-            count += 1
-            arcpy.SetProgressorLabel("Processing polygon {0}".format(count))
+            step_num += 1
+            arcpy.SetProgressorLabel("Processing polygon {0}".format(step_num))
             oid = row[0]
             shape = row[1]
             name = "OBJECTID = {1}".format(oid)
@@ -311,6 +340,7 @@ def create_lines(
 
 
 def get_feature_count(data):
+    """Return the number of features in data"""
     return len(arcpy.da.SearchCursor(data, ["OID@"]))
 
 
@@ -324,6 +354,26 @@ def get_lines(
     allow_overlap,
     spatial_reference,
 ):
+    """Create line within an area
+
+    Args:
+        polygon_name (text): The name of the polygon the line is within
+        polygon_shape (arcpy.Polygon): The boundary of the polygon
+        line_goal (int): Number of lines to create in each polygon
+        max_attempts (int): Number of times to try and create a line
+        min_length (double): Minimum length of the lines to create
+        max_length (double): Maximum length of the lines to create
+        allow_overlap (bool): Are lines allowed to overlap each other?
+        spatial_reference (arcpy.SpatialReference): The spatial reference system
+          of the the polygon and lines.
+
+    Returns:
+        List of arcpy.Polyline: The lines in the polygon
+    """
+    # pylint: disable=too-many-arguments,too-many-locals
+    # pylint: disable=invalid-name
+    # I like x, y even if they are too short
+
     attempt_count = 0
     lines_in_poly = []
 
@@ -358,6 +408,15 @@ def get_lines(
 
 
 def is_overlap(my_line, other_lines):
+    """Does `my_line` overlap (spatially) any of the lines in `other_lines`?
+
+    Args:
+        my_line (arcpy.Polyline): The line that may overlap other_lines
+        other_lines (List of arcpy.Polyline): A list of lines
+
+    Returns:
+        bool: True if the line overlaps
+    """
     for line in other_lines:
         if my_line.crosses(line):
             return True
@@ -365,6 +424,20 @@ def is_overlap(my_line, other_lines):
 
 
 def get_random_line_ends(x1, y1, min_length, max_length):
+    """The ends of a random line starting at (x1,y1)
+
+    Args:
+        x1 (float): X coordinate of one end of line
+        y1 (float): Y coordinate of one end of line
+        min_length (float): Minimum length of the lines to create
+        max_length (float): Maximum length of the lines to create
+
+    Returns:
+        ((float,float),(float,float)): The coordinate pairs at the end of the line.
+    """
+    # pylint: disable=invalid-name
+    # I like x1, y1, x1, x2 even if they are too short
+
     length = random.uniform(min_length, max_length)
     angle = random.uniform(0, 2 * math.pi)
     x2 = x1 + length * math.cos(angle)
@@ -373,6 +446,16 @@ def get_random_line_ends(x1, y1, min_length, max_length):
 
 
 def get_random_point_in_polygon(polygon):
+    """Return a random point in the polygon
+
+    Args:
+        polygon (arcpy.Polygon): A polygon shape
+
+    Returns:
+        (float,float): A coordinate tuple within the polygon
+    """
+    # pylint: disable=invalid-name
+    # I like x, y even if they are too short
     while True:
         x, y = get_random_point_in_envelope(polygon.extent)
         # do not use a point geometry unless you create it with the
@@ -382,6 +465,16 @@ def get_random_point_in_polygon(polygon):
 
 
 def get_random_point_in_envelope(env):
+    """Return a random point in the envelope
+
+    Args:
+        env (arcpy.Extent): A rectangular extents (spatial envelope)
+
+    Returns:
+        (float,float): A coordinate tuple within the envelope
+    """
+    # pylint: disable=invalid-name
+    # I like x, y even if they are too short
     x = random.uniform(env.XMin, env.XMax)
     y = random.uniform(env.YMin, env.YMax)
     return (x, y)

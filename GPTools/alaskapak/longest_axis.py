@@ -28,21 +28,24 @@ def longest_axis(in_features, out_features, name="MaxAxis"):
     add_max_axis(out_features, name)
 
 
-def make_feature_class(inFeatureClass, outFeatureClass, name):
-    arcpy.CopyFeatures_management(inFeatureClass, outFeatureClass)
+def make_feature_class(in_features, out_features, name):
+    """Copy the in_features to out_features and add double column `name`"""
+    arcpy.CopyFeatures_management(in_features, out_features)
     arcpy.AddField_management(
-        outFeatureClass, name, "DOUBLE", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
+        out_features, name, "DOUBLE", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
     )
 
 
-def add_max_axis(fc, name):
-    with arcpy.da.UpdateCursor(fc, ["Shape@", name]) as cursor:
+def add_max_axis(feature_class, name):
+    """Add the the max axis value to the column `name` in feature_class"""
+    with arcpy.da.UpdateCursor(feature_class, ["Shape@", name]) as cursor:
         for row in cursor:
             row[1] = max_axis(row[0])
-            cursor.updateRow(row),
+            cursor.updateRow(row)
 
 
 def max_axis(geom):
+    """Return the max width or height of the geom extents"""
     return max(geom.extent.width, geom.extent.height)
 
 
@@ -98,8 +101,8 @@ def parameter_fixer(args):
 
     # make sure output workspace exists
     # ArcGIS (toolbox or command line) does not do any validation on the output workspace
-    outPath, _ = os.path.split(args[1])
-    if not arcpy.Exists(outPath):
+    path, _ = os.path.split(args[1])
+    if not arcpy.Exists(path):
         utils.die("Error: The output workspace does not exist.")
 
     return args

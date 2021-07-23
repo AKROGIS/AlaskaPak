@@ -21,7 +21,7 @@ def points_to_polygons(
     point_feature_class, polygon_feature_class, polygon_id_fieldname, sort_field_name
 ):
     """Create polygons from an ordered set of points."""
-    # TODO Document parameters in the doc string
+    # TODO: Document parameters in the doc string
 
     lines = "in_memory\\lines"
     # Points To Lines (Basic License)
