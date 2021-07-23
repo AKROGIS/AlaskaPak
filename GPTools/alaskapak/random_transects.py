@@ -322,7 +322,7 @@ def create_lines(
             arcpy.SetProgressorLabel("Processing polygon {0}".format(step_num))
             oid = row[0]
             shape = row[1]
-            name = "OBJECTID = {1}".format(oid)
+            name = "OBJECTID = {0}".format(oid)
             lines = get_lines(
                 name,
                 shape,

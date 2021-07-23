@@ -47,7 +47,7 @@ def add_id_to_feature(
 
     # pylint: disable=too-many-arguments
 
-    utils.info("Adding {0} to {2}".format(field_name, feature_class))
+    utils.info("Adding {0} to {1}".format(field_name, feature_class))
     field_names = [field.name for field in arcpy.ListFields(feature_class)]
     id_field_name = utils.valid_field_name(field_name, feature_class)
     if id_field_name in field_names:
