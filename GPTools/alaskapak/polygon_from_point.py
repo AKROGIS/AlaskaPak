@@ -35,7 +35,6 @@ def get_polygon_data(
     polygon_group_field_name) which is wrapped in a dictionary keyed on the
     polygon ids (values in the polygon_id_field_name).
     """
-    # FIXME: Sort could be None
     if polygon_group_field_name:
         fields = [
             polygon_id_field_name,
@@ -44,10 +43,15 @@ def get_polygon_data(
             polygon_azimuth_field_name,
             polygon_distance_field_name,
         ]
+        if polygon_sort_field_name is None:
+            fields.remove(polygon_sort_field_name)
         data = {}
         previous_point_id = None
         previous_group_id = None
-        for row in sorted(arcpy.da.SearchCursor(polygon_data_table, fields)):
+        rows = arcpy.da.SearchCursor(polygon_data_table, fields)
+        if polygon_sort_field_name is not None:
+            rows.sort()
+        for row in rows:
             point_id = row[0]
             group_id = row[1]
             azimuth = row[3]
@@ -69,28 +73,33 @@ def get_polygon_data(
                 data[point_id][group_id] = []
             data[point_id][group_id].append((azimuth, distance))
         return data
-    else:
-        fields = [
-            polygon_id_field_name,
-            polygon_sort_field_name,
-            polygon_azimuth_field_name,
-            polygon_distance_field_name,
-        ]
-        data = {}
-        previous_point_id = None
-        for row in sorted(arcpy.da.SearchCursor(polygon_data_table, fields)):
-            point_id = row[0]
-            azimuth = row[2]
-            distance = row[3]
-            if not point_id:
-                msg = "Found record with null {0} in polygon table. Skipping"
-                utils.warn(msg.format(polygon_id_field_name))
-                continue
-            if point_id != previous_point_id:
-                previous_point_id = point_id
-                data[point_id] = []
-            data[point_id].append((azimuth, distance))
-        return data
+
+    fields = [
+        polygon_id_field_name,
+        polygon_sort_field_name,
+        polygon_azimuth_field_name,
+        polygon_distance_field_name,
+    ]
+    if polygon_sort_field_name is None:
+        fields.remove(polygon_sort_field_name)
+    data = {}
+    previous_point_id = None
+    rows = arcpy.da.SearchCursor(polygon_data_table, fields)
+    if polygon_sort_field_name is not None:
+        rows.sort()
+    for row in rows:
+        point_id = row[0]
+        azimuth = row[2]
+        distance = row[3]
+        if not point_id:
+            msg = "Found record with null {0} in polygon table. Skipping"
+            utils.warn(msg.format(polygon_id_field_name))
+            continue
+        if point_id != previous_point_id:
+            previous_point_id = point_id
+            data[point_id] = []
+        data[point_id].append((azimuth, distance))
+    return data
 
 
 def make_polygon(point, point_id, group_id, polygon_data):
