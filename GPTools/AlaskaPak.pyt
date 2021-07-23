@@ -155,7 +155,9 @@ class AddAreaMultiple(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
+        # The value of a multi-value parameter is a ValueTable object, not a list
+        # we want a list of the featureclasses as strings
+        features = parameters[0].valueAsText.split(";")
         units = parameters[1].valueAsText.upper().replace(" ", "")
         fieldname = parameters[2].valueAsText
         overwrite = parameters[3].value
@@ -428,7 +430,7 @@ class AddLengthMultiple(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
+        features = parameters[0].valueAsText.split(";") # list of strings
         units = parameters[1].valueAsText.upper().replace(" ", "")
         field_name = parameters[2].valueAsText
         overwrite = parameters[3].value
@@ -648,7 +650,7 @@ class AddIdMultiple(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
+        features = parameters[0].valueAsText.split(";") # list of strings
         field_name = parameters[1].valueAsText
         start = parameters[2].value
         increment = parameters[3].value
@@ -746,7 +748,7 @@ class LineToRectangle(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        lines = parameters[0].value
+        lines = parameters[0].valueAsText.split(";") # list of strings
         width = parameters[1].value
         polygons = parameters[2].value
         alaskapak.line_to_rectangle(lines, polygons, width)
@@ -803,7 +805,7 @@ class PointsToPolygon(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
+        features = parameters[0].valueAsText.split(";") # list of strings
         # alaskapak.points_to_polygons(features)
         alaskapak.add_area_to_features(features)
 
@@ -864,7 +866,7 @@ class PolygonFromPoint(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
+        features = parameters[0].valueAsText.split(";") # list of strings
         # Existing toolbox points to point2poly3.py (not _alt.py); delete old version
         alaskapak.add_area_to_features(features)
 
@@ -923,7 +925,7 @@ class RandomizePoints(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
+        features = parameters[0].valueAsText.split(";") # list of strings
         alaskapak.add_area_to_features(features)
 
 
@@ -981,7 +983,7 @@ class ObscurePoints(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
+        features = parameters[0].valueAsText.split(";") # list of strings
         alaskapak.add_area_to_features(features)
 
 
@@ -1038,7 +1040,7 @@ class RandomTransects(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
+        features = parameters[0].valueAsText.split(";") # list of strings
         alaskapak.add_area_to_features(features)
 
 
@@ -1090,5 +1092,5 @@ class TableToShape(object):
 
     def execute(self, parameters, messages):
         """Get the parameters and execute the task of the tool."""
-        features = parameters[0].value
+        features = parameters[0].valueAsText.split(";") # list of strings
         alaskapak.add_area_to_features(features)
