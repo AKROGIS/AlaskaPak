@@ -24,8 +24,7 @@ def square_buildings(edges, buildings):
 
     Args:
         edges (text): An ArcGIS data source path to a existing polyline feature
-            class. Must have fields `Width_Ft` (Double) and `Right_Left`
-            ("R{ight}"|"L{eft}").
+            class. Must have fields `Width_Ft` (Double) and `Right_Left` (text).
         buildings (text): An ArcGIS data source path to the polygon feature
             class that will be created.
     """

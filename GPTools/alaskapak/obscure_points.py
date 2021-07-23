@@ -31,15 +31,15 @@ if sys.version_info[0] < 3:
 # TODO: import utils and use message functions.
 
 
-def obscure_points(pts, circles, workspace, name, min, max, nogo, mustgo):
+def obscure_points(pts, circles, workspace, name, min, max, no_go, must_go):
 
     newFC = None
-    if nogo or mustgo:
+    if no_go or must_go:
         # TODO Check for Advanced Licence; required for both functions.
         if circles:
-            newFC = CreateLimitedCircles(pts, min, max, nogo, mustgo)
+            newFC = CreateLimitedCircles(pts, min, max, no_go, must_go)
         else:
-            newFC = CreateLimitedPoints(pts, min, max, nogo, mustgo)
+            newFC = CreateLimitedPoints(pts, min, max, no_go, must_go)
     else:
         if circles:
             newFC = CreateCircles(pts, min, max)
@@ -82,7 +82,7 @@ def parameter_fixer(args):
         utils.die(usage.format(sys.argv[0]))
 
     # FIXME: Handle missing optionals
-    (inFC, outFC, type, min, max, nogo, mustgo) = args
+    (inFC, outFC, type, min, max, no_go, must_go) = args
 
     # validate input feature class
     if inFC in ["", "#"]:
@@ -164,14 +164,14 @@ def parameter_fixer(args):
         arcpy.AddError(msg.format(max))
         sys.exit()
 
-    # validate nogo
-    nogo = nogo.split(";")
+    # validate no_go
+    no_go = no_go.split(";")
     for junk in [";", "#", "", " "]:
-        while nogo.count(junk) > 0:
-            nogo.remove(junk)
-    nogo = list(set(nogo))  # removes redundant feature classes
+        while no_go.count(junk) > 0:
+            no_go.remove(junk)
+    no_go = list(set(no_go))  # removes redundant feature classes
     removelist = []
-    for fc in nogo:
+    for fc in no_go:
         if not arcpy.Exists(fc):
             msg = "'No-Go' feature class ({0}) could not be found - skipping."
             arcpy.AddMessage(msg.format(fc))
@@ -184,16 +184,16 @@ def parameter_fixer(args):
             arcpy.AddMessage(msg.format(fc))
             removelist.append(fc)
     for fc in removelist:
-        nogo.remove(fc)
+        no_go.remove(fc)
 
-    # validate mustgo
-    mustgo = mustgo.split(";")
+    # validate must_go
+    must_go = must_go.split(";")
     for junk in [";", "#", "", " "]:
-        while mustgo.count(junk) > 0:
-            mustgo.remove(junk)
-    mustgo = list(set(mustgo))  # removes redundant feature classes
+        while must_go.count(junk) > 0:
+            must_go.remove(junk)
+    must_go = list(set(must_go))  # removes redundant feature classes
     removelist = []
-    for fc in mustgo:
+    for fc in must_go:
         if not arcpy.Exists(fc):
             msg = "'Must-Go' feature class ({0}) could not be found - skipping."
             arcpy.AddMessage(msg.format(fc))
@@ -206,9 +206,9 @@ def parameter_fixer(args):
             arcpy.AddMessage(msg.format(fc))
             removelist.append(fc)
     for fc in removelist:
-        mustgo.remove(fc)
+        must_go.remove(fc)
 
-    if (nogo or mustgo) and multi:
+    if (no_go or must_go) and multi:
         # Not supported because random point in polygon will only put 1
         # point in a multipart polygon
         msg = "Cannot use multipoint input when No-Go or Must-Go areas are specified."
@@ -216,11 +216,11 @@ def parameter_fixer(args):
         sys.exit()
 
     arcpy.AddMessage("Input has been validated.")
-    # print(inFC, circles, workspace, name, min, max, nogo, mustgo)
-    return inFC, circles, workspace, name, min, max, nogo, mustgo
+    # print(inFC, circles, workspace, name, min, max, no_go, must_go)
+    return inFC, circles, workspace, name, min, max, no_go, must_go
 
 
-def CreateLimitedPoints(pts, min, max, nogo, mustgo):
+def CreateLimitedPoints(pts, min, max, no_go, must_go):
     # It is very slow to create a random point, then check it against
     # a no-go area.  The New strategy is:
     # buffer each input point with the max offset
@@ -230,22 +230,22 @@ def CreateLimitedPoints(pts, min, max, nogo, mustgo):
     # put 1 random point in this area.
     allowed = arcpy.Buffer_analysis(pts, "in_memory\\allow", max)
     if min > 0:
-        minbuf = arcpy.Buffer_analysis(pts, "in_memory\\minbuf", min)
+        min_buffer = arcpy.Buffer_analysis(pts, "in_memory\\min_buffer", min)
         # Requires advanced (ArcInfo) license
-        erase1 = arcpy.Erase_analysis(allowed, minbuf, "in_memory\\erase1")
+        erase1 = arcpy.Erase_analysis(allowed, min_buffer, "in_memory\\erase1")
         arcpy.Delete_management(allowed)
-        arcpy.Delete_management(minbuf)
-        del minbuf
+        arcpy.Delete_management(min_buffer)
+        del min_buffer
         allowed = erase1
     index = 0
-    for fc in nogo:
+    for fc in no_go:
         newAllowed = arcpy.Erase_analysis(
             allowed, fc, "in_memory\\allow{0}".format(index)
         )
         index = index + 1
         arcpy.Delete_management(allowed)
         allowed = newAllowed
-    for fc in mustgo:
+    for fc in must_go:
         newAllowed = arcpy.Clip_analysis(
             allowed, fc, "in_memory\\allow{0}".format(index)
         )
@@ -267,11 +267,11 @@ def CreateLimitedPoints(pts, min, max, nogo, mustgo):
     return newpts
 
 
-def CreateLimitedCircles(pts, min, max, nogo, mustgo):
+def CreateLimitedCircles(pts, min, max, no_go, must_go):
     """returns a polygon feature class called "in_memory\circles". The
     caller is responsible for deleting this feature class when they are
     done. See CreatePoints for more information."""
-    newpts = CreateLimitedPoints(pts, min, max, nogo, mustgo)
+    newpts = CreateLimitedPoints(pts, min, max, no_go, must_go)
     circles = arcpy.Buffer_analysis(newpts, "in_memory\\circles", max)
     arcpy.Delete_management(newpts)
     del newpts
