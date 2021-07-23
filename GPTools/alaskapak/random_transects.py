@@ -12,22 +12,19 @@ import sys
 
 import arcpy
 
+if __name__ == "__main__":
+    # for use as a command line script and with old style ArcGIS toolboxes (*.tbx)
+    import utils
+else:
+    # for use as a module and Python toolboxes (*.pyt)
+    from . import utils
+
 # FIXME - use environment SR, Z, M, when creating feature class
 # TODO: Remove/replace random_transects() and sanitize_input()
 # use *_commandline() , *_testing() and toolbox_validation()
 
 
-def random_transects():
-    clean_params = sanitize_input(
-        arcpy.GetParameterAsText(0),
-        arcpy.GetParameterAsText(1),
-        arcpy.GetParameterAsText(2),
-        arcpy.GetParameterAsText(3),
-        arcpy.GetParameterAsText(4),
-        arcpy.GetParameterAsText(5),
-        arcpy.GetParameterAsText(6),
-    )
-    (
+def random_transects(
         polygons,
         workspace,
         name,
@@ -36,7 +33,7 @@ def random_transects():
         max_length,
         max_tries,
         allow_overlap,
-    ) = clean_params
+    ):
 
     lines = create_feature_class(polygons, workspace, name)
     feature_count = get_feature_count(polygons)
@@ -53,15 +50,48 @@ def random_transects():
     arcpy.ResetProgressor()
 
 
-def sanitize_input(
-    in_feature_class,
-    out_feature_class,
-    lines_per_poly,
-    min_length,
-    max_length,
-    max_tries,
-    allow_overlap,
-):
+def parameter_fixer(args):
+    """Validates and transforms the command line arguments for the task.
+
+    1) Converts text values from old style toolbox (*.tbx) parameters (or the
+       command line) to the python object arguments expected by the primary task
+       of the script, and as provided by the new style toolbox (*.pyt).
+    2) Validates the correct number of arguments.
+    3) Provides default values for command line options provided as "#"
+       or missing from the end of the command line.
+    4) Provides additional validation for command line parameters to match the
+       validation done by the toolbox interface.  This isn't required when
+       called by an old style toolbox, but it isn't possible to tell it is
+       called by the toolbox or by the command line.
+
+    Args:
+        args (list[text]): A list of commands arguments, Usually obtained
+        from the sys.argv or arcpy.GetParameterAsText().  Provide "#" as
+        placeholder for an unspecified intermediate argument.
+
+    Returns:
+        A list of validated arguments expected by the task being called.
+        Exits with an error message if the args cannot be transformed.
+    """
+
+    # TODO: handle optional command line arguments
+    if len(args) != 7:
+        usage = (
+            "Usage: {0} areas transects [transects_per_area] "
+            "[min_length] [max_length] [max_tries] [allow_overlap]"
+        )
+        utils.die(usage.format(sys.argv[0]))
+
+    (
+        in_feature_class,
+        out_feature_class,
+        lines_per_poly,
+        min_length,
+        max_length,
+        max_tries,
+        allow_overlap,
+    ) = args
+
     # validate input feature class
     if in_feature_class in ["", "#"]:
         arcpy.AddError("No input feature class specified.")
@@ -358,4 +388,6 @@ def get_random_point_in_envelope(env):
 
 
 if __name__ == "__main__":
-    random_transects()
+    # Set command line or simple testing
+    # sys.argv[1:] = ["TODO create test case"]
+    utils.execute(random_transects, parameter_fixer)

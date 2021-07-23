@@ -74,30 +74,43 @@ def make_shape(shape_type, points):
     return None
 
 
-def toolbox_validation():
-    """Exits with an error message if the command line arguments are not valid.
+def parameter_fixer(args):
+    """Validates and transforms the command line arguments for the task.
 
-    Provides the same default processing and validation for command line scripts
-    that the ArcGIS toolbox framework provides.  It does not do all possible
-    validation and error checking, see the validation option of the main function.
+    1) Converts text values from old style toolbox (*.tbx) parameters (or the
+       command line) to the python object arguments expected by the primary task
+       of the script, and as provided by the new style toolbox (*.pyt).
+    2) Validates the correct number of arguments.
+    3) Provides default values for command line options provided as "#"
+       or missing from the end of the command line.
+    4) Provides additional validation for command line parameters to match the
+       validation done by the toolbox interface.  This isn't required when
+       called by an old style toolbox, but it isn't possible to tell it is
+       called by the toolbox or by the command line.
+
+    Args:
+        args (list[text]): A list of commands arguments, Usually obtained
+        from the sys.argv or arcpy.GetParameterAsText().  Provide "#" as
+        placeholder for an unspecified intermediate argument.
 
     Returns:
-        A list of validated command line parameters.
+        A list of validated arguments expected by the task being called.
+        Exits with an error message if the args cannot be transformed.
     """
 
-    if len(sys.argv) != 7:
+    if len(args) != 7:
         usage = (
-            "Usage: {0} shape_table vertex_list shape_type "
-            "point_features point_id_name output_features"
+            "Usage: {0} shape_table vertex_list point_features "
+            "point_id_name shape_type output_features"
         )
         utils.die(usage.format(sys.argv[0]))
 
-    table = arcpy.GetParameterAsText(0)
-    vertex_list = arcpy.GetParameterAsText(1)
-    shape_type = arcpy.GetParameterAsText(4)
-    point_feature_class = arcpy.GetParameterAsText(2)
-    point_id_field = arcpy.GetParameterAsText(3)
-    out_feature_class = arcpy.GetParameterAsText(5)
+    table = args[0]
+    vertex_list = args[1]
+    point_feature_class = args[2]
+    point_id_field = args[3]
+    shape_type = args[4]
+    out_feature_class = args[5]
 
     # validate table
     if not arcpy.Exists(table):
@@ -380,13 +393,7 @@ def table_to_shape(
     utils.info("Done.")
 
 
-def table_to_shape_commandline():
-    """Parse and validate command line arguments then build shape from table."""
-    args = toolbox_validation()
-    table_to_shape(*args, validate=True)
-
-
 if __name__ == "__main__":
-    # For testing
-    # Change `from . import utils` to `import utils` to run as a script
-    table_to_shape_commandline()
+    # Set command line or simple testing
+    # sys.argv[1:] = ["TODO: develop test case"]
+    utils.execute(table_to_shape, parameter_fixer)

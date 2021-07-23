@@ -123,3 +123,24 @@ def valid_field_name(field_name, data_set):
     workspace = get_database(data_set)
     new_field_name = arcpy.ValidateFieldName(field_name, workspace)
     return new_field_name
+
+def execute(task, transformer=None):
+    """Execute a task with transformed toolbox parameters (or command line arguments).
+
+    Args:
+       task (callable): The function to execute
+       transformer (callable): an optional function to transform and/or validate
+       the toolbox parameters to match the task arguments
+    """
+    args = []
+    try:
+        # Collect arcpy parameters until empty or they throw an exception
+        i = 0
+        while arcpy.GetParameterAsText(i):
+            args.append(arcpy.GetParameterAsText(i))
+            i += 1
+    except RuntimeError:
+        pass
+    if transformer is not None:
+        args = transformer(args)
+    task(*args)

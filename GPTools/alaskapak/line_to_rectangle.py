@@ -158,12 +158,19 @@ def line_to_rectangle(line_feature, rect_feature, offset_field_name):
     del rect_cursor
 
 
-def toolbox_validation(args):
-    """Exits with an error message if the command line arguments are not valid.
+def parameter_fixer(args):
+    """Validates and transforms the command line arguments for the task.
 
-    Provides the same default processing and validation for command line scripts
-    that the ArcGIS toolbox framework provides.  It does not do all possible
-    validation and error checking.
+    1) Converts text values from old style toolbox (*.tbx) parameters (or the
+       command line) to the python object arguments expected by the primary task
+       of the script, and as provided by the new style toolbox (*.pyt).
+    2) Validates the correct number of arguments.
+    3) Provides default values for command line options provided as "#"
+       or missing from the end of the command line.
+    4) Provides additional validation for command line parameters to match the
+       validation done by the toolbox interface.  This isn't required when
+       called by an old style toolbox, but it isn't possible to tell it is
+       called by the toolbox or by the command line.
 
     Args:
         args (list[text]): A list of commands arguments, Usually obtained
@@ -171,7 +178,8 @@ def toolbox_validation(args):
         placeholder for an unspecified intermediate argument.
 
     Returns:
-        A list of validated command line parameters.
+        A list of validated arguments expected by the task being called.
+        Exits with an error message if the args cannot be transformed.
     """
 
     arg_count = len(args)
@@ -207,7 +215,6 @@ def toolbox_validation(args):
     if offset_field_type is None:
         msg = "{0} was not found as a field in {1}."
         utils.die(msg.format(offset_field_name, line_feature))
-        sys.exit(1)
 
     if offset_field_type not in ["SmallInteger", "Integer", "Single", "Double"]:
         msg = "{0}({1}) is not a numeric data type."
@@ -216,23 +223,7 @@ def toolbox_validation(args):
     return [line_feature, rect_feature, offset_field_name]
 
 
-def line_to_rectangle_commandline():
-    """Parse and validate command line arguments then add area to features."""
-    args = [arcpy.GetParameterAsText(i) for i in range(arcpy.GetParameterCount())]
-    args = toolbox_validation(args)
-    line_to_rectangle(*args)
-
-
-def line_to_rectangle_testing(args):
-    """Specify command line arguments for testing."""
-    args = toolbox_validation(args)
-    print(args)
-    line_to_rectangle(*args)
-
-
 if __name__ == "__main__":
-    # For testing
-    # Change `from . import utils` to `import utils` to run as a script
-    line_to_rectangle_commandline()
-    # args = ["C:/tmp/building.gdb/edges", "C:/tmp/building.gdb/footprint", "offset"]
-    # line_to_rectangle_testing(args)
+    # Set command line or simple testing
+    # sys.argv[1:] = ["C:/tmp/test.gdb/sides", "width", "C:/tmp/test.gdb/rects"]
+    utils.execute(line_to_rectangle, parameter_fixer)

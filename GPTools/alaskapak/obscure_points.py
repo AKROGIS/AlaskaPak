@@ -5,13 +5,20 @@ Create random circles that contain sensitive points.
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-
 import math
 import os
 import random
 import sys
 
 import arcpy
+
+if __name__ == "__main__":
+    # for use as a command line script and with old style ArcGIS toolboxes (*.tbx)
+    import utils
+else:
+    # for use as a module and Python toolboxes (*.pyt)
+    from . import utils
+
 
 # Python 2/3 compatible xrange() cabability
 # pylint: disable=undefined-variable,redefined-builtin
@@ -24,17 +31,7 @@ if sys.version_info[0] < 3:
 # TODO: import utils and use message functions.
 
 
-def ObscurePoints():
-    cleanParams = SanitizeInput(
-        arcpy.GetParameterAsText(0),
-        arcpy.GetParameterAsText(1),
-        arcpy.GetParameterAsText(2),
-        arcpy.GetParameterAsText(3),
-        arcpy.GetParameterAsText(4),
-        arcpy.GetParameterAsText(5),
-        arcpy.GetParameterAsText(6),
-    )
-    pts, circles, workspace, name, min, max, nogo, mustgo = cleanParams
+def obscure_points(pts, circles, workspace, name, min, max, nogo, mustgo):
 
     newFC = None
     if nogo or mustgo:
@@ -54,7 +51,39 @@ def ObscurePoints():
         del newFC
 
 
-def SanitizeInput(inFC, outFC, type, min, max, nogo, mustgo):
+def parameter_fixer(args):
+    """Validates and transforms the command line arguments for the task.
+
+    1) Converts text values from old style toolbox (*.tbx) parameters (or the
+       command line) to the python object arguments expected by the primary task
+       of the script, and as provided by the new style toolbox (*.pyt).
+    2) Validates the correct number of arguments.
+    3) Provides default values for command line options provided as "#"
+       or missing from the end of the command line.
+    4) Provides additional validation for command line parameters to match the
+       validation done by the toolbox interface.  This isn't required when
+       called by an old style toolbox, but it isn't possible to tell it is
+       called by the toolbox or by the command line.
+
+    Args:
+        args (list[text]): A list of commands arguments, Usually obtained
+        from the sys.argv or arcpy.GetParameterAsText().  Provide "#" as
+        placeholder for an unspecified intermediate argument.
+
+    Returns:
+        A list of validated arguments expected by the task being called.
+        Exits with an error message if the args cannot be transformed.
+    """
+
+    if not len(args) == 7:
+        usage = ("Usage: {0} sensitive_points obscured_features [output_shape] "
+        " [minimum_offset], [maximum_offset], [no_go_areas], [must_go_areas]"
+        )
+        utils.die(usage.format(sys.argv[0]))
+
+    # FIXME: Handle missing optionals
+    (inFC, outFC, type, min, max, nogo, mustgo) = args
+
     # validate input feature class
     if inFC in ["", "#"]:
         arcpy.AddError("No input feature class specified.")
@@ -258,9 +287,10 @@ def CreatePoints(existing, min, max):
     is responsible for deleting this feature class when they are done."""
     newpts = arcpy.FeatureClassToFeatureClass_conversion(existing, "in_memory", "temp")
     with arcpy.da.UpdateCursor(newpts, ["SHAPE@XY"]) as cursor:
-        x, y = row[0]
-        row[0] = RandomizePoint(x, y, min, max)
-        cursor.updateRow(row)
+        for row in cursor:
+            x, y = row[0]
+            row[0] = RandomizePoint(x, y, min, max)
+            cursor.updateRow(row)
     return newpts
 
 
@@ -305,4 +335,6 @@ def RandomizePoint(x, y, r1, r2):
 
 
 if __name__ == "__main__":
-    ObscurePoints()
+    # Set command line or simple testing
+    # sys.argv[1:] = ["TODO create test case"]
+    utils.execute(obscure_points, parameter_fixer)

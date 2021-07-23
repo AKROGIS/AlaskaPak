@@ -51,7 +51,8 @@ def add_length_to_feature(feature, units=None, field_name="Length", overwrite=Fa
     Returns:
         None
     """
-    utils.info("Adding {0} (in {1}) to {2}".format(field_name, units, feature))
+    print_units = units if units is not None else "feature's units"
+    utils.info("Adding {0} (in {1}) to {2}".format(field_name, print_units, feature))
 
     # Verify and/or create field name
     field_name = utils.valid_field_name(field_name, feature)
@@ -115,12 +116,19 @@ def add_length_to_features(features, units=None, field_name="Length", overwrite=
         add_length_to_feature(feature, units, field_name, overwrite)
 
 
-def toolbox_validation(args):
-    """Exits with an error message if the command line arguments are not valid.
+def parameter_fixer(args):
+    """Validates and transforms the command line arguments for the task.
 
-    Provides the same default processing and validation for command line scripts
-    that the ArcGIS toolbox framework provides.  It does not do all possible
-    validation and error checking.
+    1) Converts text values from old style toolbox (*.tbx) parameters (or the
+       command line) to the python object arguments expected by the primary task
+       of the script, and as provided by the new style toolbox (*.pyt).
+    2) Validates the correct number of arguments.
+    3) Provides default values for command line options provided as "#"
+       or missing from the end of the command line.
+    4) Provides additional validation for command line parameters to match the
+       validation done by the toolbox interface.  This isn't required when
+       called by an old style toolbox, but it isn't possible to tell it is
+       called by the toolbox or by the command line.
 
     Args:
         args (list[text]): A list of commands arguments, Usually obtained
@@ -128,7 +136,8 @@ def toolbox_validation(args):
         placeholder for an unspecified intermediate argument.
 
     Returns:
-        A list of validated command line parameters.
+        A list of validated arguments expected by the task being called.
+        Exits with an error message if the args cannot be transformed.
     """
 
     # pylint: disable=too-many-branches
@@ -189,23 +198,7 @@ def toolbox_validation(args):
     return [features, units, field_name, overwrite]
 
 
-def add_length_commandline():
-    """Parse and validate command line arguments then add length to features."""
-    args = [arcpy.GetParameterAsText(i) for i in range(arcpy.GetParameterCount())]
-    args = toolbox_validation(args)
-    add_length_to_features(*args)
-
-
-def add_length_testing(args):
-    """Specify command line arguments for testing."""
-    args = toolbox_validation(args)
-    print(args)
-    add_length_to_features(*args)
-
-
 if __name__ == "__main__":
-    # For testing
-    # Change `from . import utils` to `import utils` to run as a script
-    add_length_commandline()
-    # args = ["C:/tmp/akr_facility.gdb/roads_ln", "Feet", "#", "Yes"]
-    # add_length_testing(args)
+    # Set command line or simple testing
+    # sys.argv[1:] = ["C:/tmp/akr_facility.gdb/roads_ln", "Feet", "#", "Yes"]
+    utils.execute(add_length_to_features, parameter_fixer)

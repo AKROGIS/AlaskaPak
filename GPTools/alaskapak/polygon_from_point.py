@@ -237,12 +237,19 @@ def polygon_from_control_point(
     utils.info("Output feature class has been populated")
 
 
-def toolbox_validation(args):
-    """Exits with an error message if the command line arguments are not valid.
+def parameter_fixer(args):
+    """Validates and transforms the command line arguments for the task.
 
-    Provides the same default processing and validation for command line scripts
-    that the ArcGIS toolbox framework provides.  It does not do all possible
-    validation and error checking, see the validation option of the main function.
+    1) Converts text values from old style toolbox (*.tbx) parameters (or the
+       command line) to the python object arguments expected by the primary task
+       of the script, and as provided by the new style toolbox (*.pyt).
+    2) Validates the correct number of arguments.
+    3) Provides default values for command line options provided as "#"
+       or missing from the end of the command line.
+    4) Provides additional validation for command line parameters to match the
+       validation done by the toolbox interface.  This isn't required when
+       called by an old style toolbox, but it isn't possible to tell it is
+       called by the toolbox or by the command line.
 
     Args:
         args (list[text]): A list of commands arguments, Usually obtained
@@ -250,7 +257,8 @@ def toolbox_validation(args):
         placeholder for an unspecified intermediate argument.
 
     Returns:
-        A list of validated command line parameters.
+        A list of validated arguments expected by the task being called.
+        Exits with an error message if the args cannot be transformed.
     """
 
     # pylint: disable=too-many-branches
@@ -341,16 +349,9 @@ def toolbox_validation(args):
     ]
 
 
-def polygon_from_control_point_commandline():
-    """Parse and validate command line arguments then add id to features."""
-    args = [arcpy.GetParameterAsText(i) for i in range(arcpy.GetParameterCount())]
-    args = toolbox_validation(args)
-    polygon_from_control_point(*args)
-
-
-def polygon_from_control_point_testing(args):
-    """Specify command line arguments for testing."""
-    args = [
+def set_test_command_line(args):
+    """Set command line or simple testing."""
+    sys.argv[1:] = [
         r"c:\tmp\test.gdb\campsite",
         "Tag_Number",
         r"C:\tmp\VariableTransectDataAllYears.xls\all$",
@@ -361,13 +362,9 @@ def polygon_from_control_point_testing(args):
         "A_Calc_T",
         "D",
     ]
-    args = toolbox_validation(args)
-    print(args)
-    polygon_from_control_point(*args)
 
 
 if __name__ == "__main__":
-    # For testing
-    # Change `from . import utils` to `import utils` to run as a script
-    polygon_from_control_point_commandline()
-    # polygon_from_control_point_testing(args)
+    # Set command line or simple testing
+    # sys.argv[1:] = ["C:/tmp/test.gdb/bldg_edge", "C:/tmp/test.gdb/bldg_footprint"]
+    utils.execute(polygon_from_control_point, parameter_fixer)
