@@ -25,15 +25,15 @@ else:
 
 
 def random_transects(
-        polygons,
-        workspace,
-        name,
-        lines_per_poly,
-        min_length,
-        max_length,
-        max_tries,
-        allow_overlap,
-    ):
+    polygons,
+    workspace,
+    name,
+    lines_per_poly,
+    min_length,
+    max_length,
+    max_tries,
+    allow_overlap,
+):
 
     lines = create_feature_class(polygons, workspace, name)
     feature_count = get_feature_count(polygons)

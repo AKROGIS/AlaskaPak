@@ -124,6 +124,7 @@ def valid_field_name(field_name, data_set):
     new_field_name = arcpy.ValidateFieldName(field_name, workspace)
     return new_field_name
 
+
 def execute(task, transformer=None):
     """Execute a task with transformed toolbox parameters (or command line arguments).
 

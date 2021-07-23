@@ -39,22 +39,48 @@ def lake_volume(Input_Shorelines, Input_Depth_Points, Output_Lakes, Output_Surfa
     arcpy.Merge_management(Input_Depth_Points, Output_Dataset, "")
 
     # Process: Make Feature Layer
-    arcpy.MakeFeatureLayer_management(Input_Shorelines, Output_Layer, "", "", "FID FID VISIBLE NONE;Shape Shape VISIBLE NONE;OBJECTID OBJECTID VISIBLE NONE;SHAPE_Leng SHAPE_Leng VISIBLE NONE;SHAPE_Area SHAPE_Area VISIBLE NONE;PONDNAME PONDNAME VISIBLE NONE")
+    arcpy.MakeFeatureLayer_management(
+        Input_Shorelines,
+        Output_Layer,
+        "",
+        "",
+        "FID FID VISIBLE NONE;Shape Shape VISIBLE NONE;OBJECTID OBJECTID VISIBLE NONE;SHAPE_Leng SHAPE_Leng VISIBLE NONE;SHAPE_Area SHAPE_Area VISIBLE NONE;PONDNAME PONDNAME VISIBLE NONE",
+    )
 
     # Process: Select Layer By Location
-    arcpy.SelectLayerByLocation_management(Output_Layer, "INTERSECT", Output_Dataset, "", "NEW_SELECTION")
+    arcpy.SelectLayerByLocation_management(
+        Output_Layer, "INTERSECT", Output_Dataset, "", "NEW_SELECTION"
+    )
 
     # Process: Add Field
-    arcpy.AddField_management(Output_Layer_Name, "xx_depth", "DOUBLE", "", "", "", "", "NON_NULLABLE", "NON_REQUIRED", "")
+    arcpy.AddField_management(
+        Output_Layer_Name,
+        "xx_depth",
+        "DOUBLE",
+        "",
+        "",
+        "",
+        "",
+        "NON_NULLABLE",
+        "NON_REQUIRED",
+        "",
+    )
 
     # Process: Calculate Field
     arcpy.CalculateField_management(Output_with_depth, "xx_depth", "0", "VB", "")
 
     # Process: Create TIN
-    arcpy.CreateTin_3d(Output_Surface, "", "# Depth masspoints <None>;DENA_SamplingLakes_Digitized xx_depth hardclip <None>", "DELAUNAY")
+    arcpy.CreateTin_3d(
+        Output_Surface,
+        "",
+        "# Depth masspoints <None>;DENA_SamplingLakes_Digitized xx_depth hardclip <None>",
+        "DELAUNAY",
+    )
 
     # Process: Polygon Volume (2)
-    arcpy.PolygonVolume_3d(Output_Surface, Output_with_depth_2, "xx_depth", "ABOVE", "Volume", "SArea", "0")
+    arcpy.PolygonVolume_3d(
+        Output_Surface, Output_with_depth_2, "xx_depth", "ABOVE", "Volume", "SArea", "0"
+    )
 
     # Process: Delete Field
     arcpy.DeleteField_management(Output_Lakes__temp_, "xx_depth")
@@ -94,7 +120,6 @@ def parameter_fixer(args):
 
     # TODO: check parameters.
     # depth points can be a list of point feature classes that will be merged
-
 
     return args
 

@@ -76,8 +76,9 @@ def parameter_fixer(args):
     """
 
     if not len(args) == 7:
-        usage = ("Usage: {0} sensitive_points obscured_features [output_shape] "
-        " [minimum_offset], [maximum_offset], [no_go_areas], [must_go_areas]"
+        usage = (
+            "Usage: {0} sensitive_points obscured_features [output_shape] "
+            " [minimum_offset], [maximum_offset], [no_go_areas], [must_go_areas]"
         )
         utils.die(usage.format(sys.argv[0]))
 

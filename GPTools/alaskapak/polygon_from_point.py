@@ -294,7 +294,6 @@ def parameter_fixer(args):
     polygon_id_field_name = args[3]
     polygon_feature_class = args[4]
 
-
     # validate point_layer
     if not arcpy.Exists(point_layer):
         utils.die("Control point layer cannot be found. Quitting.")

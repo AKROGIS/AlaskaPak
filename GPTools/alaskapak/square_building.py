@@ -43,7 +43,7 @@ def square_buildings(edges, buildings):
     arcpy.CalculateField_management(
         temp_edges,
         temp_field,
-        #FIXME: Will crash with Right_Left null or empty
+        # FIXME: Will crash with Right_Left null or empty
         "!Width_Ft! * 0.3048 * (1 if !Right_Left!.lower()[0] == 'r' else -1)",
         expression_type,
     )
