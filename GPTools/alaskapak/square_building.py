@@ -9,7 +9,12 @@ import sys
 
 import arcpy
 
-from . import line_to_rectangle
+if __name__ == "__main__":
+    # for use as a command line script and with old style ArcGIS toolboxes (*.tbx)
+    import line_to_rectangle
+else:
+    # for use as a module and Python toolboxes (*.pyt)
+    from . import line_to_rectangle
 
 
 def square_buildings(edges, buildings):

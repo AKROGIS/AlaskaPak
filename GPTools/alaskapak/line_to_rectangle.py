@@ -11,7 +11,12 @@ import sys
 
 import arcpy
 
-from . import utils
+if __name__ == "__main__":
+    # for use as a command line script and with old style ArcGIS toolboxes (*.tbx)
+    import utils
+else:
+    # for use as a module and Python toolboxes (*.pyt)
+    from . import utils
 
 
 def make_rect(pt1, pt2, width):
