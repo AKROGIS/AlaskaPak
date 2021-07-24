@@ -341,6 +341,8 @@ def create_lines(
 
 def get_feature_count(data):
     """Return the number of features in data"""
+    # with statement on cursor is not required here
+    # lock will be released when cursor goes out of scope (when len() returns)
     return len(arcpy.da.SearchCursor(data, ["OID@"]))
 
 
