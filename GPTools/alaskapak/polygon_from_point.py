@@ -224,30 +224,30 @@ def polygon_from_control_point(
         polygon_fields = [polygon_id_new_field_name, "SHAPE@"]
     point_fields = [point_id_field_name, "SHAPE@XY"]
     utils.info("Creating polygons.")
-    with arcpy.da.InsertCursor(polygon_feature_class, polygon_fields) as polygons:
-        with arcpy.da.SearchCursor(point_layer, point_fields) as points:
-            for point in points:
-                point_id = point[0]
-                centroid = point[1]
-                try:
-                    polygon_data = all_polygon_data[point_id]
-                except KeyError:
-                    msg = "No polygon data for point {0}. Skipping."
-                    utils.warn(msg.format(point_id))
-                    continue
-                # utils.info("Creating polygons for point {0}".format(point_id))
-                if polygon_group_new_field_name:
-                    for group_id in polygon_data:
-                        polygon_shape = make_polygon(
-                            centroid, point_id, group_id, polygon_data[group_id]
-                        )
-                        if polygon_shape:
-                            polygons.insertRow([point_id, group_id, polygon_shape])
-                else:
-                    polygon_shape = make_polygon(centroid, point_id, "", polygon_data)
+    poly_cursor = arcpy.da.InsertCursor(polygon_feature_class, polygon_fields)
+    with arcpy.da.SearchCursor(point_layer, point_fields) as points:
+        for point in points:
+            point_id = point[0]
+            centroid = point[1]
+            try:
+                polygon_data = all_polygon_data[point_id]
+            except KeyError:
+                msg = "No polygon data for point {0}. Skipping."
+                utils.warn(msg.format(point_id))
+                continue
+            # utils.info("Creating polygons for point {0}".format(point_id))
+            if polygon_group_new_field_name:
+                for group_id in polygon_data:
+                    polygon_shape = make_polygon(
+                        centroid, point_id, group_id, polygon_data[group_id]
+                    )
                     if polygon_shape:
-                        polygons.insertRow(point_id, polygon_shape)
-
+                        poly_cursor.insertRow([point_id, group_id, polygon_shape])
+            else:
+                polygon_shape = make_polygon(centroid, point_id, "", polygon_data)
+                if polygon_shape:
+                    poly_cursor.insertRow(point_id, polygon_shape)
+    del poly_cursor
     utils.info("Output feature class has been populated")
 
 
