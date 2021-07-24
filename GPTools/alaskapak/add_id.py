@@ -75,7 +75,7 @@ def add_id_to_feature(
             msg = "Sort field `{0}` not in {1}. Ignoring"
             utils.warn(msg.format(sort_field_name, feature_class))
         else:
-            if arcpy.describe(feature_class).dataType == "ShapeFile":
+            if arcpy.Describe(feature_class).dataType == "ShapeFile":
                 utils.warn("Shapefiles do not support sort fields. Ignoring")
             else:
                 order_by = "ORDER BY {0}".format(sort_field_name)
