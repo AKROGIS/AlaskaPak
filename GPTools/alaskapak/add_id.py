@@ -124,23 +124,23 @@ def parameter_fixer(args):
         )
         utils.die(usage.format(sys.argv[0]))
 
-    if arg_count < 6:
+    if arg_count < 6 or not args[5]:
         overwrite = "#"
     else:
         overwrite = args[5]
-    if arg_count < 5:
+    if arg_count < 5 or not args[4]:
         sort_field_name = "#"
     else:
         sort_field_name = args[4]
-    if arg_count < 4:
+    if arg_count < 4 or not args[3]:
         increment = "#"
     else:
         increment = args[3]
-    if arg_count < 3:
+    if arg_count < 3 or not args[2]:
         start = "#"
     else:
         start = args[2]
-    if arg_count < 2:
+    if arg_count < 2 or not args[1]:
         id_field_name = "#"
     else:
         id_field_name = args[1]
@@ -149,7 +149,7 @@ def parameter_fixer(args):
     # validate features
     features = []
     for feature in feature_list.split(";"):
-        if feature == "'" and feature[-1] == "'":
+        if feature[0] == "'" and feature[-1] == "'":
             feature = feature[1:-1]
         if arcpy.Exists(feature):
             features.append(feature)

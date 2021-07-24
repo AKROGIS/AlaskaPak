@@ -137,10 +137,15 @@ def execute(task, transformer=None):
     try:
         # Collect arcpy parameters until empty or they throw an exception
         i = 0
-        while arcpy.GetParameterAsText(i):
+        # Toolbox may send an empty string for an optional parameter
+        while True:
             args.append(arcpy.GetParameterAsText(i))
             i += 1
-    except RuntimeError:
+            # Modifying the sys.argv for testing seems to add an infinite
+            # number of empty parameters
+            if i == 20:
+                raise ValueError("Too many parameters")
+    except (RuntimeError, ValueError):
         pass
     if transformer is not None:
         args = transformer(args)
