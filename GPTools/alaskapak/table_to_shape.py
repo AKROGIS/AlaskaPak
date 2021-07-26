@@ -327,33 +327,38 @@ def table_to_shape(
     )
 
     database = utils.get_database(out_feature_class)
-    # create matching lists of input and output field names.
-    # need field lists for the search and insert cursors.
-    in_field_names = []
-    out_field_names = []
-    for field in arcpy.ListFields(table):
-        name = field.name
-        if (
-            # field.type not in ["OID", "Geometry", "GlobalID", "Blob", "Raster"]
-            field.type not in ["OID", "Geometry"]
-            and name not in vertex_names
-            and field.editable  # skip un-editable fields like Shape_Length
-        ):
-            new_name = arcpy.ValidateFieldName(name, database)
-            arcpy.AddField_management(
-                temp_fc,
-                new_name,
-                utils.type_map[field.type],
-                field.precision,
-                field.scale,
-                field.length,
-                field.aliasName,
-                field.isNullable,
-                field.required,
-                field.domain,
-            )
-            in_field_names.append(name)
-            out_field_names.append(new_name)
+    if arcpy.TestSchemaLock(database):
+        # create matching lists of input and output field names.
+        # need field lists for the search and insert cursors.
+        in_field_names = []
+        out_field_names = []
+        for field in arcpy.ListFields(table):
+            name = field.name
+            if (
+                # field.type not in ["OID", "Geometry", "GlobalID", "Blob", "Raster"]
+                field.type not in ["OID", "Geometry"]
+                and name not in vertex_names
+                and field.editable  # skip un-editable fields like Shape_Length
+            ):
+                new_name = utils.valid_field_name(name, database)
+                arcpy.AddField_management(
+                    temp_fc,
+                    new_name,
+                    utils.type_map[field.type],
+                    field.precision,
+                    field.scale,
+                    field.length,
+                    field.aliasName,
+                    field.isNullable,
+                    field.required,
+                    field.domain,
+                )
+                in_field_names.append(name)
+                out_field_names.append(new_name)
+    else:
+        msg = "Unable to acquire a schema lock to add the new fields. Skipping..."
+        utils.warn(msg)
+        return
 
     utils.info("Reading Points database")
     points = get_points(point_feature_class, point_id_field)

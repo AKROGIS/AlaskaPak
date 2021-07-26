@@ -31,6 +31,7 @@ def longest_axis(in_features, out_features, name="MaxAxis"):
 def make_feature_class(in_features, out_features, name):
     """Copy the in_features to out_features and add double column `name`"""
     arcpy.CopyFeatures_management(in_features, out_features)
+    # No need to check for a schema lock since we just created `out_features`
     arcpy.AddField_management(
         out_features, name, "DOUBLE", "", "", "", "", "NULLABLE", "NON_REQUIRED", ""
     )

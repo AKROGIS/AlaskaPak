@@ -58,19 +58,14 @@ def lake_volume(shoreline, depth_points, lakes, surface):
         output_layer, "INTERSECT", output_dataset, "", "NEW_SELECTION"
     )
 
-    # Process: Add Field
-    arcpy.AddField_management(
-        output_layer_name,
-        "xx_depth",
-        "DOUBLE",
-        "",
-        "",
-        "",
-        "",
-        "NON_NULLABLE",
-        "NON_REQUIRED",
-        "",
-    )
+    if arcpy.TestSchemaLock(output_layer_name):
+        new_field_name = "xx_depth"
+        utils.info("Creating new field {0}".format(new_field_name))
+        arcpy.AddField_management(output_layer_name, new_field_name, "Double")
+    else:
+        msg = "Unable to acquire a schema lock to add the new field. Skipping..."
+        utils.warn(msg)
+        return
 
     # Process: Calculate Field
     arcpy.CalculateField_management(output_with_depth, "xx_depth", "0", "VB", "")

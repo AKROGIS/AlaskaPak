@@ -38,6 +38,7 @@ def square_buildings(edges, buildings):
         expression_type = "PYTHON_9.3"
 
     # Create an in memory copy of edges and prep it for line_to_rectangles
+    # Since temp_edges is in_memory, no need to check for a schema lock
     arcpy.CopyFeatures_management(edges, temp_edges, "", "0", "0", "0")
     arcpy.AddField_management(temp_edges, temp_field, "DOUBLE")
     arcpy.CalculateField_management(

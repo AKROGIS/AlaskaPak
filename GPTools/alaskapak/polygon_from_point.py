@@ -169,7 +169,7 @@ def polygon_from_control_point(
     )
 
     utils.info("Empty polygon feature class has been created")
-
+    # polygon_feature_class is brand new, so no need to check for a schema lock
     polygon_fields = arcpy.ListFields(polygon_data_table)
     # Add the polygon_id_field_name to the polygon FC
     polygon_id_new_field_name = utils.valid_field_name(
