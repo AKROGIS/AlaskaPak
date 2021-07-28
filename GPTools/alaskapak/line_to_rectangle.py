@@ -154,7 +154,8 @@ def line_to_rectangle(line_feature, rect_feature, offset_field_name):
             if shape:
                 rect = make_rect_from_line(shape, offset)
                 if rect:
-                    rect_row = [rect, offset] + row[2:]
+                    # row is a tuple in arcpy.da
+                    rect_row = (rect, offset) + row[2:]
                     rect_cursor.insertRow(rect_row)
     del rect_cursor
 
@@ -189,8 +190,8 @@ def parameter_fixer(args):
         utils.die(usage.format(sys.argv[0]))
 
     line_feature = args[0]
-    offset_field_name = args[1]
-    rect_feature = args[2]
+    rect_feature = args[1]
+    offset_field_name = args[2]
 
     line_description = arcpy.Describe(line_feature)
 

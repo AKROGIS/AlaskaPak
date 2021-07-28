@@ -63,6 +63,8 @@ def make_shape(shape_type, points):
         arcpy.ExecuteError: If it cannot build the requested geometry from the
             list of points.
     """
+    # Geometry constructors need an arcpy object not a python list
+    points = arcpy.Array([arcpy.Point(*coords) for coords in points])
     if not points:
         return None
     if shape_type == "multipoint":
@@ -98,7 +100,7 @@ def parameter_fixer(args):
         Exits with an error message if the args cannot be transformed.
     """
 
-    if len(args) != 7:
+    if len(args) != 6:
         usage = (
             "Usage: {0} shape_table vertex_list point_features "
             "point_id_name shape_type output_features"
@@ -326,39 +328,36 @@ def table_to_shape(
         spatial_reference,
     )
 
+    # Need the database to verify the field name is valid
     database = utils.get_database(out_feature_class)
-    if arcpy.TestSchemaLock(database):
-        # create matching lists of input and output field names.
-        # need field lists for the search and insert cursors.
-        in_field_names = []
-        out_field_names = []
-        for field in arcpy.ListFields(table):
-            name = field.name
-            if (
-                # field.type not in ["OID", "Geometry", "GlobalID", "Blob", "Raster"]
-                field.type not in ["OID", "Geometry"]
-                and name not in vertex_names
-                and field.editable  # skip un-editable fields like Shape_Length
-            ):
-                new_name = utils.valid_field_name(name, database)
-                arcpy.AddField_management(
-                    temp_fc,
-                    new_name,
-                    utils.type_map[field.type],
-                    field.precision,
-                    field.scale,
-                    field.length,
-                    field.aliasName,
-                    field.isNullable,
-                    field.required,
-                    field.domain,
-                )
-                in_field_names.append(name)
-                out_field_names.append(new_name)
-    else:
-        msg = "Unable to acquire a schema lock to add the new fields. Skipping..."
-        utils.warn(msg)
-        return
+    # create matching lists of input and output field names.
+    # need field lists for the search and insert cursors.
+    in_field_names = []
+    out_field_names = []
+    for field in arcpy.ListFields(table):
+        name = field.name
+        if (
+            # field.type not in ["OID", "Geometry", "GlobalID", "Blob", "Raster"]
+            field.type not in ["OID", "Geometry"]
+            and name not in vertex_names
+            and field.editable  # skip un-editable fields like Shape_Length
+        ):
+            new_name = utils.valid_field_name(name, database)
+            # Schema lock is not required for an in-memory feature class
+            arcpy.AddField_management(
+                temp_fc,
+                new_name,
+                utils.type_map[field.type],
+                field.precision,
+                field.scale,
+                field.length,
+                field.aliasName,
+                field.isNullable,
+                field.required,
+                field.domain,
+            )
+            in_field_names.append(name)
+            out_field_names.append(new_name)
 
     utils.info("Reading Points database")
     points = get_points(point_feature_class, point_id_field)
@@ -385,7 +384,8 @@ def table_to_shape(
                 msg = "  Vertex info: {0} = {1}"
                 utils.warn(msg.format(vertex_names, vertex_ids))
             else:
-                new_row = [geometry] + attributes
+                # arcpy.da row is a tuple, not a list
+                new_row = (geometry,) + attributes
                 out_cursor.insertRow(new_row)
 
     del out_cursor

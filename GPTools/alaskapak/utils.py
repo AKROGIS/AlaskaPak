@@ -103,11 +103,20 @@ def get_database(data_set):
     Returns:
         text: the path to the database
     """
-    workspace = os.path.dirname(arcpy.Describe(data_set).catalogPath)
-    desc = arcpy.Describe(workspace)
-    if hasattr(desc, "datasetType") and desc.datasetType == "FeatureDataset":
-        workspace = os.path.dirname(workspace)
-    return workspace
+    if arcpy.Exists(data_set):
+        workspace = os.path.dirname(arcpy.Describe(data_set).catalogPath)
+        desc = arcpy.Describe(workspace)
+        if hasattr(desc, "datasetType") and desc.datasetType == "FeatureDataset":
+            workspace = os.path.dirname(workspace)
+        return workspace
+    data_set_lower = data_set.lower()
+    for ext in [".gdb", ",mdb", ".sde"]:
+        try:
+            index = data_set_lower.rindex(ext)
+            return data_set[:index+4]
+        except ValueError:
+            continue
+    return os.path.dirname(data_set)
 
 
 def valid_field_name(field_name, data_set):
