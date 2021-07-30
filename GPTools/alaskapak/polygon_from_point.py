@@ -292,9 +292,9 @@ def parameter_fixer(args):
     arg_count = len(args)
     if arg_count < 5 or arg_count > 9:
         usage = (
-            "Usage: {0} point_layer, point_id_field_name, polygon_data_table, "
-            "polygon_id_field_name, polygon_feature_class, [polygon_group_field_name], "
-            "[polygon_sort_field_name], [polygon_azimuth_field_name], [polygon_distance_field_name]"
+            "Usage: {0} point_layer point_id_field_name polygon_data_table "
+            "polygon_id_field_name polygon_feature_class [polygon_group_field_name] "
+            "[polygon_sort_field_name] [polygon_azimuth_field_name] [polygon_distance_field_name]"
         )
         utils.die(usage.format(sys.argv[0]))
 

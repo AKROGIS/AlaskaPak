@@ -90,5 +90,5 @@ def parameter_fixer(args):
 
 if __name__ == "__main__":
     # Set command line or simple testing
-    # sys.argv[1:] = ["C:/tmp/test.gdb/bldg_edge", "C:/tmp/test.gdb/bldg_footprint"]
+    # sys.argv[1:] = ["C:/tmp/AkPakTest.gdb/bldg_edge", "C:/tmp/AkPakTestOut.gdb/bldg_foot2"]
     utils.execute(square_buildings, parameter_fixer)

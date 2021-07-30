@@ -133,7 +133,7 @@ def line_to_rectangle(line_feature, rect_feature, offset_field_name):
         line_feature,
         "SAME_AS_TEMPLATE",
         "SAME_AS_TEMPLATE",
-        line_feature,
+        line_feature
     )
 
     # create a simple field mapping from input to output
@@ -230,5 +230,5 @@ def parameter_fixer(args):
 
 if __name__ == "__main__":
     # Set command line or simple testing
-    # sys.argv[1:] = ["C:/tmp/test.gdb/sides", "width", "C:/tmp/test.gdb/rects"]
+    # sys.argv[1:] = ["C:/tmp/AkPakTest.gdb/bldg_edge", "C:/tmp/AkPakTestOut.gdb/bldg_foot", "Width_Ft"]
     utils.execute(line_to_rectangle, parameter_fixer)
