@@ -22,72 +22,62 @@ else:
     from . import utils
 
 
-def lake_volume(shoreline, depth_points, lakes, surface):
-    """Creates lakes and surface from shoreline and depth_points"""
+def lake_volume(shoreline, depth_points, depth_field_name, lakes, surface):
+    """Creates a bottom surface and volume from a shoreline and depth_points.
+
+    Args:
+        shoreline (text): the input polygon features that define the shoreline;
+            will be copied to lakes
+        depthpoints (text): A semicolon separated list of point feature class that
+            have the depth of the lakes at various locations. All feature classes
+            must have a DOUBLE column with the name
+        depth_field_name (text): the name of a field in depthpoints with a DOUBLE
+            representing the depth at that point.
+        lakes (text): An output feature class, based on shoreline, with the added
+            columns of Volume, and SurfaceArea, for the volume of the lake and the
+            bottom's surface area respectively.
+        surface (text): An output TIN dataset representing the bottom of the lake
+    """
 
     # Check out any necessary licenses
     arcpy.CheckOutExtension("3D")
 
-    # Local variables:
-    lakes_temp = surface
-    lakes_temp2 = lakes_temp
-    output_layer = shoreline
-    output_layer_name = output_layer
-    output_with_depth = output_layer_name
-    output_with_depth2 = output_with_depth
-    output_dataset = depth_points
+    # New field names in output
+    shoreline_depth_field_name = "xx_depth" # temporary; assumed 0 needed for calcs
+    volume_field_name = "Volume"
+    surface_area_field_name = "SArea"
 
-    # Process: Merge
-    arcpy.Merge_management(depth_points, output_dataset, "")
+    # Merge all the input depth points
+    all_points = "in_memory\\depth"
+    arcpy.Merge_management(depth_points, all_points, "")
 
-    # Process: Make Feature Layer
-    arcpy.MakeFeatureLayer_management(
-        shoreline,
-        output_layer,
-        "",
-        "",
-        (
-            "FID FID VISIBLE NONE;Shape Shape VISIBLE NONE;OBJECTID OBJECTID VISIBLE NONE;"
-            "SHAPE_Leng SHAPE_Leng VISIBLE NONE;SHAPE_Area SHAPE_Area VISIBLE NONE;"
-            "PONDNAME PONDNAME VISIBLE NONE"
-        ),
+    # Copy the input to the output
+    arcpy.management.CopyFeatures(shoreline, lakes)
+
+    #Add a shoreline depth of zero to the output features
+    # No need to test for a schema lock on an in_memory feature class
+    arcpy.AddField_management(lakes, shoreline_depth_field_name, "Double")
+    # The default expression type is Python3 for Pro and VB for 10.x
+    # The expression "0" is valid in both those languages
+    arcpy.CalculateField_management(lakes, shoreline_depth_field_name, "0")
+
+    # Create a TIN of the lake bottom
+    params = "{0} {1} masspoints;{2} {3} hardclip".format(
+        all_points,
+        depth_field_name,
+        lakes,
+        shoreline_depth_field_name
+    )
+    arcpy.CreateTin_3d(surface, "", params, "DELAUNAY",
     )
 
-    # Process: Select Layer By Location
-    arcpy.SelectLayerByLocation_management(
-        output_layer, "INTERSECT", output_dataset, "", "NEW_SELECTION"
-    )
-
-    if arcpy.TestSchemaLock(output_layer_name):
-        new_field_name = "xx_depth"
-        utils.info("Creating new field {0}".format(new_field_name))
-        arcpy.AddField_management(output_layer_name, new_field_name, "Double")
-    else:
-        msg = "Unable to acquire a schema lock to add the new field. Skipping..."
-        utils.warn(msg)
-        return
-
-    # Process: Calculate Field
-    arcpy.CalculateField_management(output_with_depth, "xx_depth", "0", "VB", "")
-
-    # Process: Create TIN
-    arcpy.CreateTin_3d(
-        surface,
-        "",
-        "# Depth masspoints <None>;DENA_SamplingLakes_Digitized xx_depth hardclip <None>",
-        "DELAUNAY",
-    )
-
-    # Process: Polygon Volume (2)
+    # Add the volume and surface area to the output
     arcpy.PolygonVolume_3d(
-        surface, output_with_depth2, "xx_depth", "ABOVE", "Volume", "SArea", "0"
+        surface, lakes, shoreline_depth_field_name, "ABOVE", volume_field_name, surface_area_field_name, "0"
     )
 
-    # Process: Delete Field
-    arcpy.DeleteField_management(lakes_temp, "xx_depth")
-
-    # Process: Copy Features
-    arcpy.CopyFeatures_management(lakes_temp2, lakes, "", "0", "0", "0")
+    # Remove the temporary field from the output
+    arcpy.DeleteField_management(lakes, shoreline_depth_field_name)
 
 
 def parameter_fixer(args):
@@ -115,8 +105,8 @@ def parameter_fixer(args):
     """
 
     arg_count = len(args)
-    if not arg_count == 4:
-        usage = "Usage: {0} shore_lines depth_points lakes surface"
+    if not arg_count == 5:
+        usage = "Usage: {0} shore_lines depth_points fieldname lakes surface"
         utils.die(usage.format(sys.argv[0]))
 
     # TODO: check parameters.
