@@ -12,7 +12,12 @@ import sys
 
 import arcpy
 
-from . import utils
+if __name__ == "__main__":
+    # for use as a command line script and with old style ArcGIS toolboxes (*.tbx)
+    import utils
+else:
+    # for use as a module and Python toolboxes (*.pyt)
+    from . import utils
 
 
 def get_polygon_data(
@@ -83,25 +88,32 @@ def get_polygon_data(
         polygon_azimuth_field_name,
         polygon_distance_field_name,
     ]
+    azimuth_index = 2
+    distance_index = 3
     if polygon_sort_field_name is None:
         fields.remove(polygon_sort_field_name)
+        azimuth_index = 1
+        distance_index = 2
     data = {}
     previous_point_id = None
+    my_rows = []
     with arcpy.da.SearchCursor(polygon_data_table, fields) as rows:
-        if polygon_sort_field_name is not None:
-            rows.sort()
         for row in rows:
-            point_id = row[0]
-            azimuth = row[2]
-            distance = row[3]
-            if not point_id:
-                msg = "Found record with null {0} in polygon table. Skipping"
-                utils.warn(msg.format(polygon_id_field_name))
-                continue
-            if point_id != previous_point_id:
-                previous_point_id = point_id
-                data[point_id] = []
-            data[point_id].append((azimuth, distance))
+            my_rows.append(row)
+    if polygon_sort_field_name is not None:
+        my_rows.sort()
+    for row in my_rows:
+        point_id = row[0]
+        azimuth = row[azimuth_index]
+        distance = row[distance_index]
+        if not point_id:
+            msg = "Found record with null {0} in polygon table. Skipping"
+            utils.warn(msg.format(polygon_id_field_name))
+            continue
+        if point_id != previous_point_id:
+            previous_point_id = point_id
+            data[point_id] = []
+        data[point_id].append((azimuth, distance))
     return data
 
 
@@ -246,7 +258,7 @@ def polygon_from_control_point(
             else:
                 polygon_shape = make_polygon(centroid, point_id, "", polygon_data)
                 if polygon_shape:
-                    poly_cursor.insertRow(point_id, polygon_shape)
+                    poly_cursor.insertRow([point_id, polygon_shape])
     del poly_cursor
     utils.info("Output feature class has been populated")
 
@@ -286,19 +298,19 @@ def parameter_fixer(args):
         )
         utils.die(usage.format(sys.argv[0]))
 
-    if arg_count < 9:
+    if arg_count < 9 or not args[8]:
         polygon_distance_field_name = "#"
     else:
         polygon_distance_field_name = args[8]
-    if arg_count < 8:
+    if arg_count < 8 or not args[7]:
         polygon_azimuth_field_name = "#"
     else:
         polygon_azimuth_field_name = args[7]
-    if arg_count < 7:
+    if arg_count < 7 or not args[6]:
         polygon_sort_field_name = "#"
     else:
         polygon_sort_field_name = args[6]
-    if arg_count < 6:
+    if arg_count < 6 or not args[5]:
         polygon_group_field_name = "#"
     else:
         polygon_group_field_name = args[5]
@@ -362,22 +374,22 @@ def parameter_fixer(args):
     ]
 
 
-def set_test_command_line():
-    """Set command line or simple testing."""
+def test():
+    """Set command line or simple testing"""
     sys.argv[1:] = [
-        r"c:\tmp\test.gdb\campsite",
-        "Tag_Number",
-        r"C:\tmp\VariableTransectDataAllYears.xls\all$",
-        "Tag",
-        r"c:\tmp\test.gdb\campsites11",
-        "Year",
-        "AutoSort",
-        "A_Calc_T",
-        "D",
+        "C:/tmp/AkPakTest.gdb/CampsitesCP2010", # center point feature class
+        "Tag_Number", # ID field in center point feature class
+        "C:/tmp/AkPakTest.gdb/Campsite_Radial_Transects", # radial transects table
+        "ID", # ID field in radial transects table
+        "C:/tmp/AkPakTestOut.gdb/campsite_py", # output polygons
+        "", # Group field
+        "", # Sort field
+        "A", # Azimuth field
+        "D", # Distance field
     ]
 
 
 if __name__ == "__main__":
     # Set command line or simple testing
-    # set_test_command_line()
+    # test()
     utils.execute(polygon_from_control_point, parameter_fixer)
