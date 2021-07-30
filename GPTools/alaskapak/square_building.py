@@ -49,9 +49,8 @@ def square_buildings(edges, buildings):
         expression_type,
     )
     # Process: Line to Rectangle
-    line_to_rectangle.line_to_rectangle(temp_edges, temp_field, buildings)
+    line_to_rectangle.line_to_rectangle(temp_edges, buildings, temp_field)
     arcpy.DeleteField_management(buildings, temp_field)
-    arcpy.Delete(temp_edges)
 
 
 def parameter_fixer(args):

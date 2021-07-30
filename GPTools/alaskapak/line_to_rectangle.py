@@ -16,7 +16,10 @@ if __name__ == "__main__":
     import utils
 else:
     # for use as a module and Python toolboxes (*.pyt)
-    from . import utils
+    # FIXME: the relative import breaks when called by square_building.py
+    #        so the python toolbox will now break.
+    # from . import utils
+    import utils
 
 
 def make_rect(pt1, pt2, width):
